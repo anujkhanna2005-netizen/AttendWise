@@ -76,3 +76,20 @@ https://github.com/anujkhanna2005-netizen
 ## 🌐 Live Application
 
 https://attendwise-app.web.app
+
+## 📸 Screenshots
+
+### Dashboard
+![Dashboard](screenshots/overview.png)
+
+### Add Subject
+![Add Subject](screenshots/add-subject.png)
+
+### Subject Management
+![Subject Management](screenshots/make-changes.png)
+
+### Edit Subject
+![Edit Subject](screenshots/edit-subject.png)
+
+### Install App
+![Install App](screenshots/mobile-app-installation.png)
