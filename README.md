@@ -1,73 +1,78 @@
-# React + TypeScript + Vite
+# 🎓 AttendWise
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Track attendance. Stay above 75%.
 
-Currently, two official plugins are available:
+AttendWise is a Progressive Web App (PWA) designed for college students to track subject-wise attendance, monitor attendance percentages, and stay above the required attendance threshold.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🚀 Live Demo
 
-## React Compiler
+https://attendwise-app.web.app
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## ✨ Features
 
-## Expanding the ESLint configuration
+* Subject-wise attendance tracking
+* Real-time attendance percentage calculation
+* Bunk calculator
+* Edit subjects
+* Delete subjects
+* Offline support
+* Dark mode
+* Mobile-first design
+* Installable on Android and iOS
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🛠️ Tech Stack
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+* React
+* TypeScript
+* Vite
+* Firebase Hosting
+* Progressive Web App (PWA)
+* Local Storage
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## 📱 Installation
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Clone the repository:
+
+```bash
+git clone https://github.com/anujkhanna2005-netizen/AttendWise.git
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Install dependencies:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
 ```
+
+Run locally:
+
+```bash
+npm run dev
+```
+
+Build for production:
+
+```bash
+npm run build
+```
+
+## 🎯 Problem Solved
+
+Many college students struggle to maintain the required 75% attendance due to a lack of visibility into subject-wise attendance.
+
+AttendWise helps students:
+
+* Monitor attendance instantly
+* Know how many classes they can safely miss
+* Track attendance across multiple subjects
+* Manage attendance even when offline
+
+## 👨‍💻 Author
+
+Anuj Khanna
+
+GitHub:
+https://github.com/anujkhanna2005-netizen
+
+## 🌐 Live Application
+
+https://attendwise-app.web.app
