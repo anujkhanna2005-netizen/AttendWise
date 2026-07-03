@@ -18,6 +18,20 @@ function App() {
   const [selectedSubjectId, setSelectedSubjectId] = useState<string | null>(null);
   const [optionsSubject, setOptionsSubject] = useState<Subject | null>(null);
   const [epochTime, setEpochTime] = useState(Math.floor(Date.now() / 1000));
+  const [isOnline, setIsOnline] = useState(typeof navigator !== 'undefined' ? navigator.onLine : true);
+
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   useEffect(() => {
     if (subjects.length > 0 && !selectedSubjectId) {
@@ -68,6 +82,14 @@ function App() {
 
   return (
     <div className="flex min-h-screen">
+      
+      {/* Offline Indicator Banner */}
+      {!isOnline && (
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[99] bg-[#d97706]/20 border border-[#d97706]/40 text-[#d97706] font-label-caps text-[10px] tracking-widest px-4 py-2 flex items-center gap-2 rounded-token-full shadow-elevation-2 animate-bounce">
+          <span className="material-symbols-outlined text-[14px]">wifi_off</span>
+          SYS_OFFLINE // LOCAL_STORAGE_ACTIVE
+        </div>
+      )}
       
       {/* Sidebar Navigation (Desktop) exactly as in code.html */}
       <aside className="hidden lg:flex flex-col w-64 fixed left-0 top-0 bottom-0 z-40 bg-surface-dim/90 backdrop-blur-md border-r border-outline-variant/50 pt-20">
