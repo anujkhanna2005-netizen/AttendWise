@@ -24,6 +24,7 @@ const getRelativeTime = (timestamp: number) => {
 function App() {
   const { subjects, getSubjectStats, markAttendance } = useAttendance();
   const { showToast } = useToast();
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'subjects' | 'calendar' | 'settings'>('dashboard');
   const [isFormSheetOpen, setIsFormSheetOpen] = useState(false);
   const [subjectToEdit, setSubjectToEdit] = useState<Subject | null>(null);
   const [selectedSubjectId, setSelectedSubjectId] = useState<string | null>(null);
