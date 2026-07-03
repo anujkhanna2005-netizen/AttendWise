@@ -1,4 +1,5 @@
 import React from 'react';
+import { Button } from './ui/Button';
 
 interface SetupWizardProps {
   onAddFirstSubject: () => void;
@@ -19,13 +20,13 @@ export const SetupWizard: React.FC<SetupWizardProps> = ({ onAddFirstSubject }) =
         Track your attendance precision effortlessly. No clutter, just the numbers you need to stay safe.
       </p>
       
-      <button 
-        className="bg-primary hover:bg-primary-container text-on-primary font-label-caps py-4 px-8 flex items-center gap-2 transition-all rounded-2xl shadow-[0_0_20px_rgba(210,187,255,0.4)] hover:shadow-[0_0_25px_rgba(210,187,255,0.6)]"
+      <Button 
+        variant="primary"
         onClick={onAddFirstSubject}
       >
-        <span className="material-symbols-outlined text-[24px]">add</span>
+        <span className="material-symbols-outlined text-[24px] mr-2">add</span>
         ADD FIRST SUBJECT
-      </button>
+      </Button>
     </div>
   );
 };

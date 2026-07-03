@@ -3,6 +3,7 @@ import type { Subject } from '../types';
 import { useAttendance } from '../context/AttendanceContext';
 import { useToast } from '../context/ToastContext';
 import { CircularProgress } from './ui/CircularProgress';
+import { Button } from './ui/Button';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface SubjectCardProps {
@@ -219,20 +220,22 @@ export const SubjectCard: React.FC<SubjectCardProps> = ({ subject, onClick, onOp
 
       {/* Quick Actions Footer Row (Visual Separator, min 48px height touch target) */}
       <div className="border-t border-outline-variant/30 flex divide-x divide-outline-variant/30">
-        <button 
-          className="flex-1 bg-transparent hover:bg-tertiary-container/10 text-tertiary font-label-caps text-[10px] tracking-widest flex justify-center items-center gap-2 transition-all h-[48px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary rounded-bl-token-md"
+        <Button 
+          variant="ghost"
+          className="flex-1 h-[48px] font-label-caps text-[10px] tracking-widest flex justify-center items-center gap-2 transition-all rounded-none rounded-bl-token-md text-tertiary hover:bg-tertiary/10"
           onClick={(e) => { e.stopPropagation(); handleMark('present'); }}
         >
           <span className="material-symbols-outlined text-[16px]">check</span>
           MARK P
-        </button>
-        <button 
-          className="flex-1 bg-transparent hover:bg-error-container/10 text-error font-label-caps text-[10px] tracking-widest flex justify-center items-center gap-2 transition-all h-[48px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary rounded-br-token-md"
+        </Button>
+        <Button 
+          variant="ghost"
+          className="flex-1 h-[48px] font-label-caps text-[10px] tracking-widest flex justify-center items-center gap-2 transition-all rounded-none rounded-br-token-md text-error hover:bg-error/10"
           onClick={(e) => { e.stopPropagation(); handleMark('absent'); }}
         >
           <span className="material-symbols-outlined text-[16px]">close</span>
           MARK A
-        </button>
+        </Button>
       </div>
     </div>
   );

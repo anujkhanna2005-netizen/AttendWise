@@ -351,18 +351,20 @@ function App() {
                           <p className="font-body-sm text-outline-variant">Present: {stats.presentCount} · Absent: {stats.absentCount}</p>
                         </div>
                         <div className="flex items-center gap-3">
-                          <button 
-                            className="px-4 py-2 bg-primary/20 text-primary border border-primary/50 font-label-caps text-[10px] hover:bg-primary/40 hover:shadow-[0_0_15px_#7c3aed] transition-all flex items-center gap-2 h-[42px] rounded-token-sm"
+                          <Button 
+                            variant="primary"
+                            className="px-4 py-2 font-label-caps text-[10px] flex items-center gap-2 h-[42px] rounded-token-sm"
                             onClick={() => markAttendance(activeSubject.id, 'present')}
                           >
                             <span className="material-symbols-outlined text-[16px]">add</span> Present
-                          </button>
-                          <button 
-                            className="px-4 py-2 bg-error/20 text-error border border-error/50 font-label-caps text-[10px] hover:bg-error/40 hover:shadow-[0_0_15px_#ffb4ab] transition-all flex items-center gap-2 h-[42px] rounded-token-sm"
+                          </Button>
+                          <Button 
+                            variant="error"
+                            className="px-4 py-2 font-label-caps text-[10px] flex items-center gap-2 h-[42px] rounded-token-sm"
                             onClick={() => markAttendance(activeSubject.id, 'absent')}
                           >
                             <span className="material-symbols-outlined text-[16px]">remove</span> Absent
-                          </button>
+                          </Button>
                         </div>
                       </div>
 

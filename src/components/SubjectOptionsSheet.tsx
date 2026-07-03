@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BottomSheet } from './ui/BottomSheet';
 import { useAttendance } from '../context/AttendanceContext';
 import { useToast } from '../context/ToastContext';
+import { Button } from './ui/Button';
 import type { Subject } from '../types';
 
 interface SubjectOptionsSheetProps {
@@ -50,21 +51,23 @@ export const SubjectOptionsSheet: React.FC<SubjectOptionsSheetProps> = ({ subjec
     <BottomSheet isOpen={!!subject} onClose={onClose} title="Subject Options">
       {!isConfirmingDelete ? (
         <div className="flex flex-col gap-3">
-          <button 
-            className="w-full bg-surface border border-outline-variant/30 text-on-surface hover:text-primary hover:bg-primary/5 py-4 px-6 flex items-center justify-start gap-4 transition-all rounded-token-sm subtle-glass text-sm font-semibold"
+          <Button 
+            variant="outline"
+            className="w-full justify-start gap-4 transition-all text-sm font-semibold h-[48px] min-h-[48px]"
             onClick={() => onEdit(subject)}
           >
             <span className="material-symbols-outlined text-[24px] text-primary">edit</span>
             Edit Subject
-          </button>
+          </Button>
           
-          <button 
-            className="w-full bg-surface border border-error/20 text-error hover:bg-error-container/30 py-4 px-6 flex items-center justify-start gap-4 transition-all rounded-token-sm subtle-glass text-sm font-semibold"
+          <Button 
+            variant="error"
+            className="w-full justify-start gap-4 transition-all text-sm font-semibold h-[48px] min-h-[48px]"
             onClick={() => setIsConfirmingDelete(true)}
           >
             <span className="material-symbols-outlined text-[24px]">delete</span>
             Delete Subject
-          </button>
+          </Button>
         </div>
       ) : (
         <div className="text-center p-4">
@@ -77,18 +80,20 @@ export const SubjectOptionsSheet: React.FC<SubjectOptionsSheetProps> = ({ subjec
           </p>
           
           <div className="flex flex-col gap-3">
-            <button 
-              className="w-full bg-error hover:bg-error/90 text-on-error py-4 transition-all rounded-token-sm neon-glow-error text-sm font-bold"
+            <Button 
+              variant="error"
+              className="w-full text-sm font-bold h-[48px] min-h-[48px]"
               onClick={handleDelete}
             >
               Confirm Delete
-            </button>
-            <button 
-              className="w-full bg-surface border border-outline-variant/50 text-on-surface hover:text-primary py-4 transition-colors rounded-token-sm subtle-glass text-sm font-semibold"
+            </Button>
+            <Button 
+              variant="outline"
+              className="w-full text-sm font-semibold h-[48px] min-h-[48px]"
               onClick={() => setIsConfirmingDelete(false)}
             >
               Cancel
-            </button>
+            </Button>
           </div>
         </div>
       )}

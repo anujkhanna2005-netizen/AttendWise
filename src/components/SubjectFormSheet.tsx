@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { BottomSheet } from './ui/BottomSheet';
 import { useAttendance } from '../context/AttendanceContext';
 import { useToast } from '../context/ToastContext';
+import { Button } from './ui/Button';
 import type { Subject, SubjectColor } from '../types';
 
 interface SubjectFormSheetProps {
@@ -273,14 +274,15 @@ export const SubjectFormSheet: React.FC<SubjectFormSheetProps> = ({ isOpen, onCl
           </div>
         </div>
 
-        <button 
-          className="w-full bg-primary hover:bg-primary-container text-on-primary font-body-sm py-4 mt-2 disabled:opacity-50 transition-all font-bold rounded-token-sm neon-glow-indigo min-h-[44px]"
+        <Button 
+          variant="primary"
+          fullWidth
+          className="mt-2 text-sm font-bold h-[48px]"
           onClick={handleSave}
           disabled={!isFormValid}
-          aria-disabled={!isFormValid}
         >
           {subjectToEdit ? 'Save Changes' : 'Save Subject'}
-        </button>
+        </Button>
       </div>
     </BottomSheet>
   );
