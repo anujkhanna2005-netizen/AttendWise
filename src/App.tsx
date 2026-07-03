@@ -1,11 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { useAttendance } from './context/AttendanceContext';
 import { SetupWizard } from './components/SetupWizard';
-import { SubjectFormSheet } from './components/SubjectFormSheet';
-import { SubjectOptionsSheet } from './components/SubjectOptionsSheet';
 import { SubjectCard } from './components/SubjectCard';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Subject } from './types';
+
+// Code-split bottom sheets since they aren't needed on initial paint
+const SubjectFormSheet = lazy(() => import('./components/SubjectFormSheet').then(m => ({ default: m.SubjectFormSheet })));
+const SubjectOptionsSheet = lazy(() => import('./components/SubjectOptionsSheet').then(m => ({ default: m.SubjectOptionsSheet })));
+const SubjectDetailsSheet = lazy(() => import('./components/SubjectDetailsSheet').then(m => ({ default: m.SubjectDetailsSheet })));
+
 
 
 function App() {
@@ -430,24 +434,26 @@ function App() {
         </a>
       </nav>
 
-      <SubjectFormSheet 
-        isOpen={isFormSheetOpen} 
-        onClose={() => {
-          setIsFormSheetOpen(false);
-          setTimeout(() => setSubjectToEdit(null), 300);
-        }} 
-        subjectToEdit={subjectToEdit}
-      />
+      <Suspense fallback={null}>
+        <SubjectFormSheet 
+          isOpen={isFormSheetOpen} 
+          onClose={() => {
+            setIsFormSheetOpen(false);
+            setTimeout(() => setSubjectToEdit(null), 300);
+          }} 
+          subjectToEdit={subjectToEdit}
+        />
 
-      <SubjectOptionsSheet 
-        subject={optionsSubject} 
-        onClose={() => setOptionsSubject(null)}
-        onEdit={(sub) => {
-          setOptionsSubject(null);
-          setSubjectToEdit(sub);
-          setIsFormSheetOpen(true);
-        }}
-      />
+        <SubjectOptionsSheet 
+          subject={optionsSubject} 
+          onClose={() => setOptionsSubject(null)}
+          onEdit={(sub) => {
+            setOptionsSubject(null);
+            setSubjectToEdit(sub);
+            setIsFormSheetOpen(true);
+          }}
+        />
+      </Suspense>
 
     </div>
   );
