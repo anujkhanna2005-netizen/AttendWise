@@ -60,6 +60,7 @@ export const SubjectCard: React.FC<SubjectCardProps> = ({ subject, onClick, onOp
   return (
     <div 
       className={`glass-card border border-outline-variant/30 p-6 cursor-pointer transition-all group relative hover:border-outline/60 ${glowClass}`}
+      style={{ boxShadow: glowClass ? undefined : 'var(--elevation-1)' }}
       onClick={onClick}
     >
       <div className="flex justify-between items-start mb-4">

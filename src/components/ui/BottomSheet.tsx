@@ -107,7 +107,8 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({ isOpen, onClose, title
         aria-modal="true"
         aria-labelledby="bottom-sheet-title"
         tabIndex={-1}
-        className="fixed bottom-0 left-0 right-0 max-w-3xl mx-auto glass-card border-t border-outline-variant/50 z-50 p-6 shadow-[0_-10px_40px_rgba(124,58,237,0.15)] max-h-[90vh] overflow-y-auto transform transition-transform bottom-sheet-slide focus:outline-none"
+        className="fixed bottom-0 left-0 right-0 max-w-3xl mx-auto glass-card border-t border-outline-variant/50 z-50 p-6 max-h-[90vh] overflow-y-auto transform transition-transform bottom-sheet-slide bottom-sheet-radius focus:outline-none"
+        style={{ boxShadow: 'var(--glow-sheet)' }}
         onKeyDown={handleKeyDown}
       >
         <div className="w-12 h-1 bg-outline-variant/50 mx-auto mb-6" />

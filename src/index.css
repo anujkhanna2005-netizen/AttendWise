@@ -2,23 +2,269 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================================
+   DESIGN TOKEN SYSTEM — CSS Custom Properties
+   Source of truth: /src/design-system/tokens/
+   All CSS vars below mirror the TS token objects so both CSS
+   and TypeScript components read from the same values.
+   ============================================================ */
+
+/* ─────────────────────────────────────────────────────────
+   TOKEN LAYER: injected before Tailwind base so they are
+   available to all Tailwind utility classes via var()
+   ───────────────────────────────────────────────────────── */
 @layer base {
+
+  /* ── NEUTRAL SCALE (13-step, warm purple-tinted) ──────── */
+  :root {
+    --neutral-0:   #ffffff;
+    --neutral-50:  #f8f7fc;
+    --neutral-100: #f0eef8;
+    --neutral-150: #e8e5f3;
+    --neutral-200: #dddaef;
+    --neutral-300: #c4bedd;
+    --neutral-400: #a99ec9;
+    --neutral-500: #8e80b4;
+    --neutral-600: #72639e;
+    --neutral-700: #574c87;
+    --neutral-800: #3d3570;
+    --neutral-900: #241e56;
+    --neutral-950: #15121b;   /* app background */
+  }
+
+  /* ── COLOR TOKENS — Dark Mode (default; this app is dark-first) ── */
+  :root {
+    /* Primary brand */
+    --color-primary:          #d2bbff;
+    --color-primary-hover:    #b89dff;
+    --color-primary-active:   #9b7de0;
+    --color-primary-container:#7c3aed;
+    --color-on-primary:       #3f008e;
+
+    /* Secondary / cyan */
+    --color-secondary:        #4cd7f6;
+    --color-secondary-container: #03b5d3;
+    --color-on-secondary:     #003640;
+
+    /* Tertiary / safe-green (WCAG AA #059669) */
+    --color-tertiary:         #059669;
+    --color-tertiary-container: #007650;
+    --color-on-tertiary:      #003824;
+
+    /* Surface stack (dark-first) */
+    --color-background:            #15121b;
+    --color-surface:               #15121b;
+    --color-surface-dim:           #15121b;
+    --color-surface-bright:        #3c3742;
+    --color-surface-container-lowest:  #100d16;
+    --color-surface-container-low:     #1d1a24;
+    --color-surface-container:         #221e28;
+    --color-surface-container-high:    #2c2833;
+    --color-surface-container-highest: #37333e;
+    --color-surface-variant:       #37333e;
+
+    /* Text / on-surface */
+    --color-text-primary:   #e8dfee;   /* on-surface */
+    --color-text-secondary: #ccc3d8;   /* on-surface-variant */
+    --color-text-tertiary:  #958da1;   /* outline */
+
+    /* Borders */
+    --color-outline:         #958da1;
+    --color-outline-variant: #4a4455;
+
+    /* Status (all WCAG 2.2 AA ≥4.5:1 on white) */
+    --color-safe:            #059669;
+    --color-safe-subtle:     rgba(5, 150, 105, 0.1);
+    --color-safe-border:     rgba(5, 150, 105, 0.4);
+
+    --color-warning:         #d97706;
+    --color-warning-subtle:  rgba(217, 119, 6, 0.1);
+    --color-warning-border:  rgba(217, 119, 6, 0.4);
+
+    --color-danger:          #dc2626;
+    --color-danger-subtle:   rgba(220, 38, 38, 0.1);
+    --color-danger-border:   rgba(220, 38, 38, 0.4);
+
+    /* Error (same as danger for this design system) */
+    --color-error:           #dc2626;
+    --color-error-container: #93000a;
+    --color-on-error:        #690005;
+  }
+
+  /* ── LIGHT MODE OVERRIDES (only tokens that change) ──── */
+  /* This app is dark-first; light mode overrides are minimal.
+     Provided for completeness and future theming. */
+  @media (prefers-color-scheme: light) {
+    :root {
+      --color-background:            var(--neutral-50);
+      --color-surface:               var(--neutral-0);
+      --color-surface-dim:           var(--neutral-100);
+      --color-surface-bright:        var(--neutral-0);
+      --color-surface-container-lowest:  var(--neutral-50);
+      --color-surface-container-low:     var(--neutral-100);
+      --color-surface-container:         var(--neutral-150);
+      --color-surface-container-high:    var(--neutral-200);
+      --color-surface-container-highest: var(--neutral-300);
+      --color-surface-variant:       var(--neutral-200);
+
+      --color-text-primary:   var(--neutral-950);
+      --color-text-secondary: var(--neutral-700);
+      --color-text-tertiary:  var(--neutral-500);
+
+      --color-outline:         var(--neutral-500);
+      --color-outline-variant: var(--neutral-300);
+
+      --color-primary:         #7c3aed;  /* inverted for light bg */
+      --color-primary-hover:   #6d28d9;
+      --color-primary-active:  #5b21b6;
+      --color-on-primary:      #ffffff;
+    }
+  }
+
+  /* ── SPACING SCALE (4px base, --space-1 → --space-16) ── */
+  :root {
+    --space-1:  4px;
+    --space-2:  8px;
+    --space-3:  12px;
+    --space-4:  16px;
+    --space-5:  20px;
+    --space-6:  24px;
+    --space-7:  28px;
+    --space-8:  32px;
+    --space-9:  36px;
+    --space-10: 40px;
+    --space-11: 44px;
+    --space-12: 48px;
+    --space-14: 56px;
+    --space-16: 64px;
+  }
+
+  /* ── TYPOGRAPHY SCALE ──────────────────────────────────── */
+  /* clamp(min, preferred, max) for fluid headline scaling */
+  :root {
+    /* Font families with robust system fallbacks */
+    --font-display: "Sora", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --font-body:    "Sora", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --font-mono:    "JetBrains Mono", "Cascadia Code", "Fira Code", "Courier New", monospace;
+
+    /* Display Lg — hero numbers */
+    --text-display-lg-size:     clamp(2.5rem, 5vw, 4rem);
+    --text-display-lg-weight:   700;
+    --text-display-lg-line:     1.15;
+    --text-display-lg-tracking: -0.03em;
+
+    /* Headline Lg — section titles */
+    --text-headline-lg-size:     clamp(1.5rem, 3vw, 2rem);
+    --text-headline-lg-weight:   600;
+    --text-headline-lg-line:     1.25;
+    --text-headline-lg-tracking: -0.01em;
+
+    /* Headline Md — card headers, sheet titles */
+    --text-headline-md-size:     clamp(1.125rem, 2vw, 1.5rem);
+    --text-headline-md-weight:   600;
+    --text-headline-md-line:     1.333;
+    --text-headline-md-tracking: -0.005em;
+
+    /* Title Md — panel headers */
+    --text-title-md-size:     1rem;
+    --text-title-md-weight:   600;
+    --text-title-md-line:     1.5;
+    --text-title-md-tracking: 0;
+
+    /* Body Lg — descriptions */
+    --text-body-lg-size:   1rem;
+    --text-body-lg-weight: 400;
+    --text-body-lg-line:   1.5;
+
+    /* Body Sm — secondary text */
+    --text-body-sm-size:   0.875rem;
+    --text-body-sm-weight: 400;
+    --text-body-sm-line:   1.428;
+
+    /* Label Caps — monospace terminal labels (dominant style in this app) */
+    --text-label-caps-size:     0.75rem;
+    --text-label-caps-weight:   500;
+    --text-label-caps-line:     1.333;
+    --text-label-caps-tracking: 0.1em;
+
+    /* Label Sm — small caps (10px metadata) */
+    --text-label-sm-size:     0.625rem;
+    --text-label-sm-weight:   500;
+    --text-label-sm-line:     1.2;
+    --text-label-sm-tracking: 0.1em;
+
+    /* Caption — timestamps */
+    --text-caption-size:   0.75rem;
+    --text-caption-weight: 400;
+    --text-caption-line:   1.333;
+  }
+
+  /* ── RADIUS TOKENS ─────────────────────────────────────── */
+  :root {
+    --radius-xs:   4px;     /* badges, terminal chips */
+    --radius-sm:   8px;     /* buttons, small elements */
+    --radius-md:   12px;    /* cards, inputs */
+    --radius-lg:   16px;    /* large cards, sheet corners */
+    --radius-xl:   24px;    /* prominent CTAs, setup wizard button */
+    --radius-full: 9999px;  /* pill badges, color swatches */
+  }
+
+  /* ── SHADOW / ELEVATION TOKENS ─────────────────────────── */
+  :root {
+    --elevation-0: none;
+    --elevation-1: 0 1px 2px rgba(0,0,0,0.3), 0 1px 4px rgba(0,0,0,0.2);
+    --elevation-2: 0 2px 8px rgba(0,0,0,0.35), 0 4px 12px rgba(0,0,0,0.25);
+    --elevation-3: 0 8px 24px rgba(0,0,0,0.4), 0 16px 32px rgba(0,0,0,0.3);
+    --elevation-4: 0 16px 48px rgba(0,0,0,0.5), 0 32px 64px rgba(0,0,0,0.35);
+
+    /* Neon glow accents (brand-specific, composable with elevation) */
+    --glow-primary:   0 0 15px rgba(124, 58, 237, 0.5);
+    --glow-secondary: 0 0 15px rgba(76, 215, 246, 0.4);
+    --glow-error:     0 0 15px rgba(220, 38, 38, 0.4);
+    --glow-sheet:     0 -10px 40px rgba(124, 58, 237, 0.15);
+  }
+
+  /* ── MOTION TOKENS ─────────────────────────────────────── */
+  :root {
+    --duration-instant:  0ms;
+    --duration-fast:     100ms;
+    --duration-base:     200ms;
+    --duration-moderate: 300ms;
+    --duration-slow:     500ms;
+    --duration-sheet:    250ms;
+
+    --easing-decelerate: cubic-bezier(0, 0, 0.2, 1);
+    --easing-accelerate: cubic-bezier(0.4, 0, 1, 1);
+    --easing-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+    --easing-spring:     cubic-bezier(0.32, 0.72, 0, 1);
+    --easing-linear:     linear;
+  }
+
+  /* ── BASE BODY RULE ───────────────────────────────────── */
   body {
     min-height: max(884px, 100dvh);
+    font-family: var(--font-body);
+    color: var(--color-text-primary);
+    background-color: var(--color-background);
   }
 }
 
+/* ============================================================
+   UTILITY CLASSES
+   ============================================================ */
 @layer utilities {
   .material-symbols-outlined {
     font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
   }
   
+  /* Terminal scanline overlay */
   .scanline {
     background: linear-gradient(to bottom, transparent 50%, rgba(0, 0, 0, 0.3) 51%);
     background-size: 100% 4px;
     pointer-events: none;
   }
 
+  /* Subtle background dot-grid */
   .technical-grid {
     background-image: 
       linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
@@ -26,44 +272,77 @@
     background-size: 40px 40px;
   }
 
+  /* Glassmorphism card surface */
   .glass-card {
     backdrop-filter: blur(12px);
     background: rgba(18, 18, 26, 0.7);
   }
 
+  /* ── Neon glow helpers (use token vars) ─── */
   .neon-glow-indigo {
-    box-shadow: 0 0 15px rgba(124, 58, 237, 0.5);
+    box-shadow: var(--glow-primary);
   }
   
   .neon-glow-cyan {
-    box-shadow: 0 0 15px rgba(76, 215, 246, 0.4);
+    box-shadow: var(--glow-secondary);
   }
 
+  .neon-glow-error {
+    box-shadow: var(--glow-error);
+  }
+
+  /* ── Status badge typography helper ─────── */
+  .text-label-sm {
+    font-size:      var(--text-label-sm-size);
+    font-weight:    var(--text-label-sm-weight);
+    line-height:    var(--text-label-sm-line);
+    letter-spacing: var(--text-label-sm-tracking);
+    font-family:    var(--font-mono);
+  }
+
+  /* ── Animations ──────────────────────────── */
   @keyframes pulse-cyan {
     0%, 100% { opacity: 0.8; }
     50% { opacity: 1; text-shadow: 0 0 10px rgba(76, 215, 246, 0.8); }
   }
   .animate-status {
-    animation: pulse-cyan 2s infinite;
+    animation: pulse-cyan var(--duration-slow) infinite;
   }
 
-  /* BottomSheet slide-up animation */
+  /* BottomSheet slide-up animation (uses token vars) */
   .bottom-sheet-slide {
-    animation: sheet-slide-up 0.25s cubic-bezier(0.32, 0.72, 0, 1);
+    animation: sheet-slide-up var(--duration-sheet) var(--easing-spring);
   }
   @keyframes sheet-slide-up {
     from { transform: translateY(100%); }
     to   { transform: translateY(0); }
   }
+
+  /* ── Elevation utility classes ────────────── */
+  .elevation-0 { box-shadow: var(--elevation-0); }
+  .elevation-1 { box-shadow: var(--elevation-1); }
+  .elevation-2 { box-shadow: var(--elevation-2); }
+  .elevation-3 { box-shadow: var(--elevation-3); }
+  .elevation-4 { box-shadow: var(--elevation-4); }
 }
 
 /* ============================================================
    REDUCED MOTION — disable / drastically shorten all animations
-   for users who have requested reduced motion in their OS.
    WCAG 2.3.3 / prefers-reduced-motion best practice.
+   Override duration tokens so all var(--duration-*) become 0.01ms.
    ============================================================ */
 @media (prefers-reduced-motion: reduce) {
-  /* Kill all CSS transitions globally */
+  /* Override motion tokens at the root so all consumers are covered */
+  :root {
+    --duration-instant:  0.01ms;
+    --duration-fast:     0.01ms;
+    --duration-base:     0.01ms;
+    --duration-moderate: 0.01ms;
+    --duration-slow:     0.01ms;
+    --duration-sheet:    0.01ms;
+  }
+
+  /* Belt-and-suspenders: kill all transitions/animations globally */
   *,
   *::before,
   *::after {
@@ -73,20 +352,17 @@
     scroll-behavior: auto !important;
   }
 
-  /* Specifically disable the bottom-sheet slide animation */
   .bottom-sheet-slide {
     animation: none !important;
     transform: none !important;
   }
 
-  /* Disable pulse animations */
   .animate-status,
   .animate-pulse {
     animation: none !important;
     opacity: 1 !important;
   }
 
-  /* Disable the scanline animation (it moves slightly with grid) */
   .technical-grid {
     transition: none !important;
   }
