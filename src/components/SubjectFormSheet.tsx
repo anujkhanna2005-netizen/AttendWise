@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { BottomSheet } from './ui/BottomSheet';
 import { useAttendance } from '../context/AttendanceContext';
 import type { Subject, SubjectColor } from '../types';
@@ -40,6 +40,8 @@ export const SubjectFormSheet: React.FC<SubjectFormSheetProps> = ({ isOpen, onCl
   const presentError = touchedPresent ? validateCount(initialPresent) : null;
   const absentError = touchedAbsent ? validateCount(initialAbsent) : null;
 
+  const colorButtonRefs = useRef<(HTMLButtonElement | null)[]>([]);
+
   useEffect(() => {
     if (isOpen) {
       if (subjectToEdit) {
@@ -53,14 +55,12 @@ export const SubjectFormSheet: React.FC<SubjectFormSheetProps> = ({ isOpen, onCl
         setInitialPresent('0');
         setInitialAbsent('0');
       }
-      // Reset touched state on sheet open
       setTouchedPresent(false);
       setTouchedAbsent(false);
     }
   }, [isOpen, subjectToEdit]);
 
   const handleSave = () => {
-    // Force validation by marking everything touched
     setTouchedPresent(true);
     setTouchedAbsent(true);
 
@@ -86,6 +86,30 @@ export const SubjectFormSheet: React.FC<SubjectFormSheetProps> = ({ isOpen, onCl
     onClose();
   };
 
+  // Keyboard navigation for ColorPicker radio group
+  const handleColorKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    const currentIndex = COLORS.findIndex((c) => c.value === color);
+    let nextIndex = currentIndex;
+
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      nextIndex = (currentIndex + 1) % COLORS.length;
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      nextIndex = (currentIndex - 1 + COLORS.length) % COLORS.length;
+    } else {
+      return; // Do nothing for other keys
+    }
+
+    const nextColor = COLORS[nextIndex].value;
+    setColor(nextColor);
+    
+    // Focus the selected button immediately
+    setTimeout(() => {
+      colorButtonRefs.current[nextIndex]?.focus();
+    }, 0);
+  };
+
   const inputClass = (hasError: boolean | null) =>
     `w-full p-4 rounded-2xl border ${hasError ? 'border-red-500 bg-red-500/5' : 'border-outline-variant/50 bg-surface/50'} text-on-surface font-body-md mb-1 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all shadow-inner`;
   const labelClass = "block text-xs font-label-caps tracking-widest text-outline mb-2 uppercase";
@@ -96,7 +120,7 @@ export const SubjectFormSheet: React.FC<SubjectFormSheetProps> = ({ isOpen, onCl
   return (
     <BottomSheet isOpen={isOpen} onClose={onClose} title={subjectToEdit ? 'Edit Subject' : 'Add Subject'}>
       <div>
-        {/* Subject Name — label/id properly associated */}
+        {/* Subject Name */}
         <label htmlFor="subject-name" className={labelClass}>Subject Name</label>
         <input 
           id="subject-name"
@@ -108,27 +132,38 @@ export const SubjectFormSheet: React.FC<SubjectFormSheetProps> = ({ isOpen, onCl
           aria-invalid={!name.trim() ? 'true' : 'false'}
         />
 
-        {/* Color Picker — label as group label, role=group */}
+        {/* Color Picker — proper role="radiogroup" and keyboard navigation */}
         <label className={labelClass} id="color-picker-label">Accent Color</label>
-        <div className="flex gap-4 mb-6" role="group" aria-labelledby="color-picker-label">
-          {COLORS.map((c) => (
-            <button 
-              key={c.value}
-              onClick={() => setColor(c.value)}
-              className="w-12 h-12 min-w-[44px] min-h-[44px] rounded-full flex items-center justify-center transition-all cursor-pointer"
-              style={{
-                backgroundColor: c.hex,
-                boxShadow: color === c.value ? `0 0 0 4px var(--tw-colors-surface), 0 0 0 6px ${c.hex}, 0 0 15px ${c.hex}` : 'none',
-              }}
-              aria-label={`Select color ${c.label}`}
-              aria-pressed={color === c.value}
-            />
-          ))}
+        <div 
+          className="flex gap-4 mb-6" 
+          role="radiogroup" 
+          aria-labelledby="color-picker-label"
+          onKeyDown={handleColorKeyDown}
+        >
+          {COLORS.map((c, index) => {
+            const isSelected = color === c.value;
+            return (
+              <button 
+                key={c.value}
+                ref={(el) => { colorButtonRefs.current[index] = el; }}
+                role="radio"
+                aria-checked={isSelected}
+                tabIndex={isSelected ? 0 : -1}
+                onClick={() => setColor(c.value)}
+                className="w-12 h-12 min-w-[44px] min-h-[44px] rounded-token-full flex items-center justify-center transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                style={{
+                  backgroundColor: c.hex,
+                  boxShadow: isSelected ? `0 0 0 4px var(--tw-colors-surface), 0 0 0 6px ${c.hex}, 0 0 15px ${c.hex}` : 'none',
+                }}
+                aria-label={c.label}
+              />
+            );
+          })}
         </div>
 
         <div className="flex gap-4">
           <div className="flex-1">
-            {/* Present — htmlFor/id properly associated */}
+            {/* Present */}
             <label htmlFor="initial-present" className={labelClass}>Present (Initial)</label>
             <input 
               id="initial-present"
@@ -151,7 +186,7 @@ export const SubjectFormSheet: React.FC<SubjectFormSheetProps> = ({ isOpen, onCl
             {!presentError && <div className="mb-4" />}
           </div>
           <div className="flex-1">
-            {/* Absent — htmlFor/id properly associated */}
+            {/* Absent */}
             <label htmlFor="initial-absent" className={labelClass}>Absent (Initial)</label>
             <input 
               id="initial-absent"
