@@ -3,7 +3,10 @@ import { useAttendance } from './context/AttendanceContext';
 import { SetupWizard } from './components/SetupWizard';
 import { SubjectFormSheet } from './components/SubjectFormSheet';
 import { SubjectOptionsSheet } from './components/SubjectOptionsSheet';
+import { SubjectCard } from './components/SubjectCard';
+import { motion, AnimatePresence } from 'framer-motion';
 import type { Subject } from './types';
+
 
 function App() {
   const { subjects, getSubjectStats, markAttendance } = useAttendance();
@@ -56,6 +59,9 @@ function App() {
   }, [subjects]);
 
   const hasCompletedSetup = localStorage.getItem('attendwise_setup_completed') === 'true';
+  const prefersReducedMotion =
+    typeof window !== 'undefined' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   return (
     <div className="flex min-h-screen">
@@ -148,6 +154,45 @@ function App() {
           ) : activeSubject && stats ? (
 
             <>
+              {/* Staggered Subject Cards list on home dashboard */}
+              <div className="mb-10 mt-4">
+                <h3 className="font-label-caps text-[10px] text-outline mb-4 uppercase tracking-widest">REGISTERED_MODULES</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <AnimatePresence mode="popLayout">
+                    {subjects.map((subject, index) => (
+                      <motion.div
+                        key={subject.id}
+                        layout
+                        initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 15 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={prefersReducedMotion ? { opacity: 0 } : { 
+                          opacity: 0, 
+                          x: -40,
+                          height: 0,
+                          marginBottom: 0,
+                          paddingTop: 0,
+                          paddingBottom: 0,
+                          marginTop: 0,
+                          overflow: 'hidden',
+                          transition: { duration: 0.25 }
+                        }}
+                        transition={{ 
+                          duration: prefersReducedMotion ? 0.01 : 0.25,
+                          delay: prefersReducedMotion ? 0 : index * 0.04,
+                          ease: [0.32, 0.72, 0, 1] 
+                        }}
+                      >
+                        <SubjectCard 
+                          subject={subject} 
+                          onClick={() => setSelectedSubjectId(subject.id)}
+                          onOptionsClick={(sub) => setOptionsSubject(sub)}
+                        />
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                </div>
+              </div>
+
               {/* Dashboard Header Content exactly as in code.html */}
               <div className="mb-gutter flex flex-col md:flex-row md:items-end justify-between gap-4 border-l-2 border-secondary pl-4 py-2 mt-4">
                 <div>
