@@ -6,6 +6,7 @@ import { SubjectCard } from './components/SubjectCard';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRegisterSW } from 'virtual:pwa-register/react';
 import type { Subject } from './types';
+import { Button } from './components/ui/Button';
 
 // Code-split bottom sheets since they aren't needed on initial paint
 const SubjectFormSheet = lazy(() => import('./components/SubjectFormSheet').then(m => ({ default: m.SubjectFormSheet })));
@@ -21,14 +22,48 @@ const getRelativeTime = (timestamp: number) => {
   return new Date(timestamp).toLocaleDateString([], { month: 'short', day: 'numeric' });
 };
 
+import { useSemester } from './context/SemesterContext';
+
 function App() {
   const { subjects, getSubjectStats, markAttendance } = useAttendance();
   const { showToast } = useToast();
+  const { semesterInfo, updateSemesterInfo, hasCompletedSemesterSetup, skipSemesterSetup, hasSkippedSetup } = useSemester();
   const [activeTab, setActiveTab] = useState<'dashboard' | 'subjects' | 'calendar' | 'settings'>('dashboard');
   const [isFormSheetOpen, setIsFormSheetOpen] = useState(false);
   const [subjectToEdit, setSubjectToEdit] = useState<Subject | null>(null);
   const [selectedSubjectId, setSelectedSubjectId] = useState<string | null>(null);
   const [optionsSubject, setOptionsSubject] = useState<Subject | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [semName, setSemName] = useState(semesterInfo?.name || '');
+  const [semStart, setSemStart] = useState(semesterInfo?.startDate || '');
+  const [semEnd, setSemEnd] = useState(semesterInfo?.endDate || '');
+  const [expectedClassesMap, setExpectedClassesMap] = useState<{ [subjectId: string]: string }>(() => {
+    const initial: { [subjectId: string]: string } = {};
+    if (semesterInfo?.expectedClasses) {
+      Object.keys(semesterInfo.expectedClasses).forEach(id => {
+        initial[id] = semesterInfo.expectedClasses[id]?.toString() || '';
+      });
+    }
+    return initial;
+  });
+
+  useEffect(() => {
+    if (semesterInfo) {
+      setSemName(semesterInfo.name);
+      setSemStart(semesterInfo.startDate);
+      setSemEnd(semesterInfo.endDate);
+      const initial: { [subjectId: string]: string } = {};
+      Object.keys(semesterInfo.expectedClasses).forEach(id => {
+        initial[id] = semesterInfo.expectedClasses[id]?.toString() || '';
+      });
+      setExpectedClassesMap(initial);
+    }
+  }, [semesterInfo]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 800);
+    return () => clearTimeout(timer);
+  }, []);
   const [isOnline, setIsOnline] = useState(typeof navigator !== 'undefined' ? navigator.onLine : true);
 
   // Prompt user to update when service worker detects new version available
@@ -134,13 +169,56 @@ function App() {
     }
   }, [subjects]);
 
+  const semesterBunkCalc = useMemo(() => {
+    if (!activeSubject || !stats || !semesterInfo) return null;
+    const expectedTotalClasses = semesterInfo.expectedClasses[activeSubject.id];
+    if (!expectedTotalClasses || expectedTotalClasses <= stats.totalClasses) return null;
+    
+    const remainingClasses = expectedTotalClasses - stats.totalClasses;
+    const requiredPresents = Math.ceil(0.75 * expectedTotalClasses);
+    const neededPresents = Math.max(0, requiredPresents - stats.presentCount);
+    
+    const maxSkip = remainingClasses - neededPresents;
+    const isPossible = neededPresents <= remainingClasses;
+    
+    return {
+      expectedTotalClasses,
+      remainingClasses,
+      requiredPresents,
+      neededPresents,
+      maxSkip,
+      isPossible
+    };
+  }, [activeSubject, stats, semesterInfo]);
+
   const hasCompletedSetup = localStorage.getItem('attendwise_setup_completed') === 'true';
   const prefersReducedMotion =
     typeof window !== 'undefined' &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center text-center p-6 select-none">
+        <div className="relative mb-6">
+          <div className="w-20 h-20 bg-primary-container/20 flex items-center justify-center rounded-token-sm border border-primary/50 animate-pulse shadow-[0_0_20px_rgba(124,58,237,0.4)]">
+            <span className="material-symbols-outlined text-[44px] text-primary animate-spin" style={{ animationDuration: '3s' }}>school</span>
+          </div>
+        </div>
+        <h2 className="font-body-md font-bold text-on-surface tracking-wider animate-pulse">AttendWise</h2>
+        <p className="text-[10px] text-outline mt-1 animate-pulse uppercase tracking-widest">Loading your workspace...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen">
+      {/* Accessibility skip-link (Issue 6) */}
+      <a 
+        href="#main-content" 
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[999] bg-primary text-on-primary px-4 py-2 font-bold rounded-token-sm focus:outline-none focus:ring-2 focus:ring-secondary"
+      >
+        Skip to main content
+      </a>
       
       {/* Offline Indicator Banner */}
       {!isOnline && (
@@ -186,7 +264,7 @@ function App() {
       </aside>
 
       {/* Main Content Canvas */}
-      <main className="w-full pt-16 pb-24 lg:pl-64 min-h-screen">
+      <main id="main-content" className="w-full pt-16 pb-24 lg:pl-64 min-h-screen" tabIndex={-1}>
         <header className="fixed top-0 left-0 w-full border-b border-outline-variant/30 bg-surface/80 backdrop-blur-xl z-50 shadow-[0_0_15px_rgba(3,181,211,0.2)] flex justify-between items-center px-margin-sm md:px-margin-lg h-16 lg:pl-72">
           <div className="flex items-center gap-3">
             <span className="material-symbols-outlined text-secondary active:scale-95 transition-transform">school</span>
@@ -225,7 +303,7 @@ function App() {
             <>
               {/* Staggered Subject Cards list on home dashboard */}
               <div className="mb-10 mt-4">
-                <h3 className="font-body-sm text-outline mb-4 uppercase tracking-widest">Your Subjects</h3>
+                <h2 className="font-body-sm text-outline mb-4 uppercase tracking-widest">Your Subjects</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   <AnimatePresence mode="popLayout">
                     {subjects.map((subject, index) => (
@@ -373,15 +451,33 @@ function App() {
                     <span className="font-body-sm text-outline tracking-wider font-bold">Bunk Calculator</span>
                   </div>
                   <div className="p-6 bg-black/60 flex-grow flex flex-col justify-between">
-                    <div className="mb-4">
+                    <div className="mb-4 text-left">
                       <p className="text-secondary text-sm">Attendance Margin of Safety</p>
-                      <p className="text-on-surface-variant opacity-70 text-xs mt-1">Calculated from your current attendance history</p>
+                      <p className="text-on-surface-variant opacity-70 text-xs mt-1">
+                        {semesterBunkCalc ? (
+                          semesterBunkCalc.isPossible ? (
+                            `You can skip ${semesterBunkCalc.maxSkip} classes to remain above 75% by semester end (${new Date(semesterInfo.endDate).toLocaleDateString([], {month: 'short', day: 'numeric'})}).`
+                          ) : (
+                            `It is not possible to reach 75% by semester end. You must attend all remaining ${semesterBunkCalc.remainingClasses} classes.`
+                          )
+                        ) : (
+                          "Calculated from your current attendance history"
+                        )}
+                      </p>
                     </div>
                     <div className="space-y-3 mt-4">
                       <div className="flex justify-between items-center text-sm">
                         <span className="text-on-surface">You can skip</span>
                         <span className="text-tertiary px-2 py-0.5 bg-tertiary/10 border border-tertiary/30 rounded-token-sm">
-                          {stats.status === 'Safe' ? `${Math.max(0, Math.floor(stats.presentCount / 0.75) - stats.totalClasses)} classes` : '0 classes'}
+                          {semesterBunkCalc ? (
+                            semesterBunkCalc.isPossible ? (
+                              `${semesterBunkCalc.maxSkip} classes`
+                            ) : (
+                              '0 classes'
+                            )
+                          ) : (
+                            stats.status === 'Safe' ? `${Math.max(0, Math.floor(stats.presentCount / 0.75) - stats.totalClasses)} classes` : '0 classes'
+                          )}
                         </span>
                       </div>
                       <div className="flex justify-between items-center text-sm">
@@ -394,7 +490,13 @@ function App() {
                     <div className="mt-auto border-t border-outline-variant/30 pt-4">
                       <div className="flex justify-between items-center mb-2 text-xs">
                         <span className="text-outline">Safety Margin</span>
-                        <span className="text-secondary">Remaining: {stats.status === 'Safe' ? Math.max(0, Math.floor(stats.presentCount / 0.75) - stats.totalClasses) : 0} classes</span>
+                        <span className="text-secondary">
+                          {semesterBunkCalc ? (
+                            `Remaining Expected: ${semesterBunkCalc.remainingClasses} classes`
+                          ) : (
+                            `Remaining: ${stats.status === 'Safe' ? Math.max(0, Math.floor(stats.presentCount / 0.75) - stats.totalClasses) : 0} classes`
+                          )}
+                        </span>
                       </div>
                       <div className="h-2 bg-surface-container-lowest border border-outline-variant/50 relative overflow-hidden rounded-token-full">
                         <div className={`h-full ${isSafe ? 'bg-secondary' : 'bg-error'} transition-all`} style={{ width: `${Math.min(100, Math.max(0, (stats.percentage - 60) * 2.5))}%` }}></div>
@@ -466,22 +568,40 @@ function App() {
         </div>
       </main>
 
-      {/* BottomNavBar (Mobile Only) exactly as in code.html */}
-      <nav className="lg:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 px-4 bg-surface-container-lowest/80 backdrop-blur-xl border-t border-outline-variant/30 shadow-[0_-5px_20px_rgba(78,222,163,0.15)] overflow-x-auto gap-4 hide-scrollbar">
-        {subjects.map(subject => (
-          <a 
-            key={subject.id}
-            className={`flex flex-col items-center justify-center transition-transform active:scale-90 min-w-[60px] cursor-pointer ${selectedSubjectId === subject.id ? 'text-tertiary shadow-[0_0_10px_rgba(78,222,163,0.5)]' : 'text-outline opacity-50 hover:opacity-100 hover:text-secondary'}`} 
-            onClick={() => setSelectedSubjectId(subject.id)}
-          >
-            <span className="material-symbols-outlined">{selectedSubjectId === subject.id ? 'grid_view' : 'monitoring'}</span>
-            <span className="text-[8px] font-label-caps truncate w-full text-center mt-1">{subject.name}</span>
-          </a>
-        ))}
-        <a className="flex flex-col items-center justify-center text-primary opacity-80 hover:opacity-100 hover:shadow-[0_0_10px_rgba(124,58,237,0.5)] transition-transform active:scale-90 cursor-pointer min-w-[60px] border-l border-outline-variant/30 pl-4" onClick={() => setIsFormSheetOpen(true)}>
-          <span className="material-symbols-outlined">add_box</span>
-          <span className="text-[8px] font-label-caps mt-1">ADD</span>
-        </a>
+      {/* BottomNavBar (Mobile Only) - Fixed 4-Tab Bar */}
+      <nav className="lg:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 bg-surface-container-lowest/90 backdrop-blur-xl border-t border-outline-variant/30 shadow-[0_-5px_20px_rgba(78,222,163,0.15)] pb-[env(safe-area-inset-bottom)]">
+        <button 
+          className={`flex flex-col items-center justify-center transition-transform active:scale-95 flex-1 h-full cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${activeTab === 'dashboard' ? 'text-primary' : 'text-outline opacity-60'}`}
+          onClick={() => setActiveTab('dashboard')}
+          aria-label="Dashboard"
+        >
+          <span className="material-symbols-outlined text-[20px]">home</span>
+          <span className="text-[10px] font-medium tracking-wide mt-0.5">Dashboard</span>
+        </button>
+        <button 
+          className={`flex flex-col items-center justify-center transition-transform active:scale-95 flex-1 h-full cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${activeTab === 'subjects' ? 'text-primary' : 'text-outline opacity-60'}`}
+          onClick={() => setActiveTab('subjects')}
+          aria-label="Subjects"
+        >
+          <span className="material-symbols-outlined text-[20px]">book</span>
+          <span className="text-[10px] font-medium tracking-wide mt-0.5">Subjects</span>
+        </button>
+        <button 
+          className={`flex flex-col items-center justify-center transition-transform active:scale-95 flex-1 h-full cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${activeTab === 'calendar' ? 'text-primary' : 'text-outline opacity-60'}`}
+          onClick={() => setActiveTab('calendar')}
+          aria-label="Calendar"
+        >
+          <span className="material-symbols-outlined text-[20px]">calendar_month</span>
+          <span className="text-[10px] font-medium tracking-wide mt-0.5">Calendar</span>
+        </button>
+        <button 
+          className={`flex flex-col items-center justify-center transition-transform active:scale-95 flex-1 h-full cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${activeTab === 'settings' ? 'text-primary' : 'text-outline opacity-60'}`}
+          onClick={() => setActiveTab('settings')}
+          aria-label="Settings"
+        >
+          <span className="material-symbols-outlined text-[20px]">settings</span>
+          <span className="text-[10px] font-medium tracking-wide mt-0.5">Settings</span>
+        </button>
       </nav>
 
       <Suspense fallback={null}>
