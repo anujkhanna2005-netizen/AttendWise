@@ -5,29 +5,33 @@ interface CircularProgressProps {
   size?: number;
   strokeWidth?: number;
   color?: string;
+  trackColor?: string;
 }
 
-export const CircularProgress: React.FC<CircularProgressProps> = ({ 
-  percentage, 
-  size = 64, 
+export const CircularProgress: React.FC<CircularProgressProps> = ({
+  percentage,
+  size = 60,
   strokeWidth = 6,
-  color = 'var(--color-safe)'
+  color = '#2fd9f4', // secondary-fixed-dim
+  trackColor = 'var(--tw-colors-surface-container-high)',
 }) => {
   const radius = (size - strokeWidth) / 2;
   const circumference = radius * 2 * Math.PI;
   const offset = circumference - (percentage / 100) * circumference;
 
   return (
-    <div style={{ position: 'relative', width: size, height: size, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <div style={{ width: size, height: size, position: 'relative' }}>
       <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
+        {/* Track */}
         <circle
           cx={size / 2}
           cy={size / 2}
           r={radius}
-          stroke="var(--border-color)"
+          stroke={trackColor}
           strokeWidth={strokeWidth}
           fill="none"
         />
+        {/* Progress */}
         <circle
           cx={size / 2}
           cy={size / 2}
@@ -35,15 +39,15 @@ export const CircularProgress: React.FC<CircularProgressProps> = ({
           stroke={color}
           strokeWidth={strokeWidth}
           fill="none"
-          strokeDasharray={circumference}
-          strokeDashoffset={offset}
           strokeLinecap="round"
-          style={{ transition: 'stroke-dashoffset 0.5s ease-in-out, stroke 0.3s ease' }}
+          style={{
+            strokeDasharray: circumference,
+            strokeDashoffset: offset,
+            transition: 'stroke-dashoffset 0.5s ease-in-out, stroke 0.3s ease',
+          }}
         />
       </svg>
-      <div style={{ position: 'absolute', fontSize: size * 0.25, fontWeight: 600, color: 'var(--text-primary)' }}>
-        {percentage}%
-      </div>
+      {/* Optional: Add text in the center if needed by the component using it, but typically we display text outside or position absolute here. */}
     </div>
   );
 };

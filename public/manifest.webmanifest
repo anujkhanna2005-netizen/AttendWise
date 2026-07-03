@@ -1,0 +1,17 @@
+{
+  "name": "AttendWise",
+  "short_name": "AttendWise",
+  "description": "Track attendance. Stay above 75%.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#15121b",
+  "theme_color": "#7c3aed",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

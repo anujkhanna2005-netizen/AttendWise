@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { BottomSheet } from './ui/BottomSheet';
 import { useAttendance } from '../context/AttendanceContext';
 import type { Subject, SubjectColor } from '../types';
-import { Button } from './ui/Button';
 
 interface SubjectFormSheetProps {
   isOpen: boolean;
@@ -11,17 +10,17 @@ interface SubjectFormSheetProps {
 }
 
 const COLORS: { label: string; value: SubjectColor; hex: string }[] = [
-  { label: 'Blue', value: 'blue', hex: 'var(--color-blue)' },
-  { label: 'Purple', value: 'purple', hex: 'var(--color-purple)' },
-  { label: 'Orange', value: 'orange', hex: 'var(--color-orange)' },
-  { label: 'Green', value: 'green', hex: 'var(--color-green)' },
-  { label: 'Pink', value: 'pink', hex: 'var(--color-pink)' },
+  { label: 'Indigo', value: 'purple', hex: '#7c3aed' }, // primary-container
+  { label: 'Cyan', value: 'blue', hex: '#03b5d3' }, // secondary-container
+  { label: 'Emerald', value: 'green', hex: '#10b981' }, // tertiary
+  { label: 'Amber', value: 'orange', hex: '#f59e0b' }, // warning
+  { label: 'Rose', value: 'pink', hex: '#f43f5e' }, // error
 ];
 
 export const SubjectFormSheet: React.FC<SubjectFormSheetProps> = ({ isOpen, onClose, subjectToEdit }) => {
   const { addSubject, updateSubject } = useAttendance();
   const [name, setName] = useState('');
-  const [color, setColor] = useState<SubjectColor>('blue');
+  const [color, setColor] = useState<SubjectColor>('purple');
   const [initialPresent, setInitialPresent] = useState('0');
   const [initialAbsent, setInitialAbsent] = useState('0');
 
@@ -34,7 +33,7 @@ export const SubjectFormSheet: React.FC<SubjectFormSheetProps> = ({ isOpen, onCl
         setInitialAbsent(subjectToEdit.initialAbsent.toString());
       } else {
         setName('');
-        setColor('blue');
+        setColor('purple');
         setInitialPresent('0');
         setInitialAbsent('0');
       }
@@ -63,73 +62,51 @@ export const SubjectFormSheet: React.FC<SubjectFormSheetProps> = ({ isOpen, onCl
     onClose();
   };
 
-  const inputStyle: React.CSSProperties = {
-    width: '100%',
-    padding: '12px 16px',
-    borderRadius: '12px',
-    border: '1px solid var(--border-color)',
-    backgroundColor: 'var(--bg-color)',
-    color: 'var(--text-primary)',
-    fontSize: '16px',
-    marginBottom: '20px'
-  };
-
-  const labelStyle: React.CSSProperties = {
-    display: 'block',
-    fontSize: '14px',
-    fontWeight: 600,
-    marginBottom: '8px',
-    color: 'var(--text-secondary)'
-  };
+  const inputClass = "w-full p-4 rounded-2xl border border-outline-variant/50 bg-surface/50 text-on-surface font-body-md mb-5 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all shadow-inner";
+  const labelClass = "block text-xs font-label-caps tracking-widest text-outline mb-2 uppercase";
 
   return (
     <BottomSheet isOpen={isOpen} onClose={onClose} title={subjectToEdit ? 'Edit Subject' : 'Add Subject'}>
       <div>
-        <label style={labelStyle}>Subject Name</label>
+        <label className={labelClass}>Subject Name</label>
         <input 
-          style={inputStyle} 
+          className={inputClass}
           placeholder="e.g. Data Structures" 
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
 
-        <label style={labelStyle}>Accent Color</label>
-        <div style={{ display: 'flex', gap: '12px', marginBottom: '24px' }}>
+        <label className={labelClass}>Accent Color</label>
+        <div className="flex gap-4 mb-6">
           {COLORS.map((c) => (
-            <div 
+            <button 
               key={c.value}
               onClick={() => setColor(c.value)}
+              className="w-12 h-12 rounded-full flex items-center justify-center transition-all cursor-pointer"
               style={{
-                width: '40px',
-                height: '40px',
-                borderRadius: '20px',
                 backgroundColor: c.hex,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: color === c.value ? `0 0 0 3px var(--bg-card), 0 0 0 5px ${c.hex}` : 'none',
-                transition: 'all 0.2s'
+                boxShadow: color === c.value ? `0 0 0 4px var(--tw-colors-surface), 0 0 0 6px ${c.hex}, 0 0 15px ${c.hex}` : 'none',
               }}
+              aria-label={`Select color ${c.label}`}
             />
           ))}
         </div>
 
-        <div style={{ display: 'flex', gap: '16px' }}>
-          <div style={{ flex: 1 }}>
-            <label style={labelStyle}>Present (Initial)</label>
+        <div className="flex gap-4">
+          <div className="flex-1">
+            <label className={labelClass}>Present (Initial)</label>
             <input 
-              style={inputStyle} 
+              className={inputClass}
               type="number"
               min="0"
               value={initialPresent}
               onChange={(e) => setInitialPresent(e.target.value)}
             />
           </div>
-          <div style={{ flex: 1 }}>
-            <label style={labelStyle}>Absent (Initial)</label>
+          <div className="flex-1">
+            <label className={labelClass}>Absent (Initial)</label>
             <input 
-              style={inputStyle} 
+              className={inputClass}
               type="number"
               min="0"
               value={initialAbsent}
@@ -138,15 +115,13 @@ export const SubjectFormSheet: React.FC<SubjectFormSheetProps> = ({ isOpen, onCl
           </div>
         </div>
 
-        <Button 
-          fullWidth 
-          size="lg" 
+        <button 
+          className="w-full bg-primary hover:bg-primary-container text-on-primary font-label-caps tracking-widest py-4 mt-4 disabled:opacity-50 transition-all text-sm rounded-xl neon-glow-indigo"
           onClick={handleSave}
           disabled={!name.trim()}
-          style={{ opacity: !name.trim() ? 0.5 : 1, marginTop: '12px' }}
         >
-          {subjectToEdit ? 'Save Changes' : 'Save Subject'}
-        </Button>
+          {subjectToEdit ? 'SAVE CHANGES' : 'SAVE SUBJECT'}
+        </button>
       </div>
     </BottomSheet>
   );

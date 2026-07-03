@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AttendWise | Physics Analytics</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&amp;family=Hanken+Grotesk:wght@400;500;600&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-variant": "#e0e3e5",
+                    "on-tertiary": "#ffffff",
+                    "background": "#f7f9fb",
+                    "outline-variant": "#c7c4d8",
+                    "inverse-on-surface": "#eff1f3",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-bright": "#f7f9fb",
+                    "surface": "#f7f9fb",
+                    "on-surface": "#191c1e",
+                    "on-primary-fixed": "#0f0069",
+                    "on-tertiary-fixed-variant": "#92002a",
+                    "surface-container": "#eceef0",
+                    "tertiary-container": "#bf0f3c",
+                    "error-container": "#ffdad6",
+                    "on-primary-container": "#dad7ff",
+                    "on-secondary-fixed": "#001f25",
+                    "primary-fixed": "#e2dfff",
+                    "error": "#ba1a1a",
+                    "secondary-fixed": "#a2eeff",
+                    "tertiary-fixed-dim": "#ffb2b7",
+                    "secondary": "#006877",
+                    "on-surface-variant": "#464555",
+                    "on-tertiary-container": "#ffd0d2",
+                    "surface-container-low": "#f2f4f6",
+                    "on-background": "#191c1e",
+                    "inverse-primary": "#c3c0ff",
+                    "surface-tint": "#4d44e3",
+                    "tertiary": "#95002b",
+                    "primary-fixed-dim": "#c3c0ff",
+                    "on-error-container": "#93000a",
+                    "on-secondary-container": "#00616f",
+                    "primary-container": "#4f46e5",
+                    "inverse-surface": "#2d3133",
+                    "surface-container-highest": "#e0e3e5",
+                    "primary": "#3525cd",
+                    "on-secondary": "#ffffff",
+                    "surface-container-high": "#e6e8ea",
+                    "on-primary": "#ffffff",
+                    "surface-dim": "#d8dadc",
+                    "tertiary-fixed": "#ffdadb",
+                    "on-tertiary-fixed": "#40000d",
+                    "on-secondary-fixed-variant": "#004e5a",
+                    "secondary-container": "#3fe1fd",
+                    "secondary-fixed-dim": "#2fd9f4",
+                    "on-error": "#ffffff",
+                    "on-primary-fixed-variant": "#3323cc",
+                    "outline": "#777587"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "base": "4px",
+                    "grid-pattern": "20px",
+                    "lg": "40px",
+                    "xl": "64px",
+                    "md": "24px",
+                    "xs": "8px",
+                    "sm": "16px"
+            },
+            "fontFamily": {
+                    "display-lg-mobile": ["Sora"],
+                    "micro-label": ["JetBrains Mono"],
+                    "headline-md": ["Sora"],
+                    "body-base": ["Hanken Grotesk"],
+                    "display-lg": ["Sora"],
+                    "data-mono": ["JetBrains Mono"]
+            },
+            "fontSize": {
+                    "display-lg-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "micro-label": ["10px", {"lineHeight": "12px", "letterSpacing": "0.1em", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-base": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "data-mono": ["14px", {"lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "500"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24;
+            font-size: 24px;
+        }
+        .grid-bg {
+            background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        .progress-block {
+            height: 12px;
+            width: 100%;
+            border: 1px solid #e2e8f0;
+            background: #f7f9fb;
+        }
+        .progress-block.active {
+            background: #22d3ee;
+            box-shadow: 0 0 12px rgba(34, 211, 238, 0.4);
+            border-color: #22d3ee;
+        }
+        .status-glow-active {
+            border-left: 2px solid #22d3ee;
+            box-shadow: -4px 0 15px -5px rgba(34, 211, 238, 0.3);
+        }
+        .terminal-header {
+            background: linear-gradient(90deg, #191c1e 0%, #2d3133 100%);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface font-body-base antialiased grid-bg min-h-screen pb-32 before:fixed before:inset-0 before:pointer-events-none before:bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.05)_50%),linear-gradient(90deg,rgba(255,0,0,0.02),rgba(0,255,0,0.01),rgba(0,0,255,0.02))] before:bg-[length:100%_2px,3px_100%] before:z-50">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 dark:bg-on-surface/80 backdrop-blur-xl border-b-2 border-on-surface dark:border-surface-variant shadow-[4px_4px_0px_0px_rgba(70,72,212,1)] flex justify-between items-center px-margin-mobile h-16 w-full">
+<div class="flex items-center gap-sm px-4">
+<div class="w-10 h-10 rounded-full border-2 border-primary overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A clean, professional headshot of a young data analyst with neutral lighting. The background is a soft, blurred modern office space in light grey and indigo tones, maintaining a high-precision tech aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYNRm9WP84CW7sjhsLsUzelIj1zJtiVL4t3G58ZS1u9z7DzfzemQ52EWUan5LAg1nkYSVFAe6Gw0cyMtxHwRavHzf4qGBSmuLLNc6a6RIlNfED_2eWA19xQYpiF1eq9D59n636O_KbpccjJHv4wrFQnuktZEX3mHJYauQ0_CXJ0GNIO5D2ELFUcM2sx0LJlskKh9xWlMije0N8RjskyQrvR0-UbflfnP5Fmde91lmIDCbkav80AgtlMO-DJfc4ajHgjg7UYfgWl-g"/>
+</div>
+<h1 class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim tracking-tight">AttendWise</h1>
+</div>
+<div class="px-4 flex items-center gap-md">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim hover:opacity-80 transition-opacity active:translate-y-0.5 cursor-pointer">notifications</span>
+</div>
+</header>
+<main class="pt-24 px-4 md:px-lg max-w-7xl mx-auto space-y-md"><div class="absolute top-24 left-4 opacity-20 pointer-events-none font-data-mono text-[8px]">LAT: 40.7128<br/>LNG: -74.0060</div><div class="absolute top-24 right-4 opacity-20 pointer-events-none font-data-mono text-[8px] text-right">REF_ID: 0x9F2A<br/>VER: 4.0.1</div>
+<!-- Breadcrumb & Title -->
+<div class="flex flex-col gap-xs">
+<span class="font-micro-label text-micro-label text-outline uppercase tracking-widest">[SYSTEM::ANALYTICS_V4]</span>
+<h2 class="font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface">Physics <span class="text-primary">101</span></h2>
+</div>
+<!-- Hero: Attendance Monitor -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-md items-stretch">
+<div class="lg:col-span-8 bg-surface-container-lowest border border-outline-variant p-sm md:p-md relative overflow-hidden status-glow-active grid-bg">
+<div class="flex justify-between items-start mb-md">
+<div>
+<p class="font-micro-label text-micro-label text-outline mb-1">[CORE::ATTENDANCE_METRIC]</p>
+<h3 class="font-headline-md text-headline-md">Real-time Precision</h3>
+</div>
+<div class="bg-secondary-container/10 border border-secondary text-secondary px-3 py-1 rounded-full text-xs font-bold">
+                        LIVE FEED
+                    </div>
+</div>
+<!-- Large Monitor Visualization -->
+<div class="relative h-64 w-full bg-surface-container-low border border-outline-variant rounded-lg flex items-end px-md py-xs gap-2"><div class="absolute inset-0 flex justify-around px-md pointer-events-none"><div class="w-px h-full bg-outline-variant/10"></div><div class="w-px h-full bg-outline-variant/10"></div><div class="w-px h-full bg-outline-variant/10"></div><div class="w-px h-full bg-outline-variant/10"></div><div class="w-px h-full bg-outline-variant/10"></div></div>
+<!-- Target Line 75% -->
+<div class="absolute w-full h-px bg-error/50 left-0 bottom-[75%] z-10 before:content-['TARGET_75%'] before:absolute before:right-2 before:bottom-1 before:text-[10px] before:font-bold before:text-error"></div>
+<!-- Bars -->
+<div class="flex-1 flex flex-col justify-end gap-1 h-full">
+<div class="w-full bg-primary h-[82%] rounded-t-sm opacity-90 hover:opacity-100 transition-opacity"></div>
+<span class="text-[10px] font-bold text-center">MON</span>
+</div>
+<div class="flex-1 flex flex-col justify-end gap-1 h-full">
+<div class="w-full bg-primary h-[65%] rounded-t-sm opacity-90"></div>
+<span class="text-[10px] font-bold text-center">TUE</span>
+</div>
+<div class="flex-1 flex flex-col justify-end gap-1 h-full">
+<div class="w-full bg-primary h-[90%] rounded-t-sm opacity-90"></div>
+<span class="text-[10px] font-bold text-center">WED</span>
+</div>
+<div class="flex-1 flex flex-col justify-end gap-1 h-full">
+<div class="w-full bg-primary h-[70%] rounded-t-sm opacity-90 border-2 border-error"></div>
+<span class="text-[10px] font-bold text-center text-error">THU</span>
+</div>
+<div class="flex-1 flex flex-col justify-end gap-1 h-full">
+<div class="w-full bg-primary h-[85%] rounded-t-sm opacity-90"></div>
+<span class="text-[10px] font-bold text-center">FRI</span>
+</div>
+</div>
+</div>
+<!-- Summary Stats Card -->
+<div class="lg:col-span-4 flex flex-col gap-md">
+<div class="bg-primary-container text-on-primary-container p-md border border-on-surface shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex-1">
+<p class="font-micro-label text-micro-label text-primary-fixed uppercase tracking-widest">[GLOBAL::SCORE]</p>
+<div class="text-5xl font-bold font-display-lg py-sm">82.4%<span class="material-symbols-outlined text-2xl align-middle ml-2">trending_up</span></div>
+<div class="flex items-center gap-xs text-on-primary-container/80">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+<span class="font-data-mono text-data-mono">+4.2% from last week</span>
+</div>
+</div>
+<div class="bg-surface-container-highest border border-outline-variant p-md flex-1">
+<p class="font-micro-label text-micro-label text-outline uppercase tracking-widest">[SESSION::REMAINING]</p>
+<div class="text-3xl font-bold py-xs">12 Classes</div>
+<p class="text-sm opacity-70">Semester concludes in 24 days.</p>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant p-md grid-bg"><p class="font-micro-label text-outline uppercase mb-sm">[TECH::SPECS_V2]</p><div class="space-y-xs font-data-mono text-[10px]"><div class="flex justify-between"><span>LECTURE_CORE:</span><span class="text-primary">88.2%</span></div><div class="flex justify-between"><span>LAB_PRACTICAL:</span><span class="text-secondary">72.5%</span></div><div class="flex justify-between"><span>SYNC_LATENCY:</span><span class="text-outline">14ms</span></div><div class="flex justify-between"><span>SIGMA_VARIANCE:</span><span class="text-primary">±0.04</span></div><div class="flex justify-between"><span>SYNC_HEALTH:</span><span class="text-secondary">NOMINAL</span></div></div></div></div>
+</div>
+<!-- Bunk Calculator Section -->
+<section class="border border-on-surface overflow-hidden rounded-xl">
+<div class="terminal-header p-sm flex items-center justify-between border-b border-on-surface">
+<div class="flex items-center gap-sm">
+<div class="flex gap-1">
+<div class="w-3 h-3 rounded-full bg-error"></div>
+<div class="w-3 h-3 rounded-full bg-tertiary-container"></div>
+<div class="w-3 h-3 rounded-full bg-secondary-container"></div>
+</div>
+<span class="font-data-mono text-white text-xs tracking-widest">BUNK_CALCULATOR.EXE</span>
+</div>
+<span class="material-symbols-outlined text-white text-sm">close</span>
+</div>
+<div class="bg-on-surface p-md md:p-xl text-primary-fixed">
+<div class="max-w-3xl mx-auto space-y-md">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-md border-b border-outline-variant/20 pb-md">
+<h2 class="font-headline-md text-headline-md text-white">Status: <span class="text-secondary-container">OPTIMAL</span></h2>
+<div class="bg-primary-container/20 border border-primary-container p-sm relative overflow-hidden after:absolute after:inset-0 after:bg-gradient-to-b after:from-transparent after:via-secondary-container/10 after:to-transparent after:h-[200%] after:-top-full after:animate-[pulse_3s_infinite]">
+<p class="font-data-mono text-white">PROJECTION: You can skip <span class="text-secondary-container text-xl">[3]</span> more sessions.</p>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-xl">
+<div class="space-y-sm">
+<p class="font-micro-label text-white/60">[SIMULATION::SEQUENCE]</p>
+<div class="space-y-xs font-data-mono text-sm">
+<div class="flex justify-between items-center py-xs border-b border-white/5">
+<span class="text-white/40">Current Count:</span>
+<span class="text-white">28 / 34</span>
+</div>
+<div class="flex justify-between items-center py-xs border-b border-white/5">
+<span class="text-white/40">Critical Threshold:</span>
+<span class="text-error">75.0%</span>
+</div>
+<div class="flex justify-between items-center py-xs border-b border-white/5">
+<span class="text-white/40">Projected Final:</span>
+<span class="text-secondary-container">79.4%</span>
+</div>
+</div>
+</div>
+<div class="space-y-sm">
+<p class="font-micro-label text-white/60">[MARGIN::SAFETY]</p>
+<div class="flex gap-1"><div class="progress-block active w-1/6"></div><div class="progress-block active w-1/6"></div><div class="progress-block active w-1/6"></div><div class="progress-block active w-1/6 border-dashed"></div><div class="progress-block w-1/6 opacity-30"></div><div class="progress-block w-1/6 opacity-10"></div></div>
+<p class="text-[10px] font-data-mono text-white/40 italic mt-2">Buffer exceeds 3 sessions. Recommended attendance: NEXT 2 SESSIONS.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Event Log & Data Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-md">
+<!-- Recent History Event Log -->
+<div class="lg:col-span-1 bg-surface-container-lowest border border-outline-variant p-sm flex flex-col gap-sm">
+<div class="flex items-center justify-between border-b border-outline-variant pb-xs px-xs">
+<span class="font-micro-label text-outline">[EVENT_LOG::V1]</span>
+<span class="material-symbols-outlined text-sm">filter_list</span>
+</div>
+<div class="space-y-base overflow-y-auto max-h-[400px] pr-xs">
+<!-- Event 1 -->
+<div class="flex gap-sm p-sm border border-transparent hover:border-outline-variant hover:bg-surface-container transition-all group">
+<div class="flex flex-col items-center">
+<div class="w-1 h-full border-l border-dashed border-outline-variant"></div>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-1">
+<span class="font-data-mono text-[12px] font-bold text-primary"><span class="material-symbols-outlined text-[14px] align-middle mr-1">sync</span>PRESENT</span>
+<span class="font-data-mono text-[10px] text-outline">14:02:11.042 [AUTO]</span>
+</div>
+<p class="text-sm font-bold">Quantum Mechanics Lab</p>
+<p class="text-[10px] text-outline uppercase">UNIT 04 // HALL B</p>
+</div>
+</div>
+<!-- Event 2 -->
+<div class="flex gap-sm p-sm border border-transparent hover:border-outline-variant hover:bg-surface-container transition-all group">
+<div class="flex flex-col items-center">
+<div class="w-1 h-full border-l border-dashed border-outline-variant"></div>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-1">
+<span class="font-data-mono text-[12px] font-bold text-error"><span class="material-symbols-outlined text-[14px] align-middle mr-1">edit_note</span>ABSENT</span>
+<span class="font-data-mono text-[10px] text-outline">09:15:44.891 [MANUAL]</span>
+</div>
+<p class="text-sm font-bold">Electrodynamics Lecture</p>
+<p class="text-[10px] text-outline uppercase">UNIT 04 // MAIN THEATER</p>
+</div>
+</div>
+<!-- Event 3 -->
+<div class="flex gap-sm p-sm border border-transparent hover:border-outline-variant hover:bg-surface-container transition-all group">
+<div class="flex flex-col items-center">
+<div class="w-1 h-full border-l border-dashed border-outline-variant"></div>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-1">
+<span class="font-data-mono text-[12px] font-bold text-secondary">HOLIDAY</span>
+<span class="font-data-mono text-[10px] text-outline">00:00:00</span>
+</div>
+<p class="text-sm font-bold">University Foundation Day</p>
+<p class="text-[10px] text-outline uppercase">CAMPUS-WIDE</p>
+</div>
+</div>
+<!-- Event 4 -->
+<div class="flex gap-sm p-sm border border-transparent hover:border-outline-variant hover:bg-surface-container transition-all group">
+<div class="flex flex-col items-center">
+<div class="w-1 h-full border-l border-dashed border-outline-variant"></div>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-1">
+<span class="font-data-mono text-[12px] font-bold text-primary">PRESENT</span>
+<span class="font-data-mono text-[10px] text-outline">11:30:22</span>
+</div>
+<p class="text-sm font-bold">Thermodynamics Tutorial</p>
+<p class="text-[10px] text-outline uppercase">UNIT 03 // ROOM 402</p>
+</div>
+</div>
+</div>
+<button class="w-full py-2 bg-on-surface text-white font-micro-label text-[10px] hover:bg-primary transition-colors"><span class="opacity-50 mr-2">CMD::EXECUTE</span>EXPORT_RAW_DATA.CSV</button>
+</div>
+<!-- Bento Detail Cards -->
+<div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-md">
+<div class="bg-surface-container-lowest border border-outline-variant p-md hover:shadow-[8px_8px_0px_0px_rgba(70,72,212,0.1)] transition-all">
+<p class="font-micro-label text-outline mb-4">[MODULE::COVERAGE]</p>
+<div class="flex items-center gap-md">
+<div class="w-16 h-16 rounded-full border-4 border-primary border-t-outline-variant flex items-center justify-center font-bold">
+                            78%
+                        </div>
+<div>
+<p class="text-sm font-bold">Quantum Mechanics</p>
+<p class="text-xs text-outline">9/12 Lectures attended</p>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant p-md hover:shadow-[8px_8px_0px_0px_rgba(70,72,212,0.1)] transition-all">
+<p class="font-micro-label text-outline mb-4">[PEER::BENCHMARK]</p>
+<div class="flex items-center gap-md">
+<div class="w-16 h-16 rounded-full border-4 border-secondary border-r-outline-variant flex items-center justify-center font-bold">
+                            P12
+                        </div>
+<div>
+<p class="text-sm font-bold">Class Rank</p>
+<p class="text-xs text-outline">Top 15% in attendance</p>
+</div>
+</div>
+</div>
+<div class="md:col-span-2 bg-surface-container-lowest border border-outline-variant p-md relative group overflow-hidden">
+<div class="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="relative z-10">
+<p class="font-micro-label text-outline mb-4">[SYSTEM::AI_INSIGHT]</p>
+<p class="text-sm leading-relaxed">
+                            "Current trend suggests a high probability of maintaining <span class="text-primary font-bold">80%+ attendance</span> if Friday morning sessions are prioritized. Potential conflict detected on Oct 14 due to Lab Overlap."
+                        </p>
+</div>
+<div class="absolute top-0 left-0 w-2 h-2 border-t border-l border-primary"></div><div class="absolute top-0 right-0 w-2 h-2 border-t border-r border-primary"></div><div class="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-primary"></div><div class="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-primary"></div></div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 bg-surface/80 dark:bg-on-surface/80 backdrop-blur-xl border-t-2 border-on-surface dark:border-surface-variant shadow-[0px_-4px_0px_0px_rgba(70,72,212,1)] rounded-t-xl">
+<div class="flex justify-around items-center w-full px-xs py-sm mb-safe">
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant p-2 hover:bg-surface-container-high dark:hover:bg-surface-variant/20 rounded-xl active:scale-95 transition-all" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-primary-container dark:bg-primary text-on-primary-container dark:text-on-primary rounded-xl px-4 py-2 border-2 border-on-surface shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:scale-95 transition-all relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-tr before:from-white/20 before:to-transparent before:pointer-events-none" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-md text-label-md">Analytics</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant p-2 hover:bg-surface-container-high dark:hover:bg-surface-variant/20 rounded-xl active:scale-95 transition-all" href="#">
+<span class="material-symbols-outlined">add_box</span>
+<span class="font-label-md text-label-md">Add</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant p-2 hover:bg-surface-container-high dark:hover:bg-surface-variant/20 rounded-xl active:scale-95 transition-all" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-md text-label-md">Profile</span>
+</a>
+</div>
+</nav>
+<!-- Micro Interactions Script -->
+<script>
+        // Simple hover effect for the bar chart
+        const bars = document.querySelectorAll('.bg-primary');
+        bars.forEach(bar => {
+            bar.addEventListener('mouseenter', () => {
+                bar.classList.add('shadow-[0_0_10px_rgba(53,37,205,0.4)]');
+            });
+            bar.addEventListener('mouseleave', () => {
+                bar.classList.remove('shadow-[0_0_10px_rgba(53,37,205,0.4)]');
+            });
+        });
+
+        // Simulating a live update every 10 seconds
+        setInterval(() => {
+            const glow = document.querySelector('.status-glow-active');
+            glow.style.opacity = '0.7';
+            setTimeout(() => {
+                glow.style.opacity = '1';
+            }, 100);
+        }, 10000);
+    </script>
+</body></html>

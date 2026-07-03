@@ -4,14 +4,44 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <meta name="theme-color" content="#3b82f6" media="(prefers-color-scheme: light)" />
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+
+    <!-- Font preconnect for faster DNS resolution -->
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+
+    <!-- Preload primary stylesheet as high-priority hint, then load it -->
+    <link rel="preload" as="style"
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap"
+      onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript>
+      <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" />
+    </noscript>
+
+    <!-- Material Symbols (icon font) -->
+    <link rel="preload" as="style"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript>
+      <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" />
+    </noscript>
+
+    <meta name="theme-color" content="#7c3aed" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)" />
     <meta name="description" content="AttendWise 🎓 Track attendance. Stay above 75%." />
-    <link rel="apple-touch-icon" href="/icon.png" />
+    <!-- apple-touch-icon: use SVG (supported iOS 12+ with fallback) -->
+    <link rel="apple-touch-icon" href="/favicon.svg" />
     <title>AttendWise</title>
   </head>
-  <body>
-    <div id="root"></div>
+  <body class="bg-background text-on-surface font-body-md selection:bg-primary-container/30 overflow-x-hidden">
+    <!-- Background Elements -->
+    <div class="fixed inset-0 technical-grid z-0 opacity-50"></div>
+    <div class="fixed inset-0 scanline z-10 opacity-15"></div>
+    <div id="root" class="relative z-20"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

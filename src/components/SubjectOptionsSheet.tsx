@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { BottomSheet } from './ui/BottomSheet';
 import { useAttendance } from '../context/AttendanceContext';
 import type { Subject } from '../types';
-import { Button } from './ui/Button';
-import { Edit2, Trash2, AlertTriangle } from 'lucide-react';
 
 interface SubjectOptionsSheetProps {
   subject: Subject | null;
@@ -15,7 +13,6 @@ export const SubjectOptionsSheet: React.FC<SubjectOptionsSheetProps> = ({ subjec
   const { deleteSubject } = useAttendance();
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
 
-  // Reset confirmation state when sheet closes/opens
   useEffect(() => {
     setIsConfirmingDelete(false);
   }, [subject]);
@@ -30,61 +27,46 @@ export const SubjectOptionsSheet: React.FC<SubjectOptionsSheetProps> = ({ subjec
   return (
     <BottomSheet isOpen={!!subject} onClose={onClose} title="Subject Options">
       {!isConfirmingDelete ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <Button 
-            variant="secondary" 
-            fullWidth 
-            size="lg" 
+        <div className="flex flex-col gap-3">
+          <button 
+            className="w-full bg-surface border border-outline-variant/30 text-on-surface hover:text-primary hover:bg-primary/5 font-label-caps tracking-widest py-4 px-6 flex items-center justify-start gap-4 transition-all rounded-xl subtle-glass"
             onClick={() => onEdit(subject)}
-            style={{ justifyContent: 'flex-start', paddingLeft: '24px' }}
           >
-            <Edit2 size={20} style={{ marginRight: '16px', color: 'var(--text-secondary)' }} />
-            Edit Subject
-          </Button>
+            <span className="material-symbols-outlined text-[24px] text-primary">edit</span>
+            EDIT SUBJECT
+          </button>
           
-          <Button 
-            variant="danger" 
-            fullWidth 
-            size="lg" 
+          <button 
+            className="w-full bg-surface border border-error/20 text-error hover:bg-error-container/30 font-label-caps tracking-widest py-4 px-6 flex items-center justify-start gap-4 transition-all rounded-xl subtle-glass"
             onClick={() => setIsConfirmingDelete(true)}
-            style={{ justifyContent: 'flex-start', paddingLeft: '24px' }}
           >
-            <Trash2 size={20} style={{ marginRight: '16px' }} />
-            Delete Subject
-          </Button>
+            <span className="material-symbols-outlined text-[24px]">delete</span>
+            DELETE SUBJECT
+          </button>
         </div>
       ) : (
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ 
-            width: '64px', height: '64px', borderRadius: '32px', 
-            backgroundColor: 'var(--color-danger-bg)', color: 'var(--color-danger)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            margin: '0 auto 16px'
-          }}>
-            <AlertTriangle size={32} />
+        <div className="text-center p-4">
+          <div className="w-20 h-20 rounded-full bg-error-container/30 text-error flex items-center justify-center mx-auto mb-6 neon-glow-error">
+            <span className="material-symbols-outlined text-[40px]">warning</span>
           </div>
-          <h3 style={{ fontSize: '18px', fontWeight: 600, marginBottom: '8px' }}>Delete {subject.name}?</h3>
-          <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>
+          <h3 className="font-headline-lg-mobile text-2xl font-bold mb-3 text-on-surface">Delete {subject.name}?</h3>
+          <p className="text-outline mb-8 font-body-md max-w-sm mx-auto">
             This will permanently remove the subject and all its attendance history. This action cannot be undone.
           </p>
           
-          <div style={{ display: 'flex', gap: '12px' }}>
-            <Button 
-              variant="secondary" 
-              fullWidth 
-              size="lg" 
-              onClick={() => setIsConfirmingDelete(false)}
-            >
-              Cancel
-            </Button>
-            <Button 
-              variant="danger" 
-              fullWidth 
-              size="lg" 
+          <div className="flex flex-col gap-3">
+            <button 
+              className="w-full bg-error hover:bg-error/90 text-on-error font-label-caps tracking-widest py-4 transition-all rounded-xl neon-glow-error"
               onClick={handleDelete}
             >
-              Delete
-            </Button>
+              CONFIRM DELETE
+            </button>
+            <button 
+              className="w-full bg-surface border border-outline-variant/50 text-on-surface hover:text-primary font-label-caps tracking-widest py-4 transition-colors rounded-xl subtle-glass"
+              onClick={() => setIsConfirmingDelete(false)}
+            >
+              CANCEL
+            </button>
           </div>
         </div>
       )}

@@ -1,10 +1,7 @@
 import React from 'react';
 import type { Subject } from '../types';
 import { useAttendance } from '../context/AttendanceContext';
-import { Card } from './ui/Card';
 import { CircularProgress } from './ui/CircularProgress';
-import { Check, X, TrendingUp, TrendingDown, Minus, MoreVertical } from 'lucide-react';
-import { Button } from './ui/Button';
 
 interface SubjectCardProps {
   subject: Subject;
@@ -16,108 +13,66 @@ export const SubjectCard: React.FC<SubjectCardProps> = ({ subject, onClick, onOp
   const { getSubjectStats, markAttendance } = useAttendance();
   const stats = getSubjectStats(subject);
 
-  const getStatusColor = () => {
-    if (stats.percentage >= 75) return 'var(--color-safe)';
-    if (stats.percentage >= 70) return 'var(--color-warning)';
-    return 'var(--color-danger)';
-  };
-
-  const getStatusBgColor = () => {
-    if (stats.percentage >= 75) return 'var(--color-safe-bg)';
-    if (stats.percentage >= 70) return 'var(--color-warning-bg)';
-    return 'var(--color-danger-bg)';
-  };
-
-  const renderTrend = () => {
-    if (stats.trend === 'Improving') return <TrendingUp size={16} color="var(--color-safe)" />;
-    if (stats.trend === 'Falling') return <TrendingDown size={16} color="var(--color-danger)" />;
-    return <Minus size={16} color="var(--text-secondary)" />;
-  };
+  const isSafe = stats.percentage >= 75;
+  const isWarning = stats.percentage >= 70 && !isSafe;
+  
+  const statusColor = isSafe ? '#4edea3' : (isWarning ? '#f59e0b' : '#ffb4ab');
+  const glowClass = isSafe ? 'neon-glow-cyan' : (isWarning ? '' : 'neon-glow-error');
 
   return (
-    <Card 
-      style={{ 
-        marginBottom: '16px', 
-        cursor: 'pointer',
-        position: 'relative',
-        overflow: 'hidden'
-      }}
+    <div 
+      className={`glass-card border border-outline-variant/30 p-6 cursor-pointer transition-all group relative hover:border-outline/60 ${glowClass}`}
       onClick={onClick}
     >
-      {/* Accent Color Strip */}
-      <div style={{
-        position: 'absolute',
-        top: 0, left: 0, bottom: 0,
-        width: '6px',
-        backgroundColor: `var(--color-${subject.color})`
-      }} />
-
-      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', paddingLeft: '8px' }}>
-        <CircularProgress 
-          percentage={stats.percentage} 
-          size={60} 
-          strokeWidth={6} 
-          color={getStatusColor()} 
-        />
-        
-        <div style={{ flex: 1 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <h3 style={{ fontSize: '18px', fontWeight: 600, margin: 0 }}>
-              {subject.name}
-            </h3>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: 'var(--bg-color)', padding: '4px 8px', borderRadius: '12px' }}>
-                {renderTrend()}
-              </div>
-              <button 
-                onClick={(e) => { e.stopPropagation(); onOptionsClick(subject); }}
-                style={{ padding: '4px', color: 'var(--text-secondary)' }}
-                aria-label="Options"
-              >
-                <MoreVertical size={20} />
-              </button>
+      <div className="flex justify-between items-start mb-6">
+        <div className="flex items-center gap-4">
+          <CircularProgress 
+            percentage={stats.percentage} 
+            size={64} 
+            strokeWidth={5} 
+            color={statusColor} 
+            trackColor="rgba(255,255,255,0.05)"
+          />
+          <div>
+            <h3 className="font-headline-lg-mobile text-lg text-on-surface font-semibold mb-1 truncate max-w-[150px] md:max-w-[180px]">{subject.name}</h3>
+            <div className="flex gap-4 font-label-caps text-[10px] text-outline tracking-widest uppercase">
+              <span>PR: <span className="text-on-surface">{stats.presentCount}</span></span>
+              <span>AB: <span className="text-on-surface">{stats.absentCount}</span></span>
             </div>
           </div>
-          
-          <div style={{ display: 'flex', gap: '16px', fontSize: '14px', color: 'var(--text-secondary)', marginTop: '4px' }}>
-            <span>Present: {stats.presentCount}</span>
-            <span>Absent: {stats.absentCount}</span>
-          </div>
         </div>
+        
+        <button 
+          onClick={(e) => { e.stopPropagation(); onOptionsClick(subject); }}
+          className="text-outline hover:text-secondary p-1 transition-colors"
+          aria-label="Options"
+        >
+          <span className="material-symbols-outlined text-[20px]">more_vert</span>
+        </button>
       </div>
 
-      <div style={{ 
-        marginTop: '16px', 
-        padding: '12px', 
-        borderRadius: '8px', 
-        backgroundColor: getStatusBgColor(),
-        color: getStatusColor(),
-        fontWeight: 600,
-        fontSize: '14px',
-        textAlign: 'center',
-        marginLeft: '8px'
-      }}>
-        {stats.bunkMessage}
+      <div className="border-t border-outline-variant/30 pt-4 mb-6">
+        <p className="font-body-sm text-outline leading-relaxed min-h-[40px]">
+          {stats.bunkMessage}
+        </p>
       </div>
 
-      <div style={{ display: 'flex', gap: '12px', marginTop: '16px', marginLeft: '8px' }}>
-        <Button 
-          fullWidth 
-          style={{ backgroundColor: 'var(--color-safe-bg)', color: 'var(--color-safe)' }}
+      <div className="flex gap-3">
+        <button 
+          className="flex-1 bg-surface-container hover:bg-tertiary-container/30 border border-outline-variant/30 hover:border-tertiary/50 text-tertiary font-label-caps text-[10px] tracking-widest py-3 flex justify-center items-center gap-2 transition-all"
           onClick={(e) => { e.stopPropagation(); markAttendance(subject.id, 'present'); }}
         >
-          <Check size={18} style={{ marginRight: '6px' }} />
-          Present
-        </Button>
-        <Button 
-          fullWidth 
-          style={{ backgroundColor: 'var(--color-danger-bg)', color: 'var(--color-danger)' }}
+          <span className="material-symbols-outlined text-[16px]">check</span>
+          MARK P
+        </button>
+        <button 
+          className="flex-1 bg-surface-container hover:bg-error-container/30 border border-outline-variant/30 hover:border-error/50 text-error font-label-caps text-[10px] tracking-widest py-3 flex justify-center items-center gap-2 transition-all"
           onClick={(e) => { e.stopPropagation(); markAttendance(subject.id, 'absent'); }}
         >
-          <X size={18} style={{ marginRight: '6px' }} />
-          Absent
-        </Button>
+          <span className="material-symbols-outlined text-[16px]">close</span>
+          MARK A
+        </button>
       </div>
-    </Card>
+    </div>
   );
 };
