@@ -89,6 +89,38 @@ function App() {
   const stats = activeSubject ? getSubjectStats(activeSubject) : null;
   const isSafe = stats ? stats.percentage >= 75 : true;
 
+  // Compute running percentage history for the last 8 entries
+  const runningPercentageHistory = useMemo(() => {
+    if (!activeSubject) return [];
+    const baseTotal = activeSubject.initialPresent + activeSubject.initialAbsent;
+    const basePresent = activeSubject.initialPresent;
+    const basePercentage = baseTotal === 0 ? 0 : Math.round((basePresent / baseTotal) * 100);
+    
+    let runningPresent = activeSubject.initialPresent;
+    let runningTotal = baseTotal;
+    
+    const allPoints = activeSubject.history.map((entry, idx) => {
+      if (entry.type === 'present') {
+        runningPresent += 1;
+      }
+      runningTotal += 1;
+      const pct = Math.round((runningPresent / runningTotal) * 100);
+      return {
+        label: `Sess ${idx + 1}`,
+        percentage: pct,
+      };
+    });
+    
+    const lastPoints = allPoints.slice(-8);
+    while (lastPoints.length < 8) {
+      lastPoints.unshift({
+        label: 'Base',
+        percentage: basePercentage,
+      });
+    }
+    return lastPoints;
+  }, [activeSubject, getSubjectStats]);
+
   // Monitor setup completion automatically
   useEffect(() => {
     if (subjects.length > 0) {
@@ -116,12 +148,11 @@ function App() {
       <aside className="hidden lg:flex flex-col w-64 fixed left-0 top-0 bottom-0 z-40 bg-surface-dim/90 backdrop-blur-md border-r border-outline-variant/50 pt-20">
         <div className="px-6 mb-8">
           <div className="flex items-center gap-3 py-4 border-b border-outline-variant/30">
-            <div className="w-10 h-10 rounded-sm bg-primary-container/20 flex items-center justify-center border border-primary/50">
+            <div className="w-10 h-10 rounded-token-sm bg-primary-container/20 flex items-center justify-center border border-primary/50">
               <span className="material-symbols-outlined text-primary">person</span>
             </div>
             <div>
-              <h3 className="font-label-caps text-label-caps text-primary truncate max-w-[120px]">ATTENDWISE</h3>
-              <p className="font-label-caps text-[10px] text-outline uppercase">Level 4 Access</p>
+              <h3 className="font-body-md text-primary font-bold">AttendWise</h3>
             </div>
           </div>
         </div>
@@ -134,7 +165,7 @@ function App() {
             >
               <div className="flex items-center gap-4 truncate">
                 <span className="material-symbols-outlined">{selectedSubjectId === subject.id ? 'dashboard' : 'analytics'}</span>
-                <span className="font-label-caps text-label-caps truncate max-w-[100px]">{subject.name}</span>
+                <span className="font-body-sm truncate max-w-[100px]">{subject.name}</span>
               </div>
               <button onClick={(e) => { e.stopPropagation(); setOptionsSubject(subject); }} className="hover:text-primary transition-colors">
                 <span className="material-symbols-outlined text-[16px]">settings</span>
@@ -143,34 +174,20 @@ function App() {
           ))}
           <a className="px-6 py-4 flex items-center gap-4 text-on-surface-variant opacity-70 hover:bg-surface-variant/40 hover:opacity-100 transition-all duration-75 cursor-pointer mt-4" onClick={() => setIsFormSheetOpen(true)}>
             <span className="material-symbols-outlined text-tertiary">add_box</span>
-            <span className="font-label-caps text-label-caps text-tertiary">ADD_NEW_MODULE</span>
+            <span className="font-body-sm text-tertiary">Add Subject</span>
           </a>
         </nav>
-        <div className="mt-auto p-6 border-t border-outline-variant/30">
-          <div className="bg-surface-container-high/40 p-3 border border-outline-variant/30">
-            <p className="font-label-caps text-[10px] text-outline mb-1">NETWORK_LATENCY</p>
-            <div className="h-1 bg-surface-variant rounded-full overflow-hidden">
-              <div className="h-full bg-secondary w-1/3 shadow-[0_0_5px_#4cd7f6]"></div>
-            </div>
-            <p className="font-label-caps text-[10px] text-secondary mt-1 text-right">12ms</p>
-          </div>
-        </div>
       </aside>
 
       {/* Main Content Canvas */}
       <main className="w-full pt-16 pb-24 lg:pl-64 min-h-screen">
-        {/* TopAppBar exactly as in code.html */}
         <header className="fixed top-0 left-0 w-full border-b border-outline-variant/30 bg-surface/80 backdrop-blur-xl z-50 shadow-[0_0_15px_rgba(3,181,211,0.2)] flex justify-between items-center px-margin-sm md:px-margin-lg h-16 lg:pl-72">
-          <div className="flex items-center gap-4">
-            <span className="material-symbols-outlined text-secondary cursor-crosshair active:scale-95 transition-transform">terminal</span>
-            <h1 className="font-label-caps tracking-[0.2em] text-secondary uppercase hidden sm:block">ATTENDWISE // CMD-CNTR</h1>
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="hidden md:block text-right">
-              <p className="font-label-caps text-[10px] text-outline leading-none">SYS_STATE</p>
-              <p className="font-label-caps text-[12px] text-tertiary animate-pulse">ACTIVE_MONITOR</p>
+          <div className="flex items-center gap-3">
+            <span className="material-symbols-outlined text-secondary active:scale-95 transition-transform">school</span>
+            <div>
+              <h1 className="font-body-md font-bold text-on-surface tracking-wider">AttendWise</h1>
+              <p className="text-[10px] text-outline">Track your attendance</p>
             </div>
-            <span className="material-symbols-outlined text-secondary cursor-crosshair active:scale-95 transition-transform">settings_input_component</span>
           </div>
         </header>
 
@@ -178,20 +195,20 @@ function App() {
           {subjects.length === 0 ? (
             hasCompletedSetup ? (
               /* Re-designed Empty State (distinct from setup wizard) */
-              <div className="flex flex-col items-center justify-center min-h-[50vh] text-center p-6 mt-8 glass-card border border-outline-variant/30 rounded-token-md shadow-elevation-1">
-                <div className="w-16 h-16 rounded-token-md bg-surface-variant flex items-center justify-center mb-6 text-outline">
+              <div className="flex flex-col items-center justify-center min-h-[50vh] text-center p-6 mt-8 glass-card border border-outline-variant/30 rounded-token-sm shadow-elevation-1">
+                <div className="w-16 h-16 rounded-token-sm bg-surface-variant flex items-center justify-center mb-6 text-outline">
                   <span className="material-symbols-outlined text-[32px]">folder_open</span>
                 </div>
-                <h3 className="font-headline-lg-mobile text-xl font-bold mb-2 text-on-surface">No Subjects Registered</h3>
+                <h3 className="font-headline-lg-mobile text-xl font-bold mb-2 text-on-surface">No Subjects Yet</h3>
                 <p className="font-body-sm text-outline mb-6 max-w-xs">
-                  Your module directory is empty. Add a new subject to begin monitoring attendance ratios.
+                  Your dashboard is empty. Add a subject to begin tracking your attendance.
                 </p>
                 <button 
                   onClick={() => setIsFormSheetOpen(true)}
                   className="px-6 py-3 bg-primary text-on-primary font-label-caps text-[10px] tracking-widest flex items-center gap-2 hover:bg-primary/95 transition-all shadow-glow-primary active:scale-[0.96] rounded-token-sm"
                 >
                   <span className="material-symbols-outlined text-[16px]">add</span>
-                  REGISTER MODULE
+                  Add Subject
                 </button>
               </div>
             ) : (
@@ -202,7 +219,7 @@ function App() {
             <>
               {/* Staggered Subject Cards list on home dashboard */}
               <div className="mb-10 mt-4">
-                <h3 className="font-label-caps text-[10px] text-outline mb-4 uppercase tracking-widest">REGISTERED_MODULES</h3>
+                <h3 className="font-body-sm text-outline mb-4 uppercase tracking-widest">Your Subjects</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   <AnimatePresence mode="popLayout">
                     {subjects.map((subject, index) => (
@@ -242,29 +259,21 @@ function App() {
               {/* Dashboard Header Content exactly as in code.html */}
               <div className="mb-gutter flex flex-col md:flex-row md:items-end justify-between gap-4 border-l-2 border-secondary pl-4 py-2 mt-4">
                 <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-label-caps text-[10px] text-outline uppercase tracking-widest">REF_ID: {activeSubject.id.substring(0,8)}</span>
-                    <span className="w-1.5 h-1.5 bg-secondary rounded-full animate-pulse"></span>
-                  </div>
-                  <h2 className="font-headline-lg-mobile md:font-headline-lg text-secondary uppercase tracking-tighter italic">{activeSubject.name} // NODE_VIEW</h2>
-                  <p className="font-meta-data text-outline-variant uppercase">CORE PARAMETERS: PR_{stats.presentCount} | AB_{stats.absentCount} | SYSTEM_READY</p>
+                  <h2 className="font-headline-lg-mobile md:font-headline-lg text-secondary uppercase tracking-tighter italic">{activeSubject.name}</h2>
+                  <p className="font-body-sm text-outline-variant">Present: {stats.presentCount} · Absent: {stats.absentCount}</p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="px-3 py-1 bg-surface-container-highest border border-outline-variant/50 flex flex-col items-end">
-                    <span className="font-label-caps text-[10px] text-outline">EPOCH_TIME</span>
-                    <span className="font-label-caps text-on-surface text-[12px]">{epochTime}</span>
-                  </div>
                   <button 
-                    className="px-4 py-2 bg-primary/20 text-primary border border-primary/50 font-label-caps text-[10px] hover:bg-primary/40 hover:shadow-[0_0_15px_#7c3aed] transition-all flex items-center gap-2 h-[42px]"
+                    className="px-4 py-2 bg-primary/20 text-primary border border-primary/50 font-label-caps text-[10px] hover:bg-primary/40 hover:shadow-[0_0_15px_#7c3aed] transition-all flex items-center gap-2 h-[42px] rounded-token-sm"
                     onClick={() => markAttendance(activeSubject.id, 'present')}
                   >
-                    <span className="material-symbols-outlined text-[16px]">add</span> MARK P
+                    <span className="material-symbols-outlined text-[16px]">add</span> Present
                   </button>
                   <button 
-                    className="px-4 py-2 bg-error/20 text-error border border-error/50 font-label-caps text-[10px] hover:bg-error/40 hover:shadow-[0_0_15px_#ffb4ab] transition-all flex items-center gap-2 h-[42px]"
+                    className="px-4 py-2 bg-error/20 text-error border border-error/50 font-label-caps text-[10px] hover:bg-error/40 hover:shadow-[0_0_15px_#ffb4ab] transition-all flex items-center gap-2 h-[42px] rounded-token-sm"
                     onClick={() => markAttendance(activeSubject.id, 'absent')}
                   >
-                    <span className="material-symbols-outlined text-[16px]">remove</span> MARK A
+                    <span className="material-symbols-outlined text-[16px]">remove</span> Absent
                   </button>
                 </div>
               </div>
@@ -273,11 +282,11 @@ function App() {
               <div className="grid grid-cols-1 md:grid-cols-12 gap-gutter mb-12">
                 
                 {/* Global Score Chart (Wide) */}
-                <div className="md:col-span-8 glass-card border border-outline-variant/30 p-6 relative overflow-hidden">
+                <div className="md:col-span-8 glass-card border border-outline-variant/30 p-6 relative overflow-hidden rounded-token-sm">
                   <div className="flex justify-between items-center mb-8 relative z-10">
                     <div>
-                      <h4 className="font-label-caps text-on-surface">ATTENDANCE_VECTOR</h4>
-                      <p className="font-meta-data text-outline">Real-time attendance ratio</p>
+                      <h4 className="font-body-sm text-on-surface font-bold">Attendance Trend</h4>
+                      <p className="font-body-sm text-outline text-[11px]">Ratio computed over your last 8 sessions</p>
                     </div>
                     <div className="text-right">
                       <span className="font-headline-lg-mobile text-on-surface">{stats.percentage.toFixed(1)}<span className="text-secondary">%</span></span>
@@ -290,43 +299,50 @@ function App() {
                       </p>
                     </div>
                   </div>
-                  {/* Custom Bar Chart UI - visual flair exactly as in code.html */}
-                  <div className="h-64 flex items-end justify-between gap-1 md:gap-4 relative px-4 opacity-50">
-                    <div className="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-20">
-                      <div className="border-t border-outline"></div>
-                      <div className="border-t border-outline"></div>
-                      <div className="border-t border-outline border-dashed"></div>
-                      <div className="border-t border-outline"></div>
-                      <div className="border-t border-on-surface border-2 shadow-[0_0_10px_white] z-20"></div>
+                  
+                  {/* Dynamic SVG / Flex Bar Chart driven by real data */}
+                  <div className="h-64 flex items-end justify-between gap-2 md:gap-4 relative px-2 pt-6">
+                    <div className="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-10">
+                      <div className="border-t border-outline text-[8px] pt-1">100%</div>
+                      <div className="border-t border-outline text-[8px] pt-1">75%</div>
+                      <div className="border-t border-outline text-[8px] pt-1">50%</div>
+                      <div className="border-t border-outline text-[8px] pt-1">25%</div>
+                      <div className="border-t border-on-surface border-2"></div>
                     </div>
-                    <div className="w-full bg-primary-container/80 h-[45%] neon-glow-indigo transition-all duration-300 hover:h-[50%]"></div>
-                    <div className="w-full bg-primary-container/80 h-[65%] neon-glow-indigo"></div>
-                    <div className="w-full bg-primary-container/80 h-[85%] neon-glow-indigo"></div>
-                    <div className="w-full bg-primary-container/80 h-[35%] neon-glow-indigo"></div>
-                    <div className="w-full bg-primary-container/80 h-[92%] neon-glow-indigo"></div>
-                    <div className="w-full bg-primary-container/80 h-[75%] neon-glow-indigo"></div>
-                    <div className="w-full bg-primary-container/80 h-[88%] neon-glow-indigo"></div>
-                    <div className="w-full bg-primary-container/80 h-[95%] neon-glow-indigo"></div>
-                    <div className="w-full bg-primary-container/80 h-[60%] neon-glow-indigo"></div>
-                    <div className="w-full bg-primary-container/80 h-[82%] neon-glow-indigo"></div>
-                    <div className="w-full bg-primary-container/80 h-[90%] neon-glow-indigo"></div>
-                    <div className="w-full bg-primary-container/80 h-[98%] neon-glow-indigo"></div>
-                  </div>
-                  <div className="mt-6 flex justify-between font-label-caps text-[10px] text-outline uppercase opacity-50">
-                    <span>Sess_001</span>
-                    <span>Sess_006</span>
-                    <span>Sess_012</span>
+                    
+                    {runningPercentageHistory.map((point, idx) => (
+                      <div key={idx} className="flex-1 flex flex-col items-center gap-2 h-full justify-end group z-10">
+                        {/* Tooltip on hover */}
+                        <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-surface-container-high border border-outline-variant px-1.5 py-0.5 text-[9px] rounded-token-sm text-on-surface absolute mb-20 pointer-events-none transform -translate-y-8">
+                          {point.percentage}%
+                        </div>
+                        {/* The Bar */}
+                        <div 
+                          className={`w-full transition-all duration-300 rounded-t-token-sm ${
+                            point.percentage >= 75 
+                              ? 'bg-[#059669]/80 shadow-[0_0_10px_rgba(5,150,105,0.4)]' 
+                              : point.percentage >= 70 
+                                ? 'bg-[#d97706]/80 shadow-[0_0_10px_rgba(217,119,6,0.4)]' 
+                                : 'bg-[#dc2626]/80 shadow-[0_0_10px_rgba(220,38,38,0.4)]'
+                          }`}
+                          style={{ height: `${point.percentage}%` }}
+                        ></div>
+                        <span className="text-[8px] font-label-caps text-outline truncate w-full text-center">
+                          {point.label}
+                        </span>
+                      </div>
+                    ))}
                   </div>
                 </div>
 
                 {/* Session Stats (Right Stack) */}
                 <div className="md:col-span-4 flex flex-col gap-gutter">
                   {/* Session Remaining / Node Info */}
-                  <div className="glass-card border border-secondary/40 p-6 flex items-center justify-between neon-glow-cyan">
+                  <div className="glass-card border border-secondary/40 p-6 flex items-center justify-between neon-glow-cyan rounded-token-sm flex-grow">
                     <div>
-                      <h4 className="font-label-caps text-secondary mb-2">TOTAL_SESSIONS</h4>
+                      <h4 className="font-body-sm text-secondary mb-2 font-bold">Total Classes</h4>
                       <span className="font-headline-xl text-on-surface leading-none">{stats.totalClasses < 10 ? `0${stats.totalClasses}` : stats.totalClasses}</span>
-                      <span className="font-label-caps text-outline ml-2">UNITS</span>
+                      <span className="font-body-sm text-outline ml-2">Classes</span>
                     </div>
                     <div className="relative w-20 h-20">
                       <svg className="w-full h-full rotate-[-90deg]">
@@ -337,18 +353,6 @@ function App() {
                         {Math.round(stats.percentage)}%
                       </div>
                     </div>
-                  </div>
-                  {/* Global Rank Module - kept as UI flair */}
-                  <div className="glass-card border border-outline-variant/30 p-6 flex-grow">
-                    <h4 className="font-label-caps text-on-surface mb-4 border-b border-outline-variant/30 pb-2 flex justify-between items-center">
-                      PEER_POSITION 
-                      <span className="material-symbols-outlined text-outline text-sm">groups</span>
-                    </h4>
-                    <div className="flex items-end gap-2">
-                      <span className="font-headline-lg-mobile text-tertiary">#12</span>
-                      <span className="font-label-caps text-outline mb-1 text-[10px]">OF 128 OPS</span>
-                    </div>
-                    <p className="font-body-sm text-outline mt-2">Ranked in the top 10th percentile for consistency and terminal engagement.</p>
                   </div>
                 </div>
 
@@ -417,37 +421,35 @@ function App() {
                   </div>
                 </div>
 
-                {/* AI Insight (Full Width Feature) */}
-                <div className="md:col-span-12 glass-card border-2 border-primary/20 p-6 relative overflow-hidden">
-                  <div className="absolute top-0 right-0 p-4 opacity-10">
-                    <span className="material-symbols-outlined text-[120px]">neurology</span>
-                  </div>
+                {/* Dynamic Attendance Forecast Card */}
+                <div className="md:col-span-12 glass-card border border-primary/20 p-6 relative overflow-hidden rounded-token-sm">
                   <div className="flex flex-col md:flex-row gap-6 relative z-10">
                     <div className="flex-shrink-0">
-                      <div className="w-12 h-12 bg-primary-container flex items-center justify-center rounded-sm shadow-[0_0_20px_rgba(124,58,237,0.6)]">
-                        <span className="material-symbols-outlined text-on-primary">auto_awesome</span>
+                      <div className="w-12 h-12 bg-primary-container flex items-center justify-center rounded-token-sm shadow-[0_0_20px_rgba(124,58,237,0.6)]">
+                        <span className="material-symbols-outlined text-on-primary">trending_up</span>
                       </div>
                     </div>
                     <div className="flex-grow">
-                      <h4 className="font-label-caps text-primary mb-2 flex items-center gap-2">
-                        PREDICTIVE_INSIGHT
-                        <span className="text-[10px] px-1.5 py-0.5 bg-primary/20 border border-primary/40">HIGH_CONFIDENCE</span>
+                      <h4 className="font-body-sm text-primary mb-2 flex items-center gap-2 font-bold">
+                        Attendance Forecast
                       </h4>
                       <p className="font-body-md text-on-surface max-w-3xl leading-relaxed">
-                        {isSafe ? (
-                          <>Trend analysis indicates a <span className="text-secondary underline decoration-secondary/50">92.4% probability</span> of achieving optimal targets if attendance remains {'>'}75% for the next sessions. System suggests maintaining current trajectory to maximize safety envelope for upcoming exam cycles.</>
+                        {stats.totalClasses === 0 ? (
+                          "No classes recorded yet. Mark attendance to calculate safety margins and projections."
                         ) : (
-                          <>WARNING: Trend analysis indicates critical attendance deficit. <span className="text-error underline decoration-error/50">Immediate action required</span>. System suggests attending the next {Math.ceil((0.75 * stats.totalClasses - stats.presentCount) / 0.25)} consecutive sessions to restore structural integrity and re-enter the optimal 75% envelope.</>
+                          <>
+                            Attending the next 5 classes consecutively will bring your attendance to{" "}
+                            <span className="text-secondary font-bold">
+                              {Math.round(((stats.presentCount + 5) / (stats.totalClasses + 5)) * 100)}%
+                            </span>
+                            . If you miss the next class, it will drop to{" "}
+                            <span className="text-error font-bold">
+                              {Math.round((stats.presentCount / (stats.totalClasses + 1)) * 100)}%
+                            </span>
+                            .
+                          </>
                         )}
                       </p>
-                    </div>
-                    <div className="md:w-48 flex-shrink-0 flex flex-col justify-center gap-2">
-                      <button 
-                        className="bg-primary text-on-primary font-label-caps py-2 px-4 rounded-sm hover:shadow-[0_0_15px_#7c3aed] transition-all active:scale-95"
-                        onClick={() => markAttendance(activeSubject.id, 'present')}
-                      >
-                        OVERRIDE_PRESENT
-                      </button>
                     </div>
                   </div>
                 </div>
