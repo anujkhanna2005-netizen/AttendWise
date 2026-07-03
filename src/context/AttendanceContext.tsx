@@ -6,6 +6,7 @@ interface AttendanceContextType {
   addSubject: (name: string, color: Subject['color'], initialPresent: number, initialAbsent: number) => void;
   updateSubject: (id: string, name: string, color: Subject['color'], initialPresent: number, initialAbsent: number) => void;
   deleteSubject: (id: string) => void;
+  restoreSubject: (subject: Subject) => void;
   markAttendance: (id: string, type: 'present' | 'absent') => void;
   undoLastEntry: (id: string) => void;
   getSubjectStats: (subject: Subject) => SubjectStats;
@@ -42,6 +43,10 @@ export const AttendanceProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   const deleteSubject = (id: string) => {
     setSubjects(prev => prev.filter(s => s.id !== id));
+  };
+
+  const restoreSubject = (subject: Subject) => {
+    setSubjects(prev => [...prev, subject]);
   };
 
   const markAttendance = (id: string, type: 'present' | 'absent') => {
@@ -135,6 +140,7 @@ export const AttendanceProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       addSubject,
       updateSubject,
       deleteSubject,
+      restoreSubject,
       markAttendance,
       undoLastEntry,
       getSubjectStats,

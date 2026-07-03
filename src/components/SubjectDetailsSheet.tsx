@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { BottomSheet } from './ui/BottomSheet';
 import type { Subject } from '../types';
 import { useAttendance } from '../context/AttendanceContext';
+import { useToast } from '../context/ToastContext';
 import { CircularProgress } from './ui/CircularProgress';
 
 interface SubjectDetailsSheetProps {
@@ -9,8 +10,19 @@ interface SubjectDetailsSheetProps {
   onClose: () => void;
 }
 
+const triggerHaptic = (pattern: number | number[]) => {
+  if (typeof navigator !== 'undefined' && navigator.vibrate) {
+    try {
+      navigator.vibrate(pattern);
+    } catch (e) {
+      // Ignore vibration errors
+    }
+  }
+};
+
 export const SubjectDetailsSheet: React.FC<SubjectDetailsSheetProps> = ({ subject, onClose }) => {
-  const { getSubjectStats, markAttendance, undoLastEntry, deleteSubject } = useAttendance();
+  const { getSubjectStats, markAttendance, undoLastEntry, deleteSubject, restoreSubject } = useAttendance();
+  const { showToast } = useToast();
   // Two-step delete confirmation — matches SubjectOptionsSheet pattern (no window.confirm)
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
 
@@ -23,7 +35,17 @@ export const SubjectDetailsSheet: React.FC<SubjectDetailsSheetProps> = ({ subjec
   const statusColor = isSafe ? '#059669' : '#dc2626'; // WCAG AA compliant
 
   const handleDelete = () => {
+    triggerHaptic([30, 50, 30, 50]);
+    const deletedSubject = { ...subject };
     deleteSubject(subject.id);
+    showToast(`Deleted ${deletedSubject.name}`, {
+      type: 'error',
+      actionLabel: 'Undo',
+      onAction: () => {
+        triggerHaptic(10);
+        restoreSubject(deletedSubject);
+      }
+    });
     setIsConfirmingDelete(false);
     onClose();
   };

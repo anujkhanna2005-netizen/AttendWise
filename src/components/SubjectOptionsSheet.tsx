@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BottomSheet } from './ui/BottomSheet';
 import { useAttendance } from '../context/AttendanceContext';
+import { useToast } from '../context/ToastContext';
 import type { Subject } from '../types';
 
 interface SubjectOptionsSheetProps {
@@ -9,8 +10,19 @@ interface SubjectOptionsSheetProps {
   onEdit: (subject: Subject) => void;
 }
 
+const triggerHaptic = (pattern: number | number[]) => {
+  if (typeof navigator !== 'undefined' && navigator.vibrate) {
+    try {
+      navigator.vibrate(pattern);
+    } catch (e) {
+      // Ignore vibration errors
+    }
+  }
+};
+
 export const SubjectOptionsSheet: React.FC<SubjectOptionsSheetProps> = ({ subject, onClose, onEdit }) => {
-  const { deleteSubject } = useAttendance();
+  const { deleteSubject, restoreSubject } = useAttendance();
+  const { showToast } = useToast();
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
 
   useEffect(() => {
@@ -20,7 +32,17 @@ export const SubjectOptionsSheet: React.FC<SubjectOptionsSheetProps> = ({ subjec
   if (!subject) return null;
 
   const handleDelete = () => {
+    triggerHaptic([30, 50, 30, 50]);
+    const deletedSubject = { ...subject };
     deleteSubject(subject.id);
+    showToast(`Deleted ${deletedSubject.name}`, {
+      type: 'error',
+      actionLabel: 'Undo',
+      onAction: () => {
+        triggerHaptic(10);
+        restoreSubject(deletedSubject);
+      }
+    });
     onClose();
   };
 

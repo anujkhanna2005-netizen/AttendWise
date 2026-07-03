@@ -1,6 +1,7 @@
 import React from 'react';
 import type { Subject } from '../types';
 import { useAttendance } from '../context/AttendanceContext';
+import { useToast } from '../context/ToastContext';
 import { CircularProgress } from './ui/CircularProgress';
 
 interface SubjectCardProps {
@@ -8,6 +9,17 @@ interface SubjectCardProps {
   onClick: () => void;
   onOptionsClick: (subject: Subject) => void;
 }
+
+// Helper for safe haptic feedback
+const triggerHaptic = (pattern: number | number[]) => {
+  if (typeof navigator !== 'undefined' && navigator.vibrate) {
+    try {
+      navigator.vibrate(pattern);
+    } catch (e) {
+      // Ignore vibration errors in sandboxed environments
+    }
+  }
+};
 
 // WCAG 1.4.1: status must not rely on color alone — include icon + label
 const StatusBadge: React.FC<{ isSafe: boolean; isWarning: boolean }> = ({ isSafe, isWarning }) => {
@@ -79,7 +91,8 @@ const TrendChip: React.FC<{ trend: 'Improving' | 'Falling' | 'Stable' }> = ({ tr
 };
 
 export const SubjectCard: React.FC<SubjectCardProps> = ({ subject, onClick, onOptionsClick }) => {
-  const { getSubjectStats, markAttendance } = useAttendance();
+  const { getSubjectStats, markAttendance, undoLastEntry } = useAttendance();
+  const { showToast } = useToast();
   const stats = getSubjectStats(subject);
 
   const isSafe = stats.percentage >= 75;
@@ -96,6 +109,19 @@ export const SubjectCard: React.FC<SubjectCardProps> = ({ subject, onClick, onOp
     pink: '#e11d48',
   };
   const dotColor = colorMap[subject.color] || '#7c3aed';
+
+  const handleMark = (type: 'present' | 'absent') => {
+    triggerHaptic(15);
+    markAttendance(subject.id, type);
+    showToast(`Marked ${subject.name} ${type}`, {
+      type: type === 'present' ? 'success' : 'info',
+      actionLabel: 'Undo',
+      onAction: () => {
+        triggerHaptic(10);
+        undoLastEntry(subject.id);
+      }
+    });
+  };
 
   return (
     <div 
@@ -159,14 +185,14 @@ export const SubjectCard: React.FC<SubjectCardProps> = ({ subject, onClick, onOp
       <div className="border-t border-outline-variant/30 flex divide-x divide-outline-variant/30">
         <button 
           className="flex-1 bg-transparent hover:bg-tertiary-container/10 text-tertiary font-label-caps text-[10px] tracking-widest flex justify-center items-center gap-2 transition-all h-[48px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary rounded-bl-token-md"
-          onClick={(e) => { e.stopPropagation(); markAttendance(subject.id, 'present'); }}
+          onClick={(e) => { e.stopPropagation(); handleMark('present'); }}
         >
           <span className="material-symbols-outlined text-[16px]">check</span>
           MARK P
         </button>
         <button 
           className="flex-1 bg-transparent hover:bg-error-container/10 text-error font-label-caps text-[10px] tracking-widest flex justify-center items-center gap-2 transition-all h-[48px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary rounded-br-token-md"
-          onClick={(e) => { e.stopPropagation(); markAttendance(subject.id, 'absent'); }}
+          onClick={(e) => { e.stopPropagation(); handleMark('absent'); }}
         >
           <span className="material-symbols-outlined text-[16px]">close</span>
           MARK A
