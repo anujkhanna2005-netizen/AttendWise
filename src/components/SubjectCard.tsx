@@ -14,7 +14,7 @@ const StatusBadge: React.FC<{ isSafe: boolean; isWarning: boolean }> = ({ isSafe
   if (isSafe) {
     return (
       <span
-        className="inline-flex items-center gap-1 font-label-caps text-[10px] tracking-widest px-2 py-0.5 border border-[#059669]/40 bg-[#059669]/10"
+        className="inline-flex items-center gap-1 font-label-caps text-[10px] tracking-widest px-2 py-0.5 border border-[#059669]/40 bg-[#059669]/10 rounded-token-xs"
         style={{ color: '#059669' }}
         aria-label="Status: Safe"
       >
@@ -26,7 +26,7 @@ const StatusBadge: React.FC<{ isSafe: boolean; isWarning: boolean }> = ({ isSafe
   if (isWarning) {
     return (
       <span
-        className="inline-flex items-center gap-1 font-label-caps text-[10px] tracking-widest px-2 py-0.5 border border-[#d97706]/40 bg-[#d97706]/10"
+        className="inline-flex items-center gap-1 font-label-caps text-[10px] tracking-widest px-2 py-0.5 border border-[#d97706]/40 bg-[#d97706]/10 rounded-token-xs"
         style={{ color: '#d97706' }}
         aria-label="Status: Warning"
       >
@@ -37,12 +37,43 @@ const StatusBadge: React.FC<{ isSafe: boolean; isWarning: boolean }> = ({ isSafe
   }
   return (
     <span
-      className="inline-flex items-center gap-1 font-label-caps text-[10px] tracking-widest px-2 py-0.5 border border-[#dc2626]/40 bg-[#dc2626]/10"
+      className="inline-flex items-center gap-1 font-label-caps text-[10px] tracking-widest px-2 py-0.5 border border-[#dc2626]/40 bg-[#dc2626]/10 rounded-token-xs"
       style={{ color: '#dc2626' }}
       aria-label="Status: Danger — attendance critically low"
     >
       <span className="material-symbols-outlined text-[12px]" aria-hidden="true">cancel</span>
       DANGER
+    </span>
+  );
+};
+
+// Trend Chip with sufficient contrast in both dark and light modes
+const TrendChip: React.FC<{ trend: 'Improving' | 'Falling' | 'Stable' }> = ({ trend }) => {
+  let color = 'var(--color-text-secondary)';
+  let bg = 'var(--color-surface-variant)';
+  let icon = 'trending_flat';
+  let label = 'STABLE';
+
+  if (trend === 'Improving') {
+    color = '#059669';
+    bg = 'rgba(5, 150, 105, 0.15)';
+    icon = 'trending_up';
+    label = 'UP';
+  } else if (trend === 'Falling') {
+    color = '#dc2626';
+    bg = 'rgba(220, 38, 38, 0.15)';
+    icon = 'trending_down';
+    label = 'DOWN';
+  }
+
+  return (
+    <span
+      className="inline-flex items-center gap-1 font-label-caps text-[10px] tracking-widest px-2 py-0.5 rounded-token-xs border border-outline-variant/30"
+      style={{ color, backgroundColor: bg }}
+      aria-label={`Trend: ${trend}`}
+    >
+      <span className="material-symbols-outlined text-[12px]" aria-hidden="true">{icon}</span>
+      {label}
     </span>
   );
 };
@@ -55,60 +86,86 @@ export const SubjectCard: React.FC<SubjectCardProps> = ({ subject, onClick, onOp
   const isWarning = stats.percentage >= 70 && !isSafe;
   
   const statusColor = isSafe ? '#059669' : (isWarning ? '#d97706' : '#dc2626');
-  const glowClass = isSafe ? 'neon-glow-cyan' : (isWarning ? '' : 'neon-glow-error');
+  
+  // Mapping subject colors to actual token variables/hex
+  const colorMap = {
+    purple: '#7c3aed',
+    blue: '#0891b2',
+    green: '#059669',
+    orange: '#d97706',
+    pink: '#e11d48',
+  };
+  const dotColor = colorMap[subject.color] || '#7c3aed';
 
   return (
     <div 
-      className={`glass-card border border-outline-variant/30 p-6 cursor-pointer transition-all group relative hover:border-outline/60 ${glowClass}`}
-      style={{ boxShadow: glowClass ? undefined : 'var(--elevation-1)' }}
+      className="glass-card border border-outline-variant/30 rounded-token-md cursor-pointer transition-all duration-base ease-standard group relative hover:border-outline/60 hover:shadow-elevation-2 active:scale-[0.98]"
+      style={{ boxShadow: 'var(--elevation-1)' }}
       onClick={onClick}
     >
-      <div className="flex justify-between items-start mb-4">
-        <div className="flex items-center gap-4">
-          <CircularProgress 
-            percentage={stats.percentage} 
-            size={64} 
-            strokeWidth={5} 
-            color={statusColor} 
-            trackColor="rgba(255,255,255,0.05)"
-          />
-          <div>
-            <h3 className="font-headline-lg-mobile text-lg text-on-surface font-semibold mb-1 truncate max-w-[150px] md:max-w-[180px]">{subject.name}</h3>
-            <div className="flex gap-4 font-label-caps text-[10px] text-outline tracking-widest uppercase mb-2">
-              <span>PR: <span className="text-on-surface">{stats.presentCount}</span></span>
-              <span>AB: <span className="text-on-surface">{stats.absentCount}</span></span>
+      {/* Content Body */}
+      <div className="p-6">
+        <div className="flex justify-between items-start">
+          <div className="flex items-center gap-4">
+            <CircularProgress 
+              percentage={stats.percentage} 
+              size={64} 
+              strokeWidth={5} 
+              color={statusColor} 
+              trackColor="rgba(255,255,255,0.05)"
+            />
+            <div>
+              {/* Subject Title Row with Small Colored Dot */}
+              <div className="flex items-center gap-2 mb-1">
+                <span 
+                  className="w-2.5 h-2.5 rounded-full inline-block shrink-0" 
+                  style={{ backgroundColor: dotColor }}
+                  aria-hidden="true"
+                />
+                <h3 className="font-headline-lg-mobile text-lg text-on-surface font-semibold truncate max-w-[150px] md:max-w-[180px]">{subject.name}</h3>
+              </div>
+              
+              <div className="flex gap-4 font-label-caps text-[10px] text-outline tracking-widest uppercase mb-2">
+                <span>PR: <span className="text-on-surface">{stats.presentCount}</span></span>
+                <span>AB: <span className="text-on-surface">{stats.absentCount}</span></span>
+              </div>
+              
+              {/* Badges row */}
+              <div className="flex flex-wrap gap-2">
+                <StatusBadge isSafe={isSafe} isWarning={isWarning} />
+                <TrendChip trend={stats.trend} />
+              </div>
             </div>
-            {/* WCAG 1.4.1: text + icon status badge, not color alone */}
-            <StatusBadge isSafe={isSafe} isWarning={isWarning} />
           </div>
+          
+          {/* Options button */}
+          <button 
+            onClick={(e) => { e.stopPropagation(); onOptionsClick(subject); }}
+            className="text-outline hover:text-secondary p-2 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center rounded-token-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
+            aria-label={`Options for ${subject.name}`}
+          >
+            <span className="material-symbols-outlined text-[20px]">more_vert</span>
+          </button>
         </div>
-        
-        {/* Touch target: p-2 = 40px+ hit area */}
-        <button 
-          onClick={(e) => { e.stopPropagation(); onOptionsClick(subject); }}
-          className="text-outline hover:text-secondary p-2 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
-          aria-label={`Options for ${subject.name}`}
-        >
-          <span className="material-symbols-outlined text-[20px]">more_vert</span>
-        </button>
+
+        <div className="mt-4">
+          <p className="font-body-sm text-outline leading-relaxed min-h-[40px]">
+            {stats.bunkMessage}
+          </p>
+        </div>
       </div>
 
-      <div className="border-t border-outline-variant/30 pt-4 mb-6">
-        <p className="font-body-sm text-outline leading-relaxed min-h-[40px]">
-          {stats.bunkMessage}
-        </p>
-      </div>
-
-      <div className="flex gap-3">
+      {/* Quick Actions Footer Row (Visual Separator, min 48px height touch target) */}
+      <div className="border-t border-outline-variant/30 flex divide-x divide-outline-variant/30">
         <button 
-          className="flex-1 bg-surface-container hover:bg-tertiary-container/30 border border-outline-variant/30 hover:border-tertiary/50 text-tertiary font-label-caps text-[10px] tracking-widest py-3 flex justify-center items-center gap-2 transition-all min-h-[44px]"
+          className="flex-1 bg-transparent hover:bg-tertiary-container/10 text-tertiary font-label-caps text-[10px] tracking-widest flex justify-center items-center gap-2 transition-all h-[48px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary rounded-bl-token-md"
           onClick={(e) => { e.stopPropagation(); markAttendance(subject.id, 'present'); }}
         >
           <span className="material-symbols-outlined text-[16px]">check</span>
           MARK P
         </button>
         <button 
-          className="flex-1 bg-surface-container hover:bg-error-container/30 border border-outline-variant/30 hover:border-error/50 text-error font-label-caps text-[10px] tracking-widest py-3 flex justify-center items-center gap-2 transition-all min-h-[44px]"
+          className="flex-1 bg-transparent hover:bg-error-container/10 text-error font-label-caps text-[10px] tracking-widest flex justify-center items-center gap-2 transition-all h-[48px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary rounded-br-token-md"
           onClick={(e) => { e.stopPropagation(); markAttendance(subject.id, 'absent'); }}
         >
           <span className="material-symbols-outlined text-[16px]">close</span>
