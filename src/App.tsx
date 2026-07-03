@@ -240,24 +240,44 @@ function App() {
         </div>
         <nav className="flex flex-col gap-1 overflow-y-auto flex-grow">
           {subjects.map(subject => (
-            <a 
+            <button 
               key={subject.id}
-              className={`px-6 py-4 flex items-center justify-between cursor-pointer transition-all duration-75 ${selectedSubjectId === subject.id ? 'text-primary bg-primary-container/20 border-l-4 border-primary' : 'text-on-surface-variant opacity-70 hover:bg-surface-variant/40 hover:opacity-100 border-l-4 border-transparent'}`} 
-              onClick={() => setSelectedSubjectId(subject.id)}
+              className={`px-6 py-4 flex items-center justify-between cursor-pointer transition-all duration-75 text-left w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${selectedSubjectId === subject.id ? 'text-primary bg-primary-container/20 border-l-4 border-primary' : 'text-on-surface-variant opacity-70 hover:bg-surface-variant/40 hover:opacity-100 border-l-4 border-transparent'}`} 
+              onClick={() => {
+                setSelectedSubjectId(subject.id);
+                setActiveTab('dashboard');
+              }}
+              aria-label={`View stats for ${subject.name}`}
             >
               <div className="flex items-center gap-4 truncate">
                 <span className="material-symbols-outlined">{selectedSubjectId === subject.id ? 'dashboard' : 'analytics'}</span>
                 <span className="font-body-sm truncate max-w-[100px]">{subject.name}</span>
               </div>
-              <button onClick={(e) => { e.stopPropagation(); setOptionsSubject(subject); }} className="hover:text-primary transition-colors">
+              <span 
+                onClick={(e) => { e.stopPropagation(); setOptionsSubject(subject); }} 
+                className="hover:text-primary transition-colors flex items-center justify-center p-1 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                role="button"
+                tabIndex={0}
+                aria-label={`Settings for ${subject.name}`}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.stopPropagation();
+                    setOptionsSubject(subject);
+                  }
+                }}
+              >
                 <span className="material-symbols-outlined text-[16px]">settings</span>
-              </button>
-            </a>
+              </span>
+            </button>
           ))}
-          <a className="px-6 py-4 flex items-center gap-4 text-on-surface-variant opacity-70 hover:bg-surface-variant/40 hover:opacity-100 transition-all duration-75 cursor-pointer mt-4" onClick={() => setIsFormSheetOpen(true)}>
+          <button 
+            className="px-6 py-4 flex items-center gap-4 text-on-surface-variant opacity-70 hover:bg-surface-variant/40 hover:opacity-100 transition-all duration-75 cursor-pointer mt-4 text-left w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-primary" 
+            onClick={() => setIsFormSheetOpen(true)}
+            aria-label="Add a new subject"
+          >
             <span className="material-symbols-outlined text-tertiary">add_box</span>
             <span className="font-body-sm text-tertiary">Add Subject</span>
-          </a>
+          </button>
         </nav>
       </aside>
 

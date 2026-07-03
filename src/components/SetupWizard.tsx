@@ -12,9 +12,9 @@ export const SetupWizard: React.FC<SetupWizardProps> = ({ onAddFirstSubject }) =
         <span className="material-symbols-outlined text-[48px]">school</span>
       </div>
       
-      <h1 className="font-headline-xl text-4xl font-bold mb-4 text-on-surface tracking-tight">
+      <h2 className="font-headline-xl text-4xl font-bold mb-4 text-on-surface tracking-tight">
         Welcome to AttendWise
-      </h1>
+      </h2>
       
       <p className="font-body-md text-on-surface-variant mb-10 max-w-sm">
         Track your attendance precision effortlessly. No clutter, just the numbers you need to stay safe.
