@@ -138,7 +138,7 @@ export const SubjectFormSheet: React.FC<SubjectFormSheetProps> = ({ isOpen, onCl
   };
 
   const inputClass = (hasError: boolean | null) =>
-    `w-full p-4 rounded-2xl border ${hasError ? 'border-red-500 bg-red-500/5' : 'border-outline-variant/50 bg-surface/50'} text-on-surface font-body-md mb-1 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all shadow-inner`;
+    `w-full p-4 rounded-token-sm border ${hasError ? 'border-red-500 bg-red-500/5' : 'border-outline-variant/50 bg-surface/50'} text-on-surface font-body-md mb-1 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all shadow-inner`;
   const labelClass = "block text-xs font-label-caps tracking-widest text-outline mb-2 uppercase";
   const errorClass = "font-label-caps text-[10px] tracking-widest mb-4 flex items-center gap-1";
 
@@ -238,12 +238,12 @@ export const SubjectFormSheet: React.FC<SubjectFormSheetProps> = ({ isOpen, onCl
         </div>
 
         <button 
-          className="w-full bg-primary hover:bg-primary-container text-on-primary font-label-caps tracking-widest py-4 mt-2 disabled:opacity-50 transition-all text-sm rounded-xl neon-glow-indigo min-h-[44px]"
+          className="w-full bg-primary hover:bg-primary-container text-on-primary font-body-sm py-4 mt-2 disabled:opacity-50 transition-all font-bold rounded-token-sm neon-glow-indigo min-h-[44px]"
           onClick={handleSave}
           disabled={!isFormValid}
           aria-disabled={!isFormValid}
         >
-          {subjectToEdit ? 'SAVE CHANGES' : 'SAVE SUBJECT'}
+          {subjectToEdit ? 'Save Changes' : 'Save Subject'}
         </button>
       </div>
     </BottomSheet>
