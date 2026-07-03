@@ -9,7 +9,7 @@ interface AttendanceDataContextType {
 
 interface AttendanceActionsContextType {
   addSubject: (name: string, color: Subject['color'], initialPresent: number, initialAbsent: number) => void;
-  updateSubject: (id: string, name: string, color: Subject['color'], initialPresent: number, initialAbsent: number) => void;
+  updateSubject: (id: string, name: string, color: Subject['color'], initialPresent: number, initialAbsent: number, keepHistory?: boolean) => void;
   deleteSubject: (id: string) => void;
   restoreSubject: (subject: Subject) => void;
   markAttendance: (id: string, type: 'present' | 'absent') => void;
@@ -45,8 +45,8 @@ export const AttendanceProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     setSubjects(prev => [...prev, newSubject]);
   }, []);
 
-  const updateSubject = useCallback((id: string, name: string, color: Subject['color'], initialPresent: number, initialAbsent: number) => {
-    setSubjects(prev => prev.map(s => s.id === id ? { ...s, name, color, initialPresent, initialAbsent, history: [] } : s));
+  const updateSubject = useCallback((id: string, name: string, color: Subject['color'], initialPresent: number, initialAbsent: number, keepHistory: boolean = true) => {
+    setSubjects(prev => prev.map(s => s.id === id ? { ...s, name, color, initialPresent, initialAbsent, history: keepHistory ? s.history : [] } : s));
   }, []);
 
   const deleteSubject = useCallback((id: string) => {

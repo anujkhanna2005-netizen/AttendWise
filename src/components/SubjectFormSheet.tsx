@@ -70,13 +70,38 @@ export const SubjectFormSheet: React.FC<SubjectFormSheetProps> = ({ isOpen, onCl
     if (validateCount(initialPresent) || validateCount(initialAbsent)) return;
     
     if (subjectToEdit) {
-      updateSubject(
-        subjectToEdit.id,
-        name.trim(),
-        color,
-        parseInt(initialPresent) || 0,
-        parseInt(initialAbsent) || 0
-      );
+      const presents = subjectToEdit.history.filter(h => h.type === 'present').length;
+      const absents = subjectToEdit.history.filter(h => h.type === 'absent').length;
+      const currentTotalPresent = subjectToEdit.initialPresent + presents;
+      const currentTotalAbsent = subjectToEdit.initialAbsent + absents;
+      
+      const newPresent = parseInt(initialPresent) || 0;
+      const newAbsent = parseInt(initialAbsent) || 0;
+      
+      const countsChanged = newPresent !== currentTotalPresent || newAbsent !== currentTotalAbsent;
+      
+      if (countsChanged) {
+        const confirmChange = window.confirm("Editing initial counts will affect your attendance history. Continue?");
+        if (!confirmChange) return;
+        
+        updateSubject(
+          subjectToEdit.id,
+          name.trim(),
+          color,
+          newPresent,
+          newAbsent,
+          false // Reset history since they explicitly overwrote counts
+        );
+      } else {
+        updateSubject(
+          subjectToEdit.id,
+          name.trim(),
+          color,
+          subjectToEdit.initialPresent,
+          subjectToEdit.initialAbsent,
+          true // Keep history since totals were unchanged
+        );
+      }
     } else {
       addSubject(
         name.trim(), 
