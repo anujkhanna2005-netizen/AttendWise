@@ -11,7 +11,15 @@ import type { Subject } from './types';
 const SubjectFormSheet = lazy(() => import('./components/SubjectFormSheet').then(m => ({ default: m.SubjectFormSheet })));
 const SubjectOptionsSheet = lazy(() => import('./components/SubjectOptionsSheet').then(m => ({ default: m.SubjectOptionsSheet })));
 
-
+const getRelativeTime = (timestamp: number) => {
+  const diff = Date.now() - timestamp;
+  if (diff < 60000) return 'Just now';
+  const minutes = Math.floor(diff / 60000);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  return new Date(timestamp).toLocaleDateString([], { month: 'short', day: 'numeric' });
+};
 
 function App() {
   const { subjects, getSubjectStats, markAttendance } = useAttendance();
@@ -351,66 +359,64 @@ function App() {
                     </div>
                   </div>
                 </div>
-
-                {/* Bunk Calculator (Terminal Style) hooked to real stats */}
-                <div className="md:col-span-6 glass-card border border-outline-variant/50 flex flex-col">
+                <div className="md:col-span-6 glass-card border border-outline-variant/50 flex flex-col rounded-token-sm">
                   <div className="bg-surface-container-highest px-4 py-2 border-b border-outline-variant/50 flex justify-between items-center">
                     <div className="flex gap-1.5">
                       <div className="w-2.5 h-2.5 rounded-full bg-red-500/50"></div>
                       <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/50"></div>
                       <div className="w-2.5 h-2.5 rounded-full bg-green-500/50"></div>
                     </div>
-                    <span className="font-label-caps text-[10px] text-outline tracking-widest">BUNK_SIMULATOR_V2</span>
+                    <span className="font-body-sm text-outline tracking-wider font-bold">Bunk Calculator</span>
                   </div>
-                  <div className="p-6 bg-black/60 font-label-caps flex-grow flex flex-col">
+                  <div className="p-6 bg-black/60 flex-grow flex flex-col justify-between">
                     <div className="mb-4">
-                      <p className="text-secondary animate-status">{'> RUN MARGIN_OF_SAFETY_CALC'}</p>
-                      <p className="text-on-surface-variant opacity-70 mt-1">SIMULATING 10,000 PATHWAYS...</p>
+                      <p className="text-secondary text-sm">Attendance Margin of Safety</p>
+                      <p className="text-on-surface-variant opacity-70 text-xs mt-1">Calculated from your current attendance history</p>
                     </div>
                     <div className="space-y-3 mt-4">
-                      <div className="flex justify-between items-center">
-                        <span className="text-on-surface">MAX_SKIP_CAPACITY</span>
-                        <span className="text-tertiary px-2 py-0.5 bg-tertiary/10 border border-tertiary/30">
-                          {stats.status === 'Safe' ? `0${Math.max(0, Math.floor(stats.presentCount / 0.75) - stats.totalClasses)} UNITS` : '00 UNITS'}
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="text-on-surface">You can skip</span>
+                        <span className="text-tertiary px-2 py-0.5 bg-tertiary/10 border border-tertiary/30 rounded-token-sm">
+                          {stats.status === 'Safe' ? `${Math.max(0, Math.floor(stats.presentCount / 0.75) - stats.totalClasses)} classes` : '0 classes'}
                         </span>
                       </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-on-surface">RISK_FACTOR_SIGMA</span>
-                        <span className={isSafe ? "text-tertiary" : "text-error"}>
-                          {isSafe ? "STABLE (0.12)" : "CRITICAL (0.88)"}
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="text-on-surface">Risk Level</span>
+                        <span className={isSafe ? "text-tertiary" : "text-error font-bold"}>
+                          {isSafe ? "Low Risk" : "High Risk"}
                         </span>
                       </div>
                     </div>
                     <div className="mt-auto border-t border-outline-variant/30 pt-4">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-[10px] text-outline">SAFETY_ENVELOPE</span>
-                        <span className="text-[10px] text-secondary">REMAINING: {stats.status === 'Safe' ? Math.max(0, Math.floor(stats.presentCount / 0.75) - stats.totalClasses) : 0}</span>
+                      <div className="flex justify-between items-center mb-2 text-xs">
+                        <span className="text-outline">Safety Margin</span>
+                        <span className="text-secondary">Remaining: {stats.status === 'Safe' ? Math.max(0, Math.floor(stats.presentCount / 0.75) - stats.totalClasses) : 0} classes</span>
                       </div>
-                      <div className="h-4 bg-surface-container-lowest border border-outline-variant/50 relative overflow-hidden">
-                        <div className={`h-full ${isSafe ? 'bg-secondary shadow-[0_0_15px_#4cd7f6]' : 'bg-error shadow-[0_0_15px_#ffb4ab]'} transition-all`} style={{ width: `${Math.min(100, Math.max(0, (stats.percentage - 60) * 2))}%` }}></div>
+                      <div className="h-2 bg-surface-container-lowest border border-outline-variant/50 relative overflow-hidden rounded-token-full">
+                        <div className={`h-full ${isSafe ? 'bg-secondary' : 'bg-error'} transition-all`} style={{ width: `${Math.min(100, Math.max(0, (stats.percentage - 60) * 2.5))}%` }}></div>
                       </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Event Log (Log Stream) hooked to real history */}
-                <div className="md:col-span-6 glass-card border border-outline-variant/30 flex flex-col h-full">
+                <div className="md:col-span-6 glass-card border border-outline-variant/30 flex flex-col h-full rounded-token-sm">
                   <div className="p-4 border-b border-outline-variant/30 bg-surface-container-low flex justify-between items-center">
-                    <h4 className="font-label-caps text-on-surface">LOG_STREAM</h4>
-                    <span className="font-label-caps text-[10px] text-outline px-2 py-0.5 border border-outline-variant/50">AUTO_UPDATE: ON</span>
+                    <h4 className="font-body-sm font-bold text-on-surface">Recent Activity</h4>
+                    <span className="text-[10px] text-outline px-2 py-0.5 border border-outline-variant/50 rounded-token-sm">Live</span>
                   </div>
-                  <div className="p-4 space-y-3 overflow-y-auto max-h-64 font-label-caps text-[12px]">
+                  <div className="p-4 space-y-3 overflow-y-auto max-h-64 text-[13px]">
                     {activeSubject.history.length === 0 ? (
-                      <div className="text-outline text-center py-8 opacity-50">AWAITING_DATA...</div>
+                      <div className="text-outline text-center py-8 opacity-50">No activity yet</div>
                     ) : (
                       [...activeSubject.history].reverse().slice(0, 10).map((record, index) => (
-                        <div key={record.timestamp} className="flex items-center gap-3 group transition-colors hover:bg-surface-variant/20 p-1">
-                          <span className="text-outline">{new Date(record.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'})}</span>
-                          <div className={`w-1.5 h-1.5 rounded-full ${record.type === 'present' ? 'bg-tertiary shadow-[0_0_5px_#4edea3]' : 'bg-error shadow-[0_0_5px_#ffb4ab]'}`}></div>
+                        <div key={record.timestamp} className="flex items-center gap-3 group transition-colors hover:bg-surface-variant/20 p-1 rounded-token-sm">
+                          <span className="text-outline text-xs">{getRelativeTime(record.timestamp)}</span>
+                          <div className={`w-2 h-2 rounded-full ${record.type === 'present' ? 'bg-tertiary' : 'bg-error'}`}></div>
                           <span className={record.type === 'present' ? 'text-tertiary' : 'text-error'}>
-                            NODE_{record.type.toUpperCase()}
+                            {record.type === 'present' ? 'Present' : 'Absent'}
                           </span>
-                          <span className="text-on-surface-variant ml-auto opacity-50">IDX_{activeSubject.history.length - index}</span>
+                          <span className="text-on-surface-variant ml-auto opacity-50 text-xs"># {activeSubject.history.length - index}</span>
                         </div>
                       ))
                     )}
@@ -487,7 +493,7 @@ function App() {
         <SubjectOptionsSheet 
           subject={optionsSubject} 
           onClose={() => setOptionsSubject(null)}
-          onEdit={(sub) => {
+          onEdit={(sub: Subject) => {
             setOptionsSubject(null);
             setSubjectToEdit(sub);
             setIsFormSheetOpen(true);

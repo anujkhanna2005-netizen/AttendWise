@@ -51,19 +51,19 @@ export const SubjectOptionsSheet: React.FC<SubjectOptionsSheetProps> = ({ subjec
       {!isConfirmingDelete ? (
         <div className="flex flex-col gap-3">
           <button 
-            className="w-full bg-surface border border-outline-variant/30 text-on-surface hover:text-primary hover:bg-primary/5 font-label-caps tracking-widest py-4 px-6 flex items-center justify-start gap-4 transition-all rounded-xl subtle-glass"
+            className="w-full bg-surface border border-outline-variant/30 text-on-surface hover:text-primary hover:bg-primary/5 py-4 px-6 flex items-center justify-start gap-4 transition-all rounded-token-sm subtle-glass text-sm font-semibold"
             onClick={() => onEdit(subject)}
           >
             <span className="material-symbols-outlined text-[24px] text-primary">edit</span>
-            EDIT SUBJECT
+            Edit Subject
           </button>
           
           <button 
-            className="w-full bg-surface border border-error/20 text-error hover:bg-error-container/30 font-label-caps tracking-widest py-4 px-6 flex items-center justify-start gap-4 transition-all rounded-xl subtle-glass"
+            className="w-full bg-surface border border-error/20 text-error hover:bg-error-container/30 py-4 px-6 flex items-center justify-start gap-4 transition-all rounded-token-sm subtle-glass text-sm font-semibold"
             onClick={() => setIsConfirmingDelete(true)}
           >
             <span className="material-symbols-outlined text-[24px]">delete</span>
-            DELETE SUBJECT
+            Delete Subject
           </button>
         </div>
       ) : (
@@ -78,16 +78,16 @@ export const SubjectOptionsSheet: React.FC<SubjectOptionsSheetProps> = ({ subjec
           
           <div className="flex flex-col gap-3">
             <button 
-              className="w-full bg-error hover:bg-error/90 text-on-error font-label-caps tracking-widest py-4 transition-all rounded-xl neon-glow-error"
+              className="w-full bg-error hover:bg-error/90 text-on-error py-4 transition-all rounded-token-sm neon-glow-error text-sm font-bold"
               onClick={handleDelete}
             >
-              CONFIRM DELETE
+              Confirm Delete
             </button>
             <button 
-              className="w-full bg-surface border border-outline-variant/50 text-on-surface hover:text-primary font-label-caps tracking-widest py-4 transition-colors rounded-xl subtle-glass"
+              className="w-full bg-surface border border-outline-variant/50 text-on-surface hover:text-primary py-4 transition-colors rounded-token-sm subtle-glass text-sm font-semibold"
               onClick={() => setIsConfirmingDelete(false)}
             >
-              CANCEL
+              Cancel
             </button>
           </div>
         </div>
