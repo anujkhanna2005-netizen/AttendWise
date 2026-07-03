@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 
 interface CircularProgressProps {
   percentage: number;
@@ -19,13 +20,13 @@ export const CircularProgress: React.FC<CircularProgressProps> = ({
   const circumference = radius * 2 * Math.PI;
   const offset = circumference - (percentage / 100) * circumference;
 
-  // Respect prefers-reduced-motion: disable the SVG stroke transition
+  // Respect prefers-reduced-motion
   const prefersReducedMotion =
     typeof window !== 'undefined' &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   return (
-    <div style={{ width: size, height: size, position: 'relative' }}>
+    <div style={{ width: size, height: size, position: 'relative' }} className="flex items-center justify-center">
       <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
         {/* Track */}
         <circle
@@ -36,8 +37,8 @@ export const CircularProgress: React.FC<CircularProgressProps> = ({
           strokeWidth={strokeWidth}
           fill="none"
         />
-        {/* Progress */}
-        <circle
+        {/* Progress with spring animation from framer-motion */}
+        <motion.circle
           cx={size / 2}
           cy={size / 2}
           r={radius}
@@ -45,12 +46,19 @@ export const CircularProgress: React.FC<CircularProgressProps> = ({
           strokeWidth={strokeWidth}
           fill="none"
           strokeLinecap="round"
+          initial={{ strokeDashoffset: circumference }}
+          animate={{ strokeDashoffset: offset }}
+          transition={prefersReducedMotion ? {
+            duration: 0.01
+          } : {
+            type: 'spring',
+            stiffness: 70,
+            damping: 14,
+            mass: 1,
+            restDelta: 0.1
+          }}
           style={{
             strokeDasharray: circumference,
-            strokeDashoffset: offset,
-            transition: prefersReducedMotion
-              ? 'none'
-              : 'stroke-dashoffset 0.5s ease-in-out, stroke 0.3s ease',
           }}
         />
       </svg>
