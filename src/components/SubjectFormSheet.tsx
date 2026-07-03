@@ -82,12 +82,13 @@ export const SubjectFormSheet: React.FC<SubjectFormSheetProps> = ({ isOpen, onCl
             <button 
               key={c.value}
               onClick={() => setColor(c.value)}
-              className="w-12 h-12 rounded-full flex items-center justify-center transition-all cursor-pointer"
+              className="w-12 h-12 min-w-[44px] min-h-[44px] rounded-full flex items-center justify-center transition-all cursor-pointer"
               style={{
                 backgroundColor: c.hex,
                 boxShadow: color === c.value ? `0 0 0 4px var(--tw-colors-surface), 0 0 0 6px ${c.hex}, 0 0 15px ${c.hex}` : 'none',
               }}
               aria-label={`Select color ${c.label}`}
+              aria-pressed={color === c.value}
             />
           ))}
         </div>

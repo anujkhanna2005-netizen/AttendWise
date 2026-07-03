@@ -29,7 +29,7 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({ isOpen, onClose, title
         <div className="w-12 h-1 bg-outline-variant/50 mx-auto mb-6" />
         <div className="flex justify-between items-center mb-6 border-b border-outline-variant/30 pb-4">
           <h2 className="font-label-caps text-on-surface tracking-[0.2em]">{title}</h2>
-          <button onClick={onClose} className="p-1 hover:bg-surface-variant text-outline hover:text-secondary transition-colors border border-transparent hover:border-outline-variant/50">
+          <button onClick={onClose} className="p-2 hover:bg-surface-variant text-outline hover:text-secondary transition-colors border border-transparent hover:border-outline-variant/50 min-w-[44px] min-h-[44px] flex items-center justify-center" aria-label="Close">
             <span className="material-symbols-outlined text-[20px]">close</span>
           </button>
         </div>
