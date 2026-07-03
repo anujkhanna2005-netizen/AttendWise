@@ -45,10 +45,12 @@ export const SubjectFormSheet: React.FC<SubjectFormSheetProps> = ({ isOpen, onCl
   useEffect(() => {
     if (isOpen) {
       if (subjectToEdit) {
+        const presents = subjectToEdit.history.filter(h => h.type === 'present').length;
+        const absents = subjectToEdit.history.filter(h => h.type === 'absent').length;
         setName(subjectToEdit.name);
         setColor(subjectToEdit.color);
-        setInitialPresent(subjectToEdit.initialPresent.toString());
-        setInitialAbsent(subjectToEdit.initialAbsent.toString());
+        setInitialPresent((subjectToEdit.initialPresent + presents).toString());
+        setInitialAbsent((subjectToEdit.initialAbsent + absents).toString());
       } else {
         setName('');
         setColor('purple');

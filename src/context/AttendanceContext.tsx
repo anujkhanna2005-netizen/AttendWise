@@ -46,7 +46,7 @@ export const AttendanceProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   }, []);
 
   const updateSubject = useCallback((id: string, name: string, color: Subject['color'], initialPresent: number, initialAbsent: number) => {
-    setSubjects(prev => prev.map(s => s.id === id ? { ...s, name, color, initialPresent, initialAbsent } : s));
+    setSubjects(prev => prev.map(s => s.id === id ? { ...s, name, color, initialPresent, initialAbsent, history: [] } : s));
   }, []);
 
   const deleteSubject = useCallback((id: string) => {
