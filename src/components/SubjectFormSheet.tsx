@@ -17,12 +17,28 @@ const COLORS: { label: string; value: SubjectColor; hex: string }[] = [
   { label: 'Rose', value: 'pink', hex: '#e11d48' },       // was #f43f5e → #e11d48 per spec
 ];
 
+/** Validate a numeric attendance field: must be a non-negative integer */
+function validateCount(value: string): string | null {
+  if (value.trim() === '') return 'This field is required.';
+  const num = Number(value);
+  if (!Number.isInteger(num)) return 'Must be a whole number (no decimals).';
+  if (num < 0) return 'Must be 0 or greater.';
+  return null;
+}
+
 export const SubjectFormSheet: React.FC<SubjectFormSheetProps> = ({ isOpen, onClose, subjectToEdit }) => {
   const { addSubject, updateSubject } = useAttendance();
   const [name, setName] = useState('');
   const [color, setColor] = useState<SubjectColor>('purple');
   const [initialPresent, setInitialPresent] = useState('0');
   const [initialAbsent, setInitialAbsent] = useState('0');
+
+  // Touched flags: only show errors after user has interacted with a field
+  const [touchedPresent, setTouchedPresent] = useState(false);
+  const [touchedAbsent, setTouchedAbsent] = useState(false);
+
+  const presentError = touchedPresent ? validateCount(initialPresent) : null;
+  const absentError = touchedAbsent ? validateCount(initialAbsent) : null;
 
   useEffect(() => {
     if (isOpen) {
@@ -37,11 +53,19 @@ export const SubjectFormSheet: React.FC<SubjectFormSheetProps> = ({ isOpen, onCl
         setInitialPresent('0');
         setInitialAbsent('0');
       }
+      // Reset touched state on sheet open
+      setTouchedPresent(false);
+      setTouchedAbsent(false);
     }
   }, [isOpen, subjectToEdit]);
 
   const handleSave = () => {
+    // Force validation by marking everything touched
+    setTouchedPresent(true);
+    setTouchedAbsent(true);
+
     if (!name.trim()) return;
+    if (validateCount(initialPresent) || validateCount(initialAbsent)) return;
     
     if (subjectToEdit) {
       updateSubject(
@@ -62,22 +86,31 @@ export const SubjectFormSheet: React.FC<SubjectFormSheetProps> = ({ isOpen, onCl
     onClose();
   };
 
-  const inputClass = "w-full p-4 rounded-2xl border border-outline-variant/50 bg-surface/50 text-on-surface font-body-md mb-5 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all shadow-inner";
+  const inputClass = (hasError: boolean | null) =>
+    `w-full p-4 rounded-2xl border ${hasError ? 'border-red-500 bg-red-500/5' : 'border-outline-variant/50 bg-surface/50'} text-on-surface font-body-md mb-1 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all shadow-inner`;
   const labelClass = "block text-xs font-label-caps tracking-widest text-outline mb-2 uppercase";
+  const errorClass = "font-label-caps text-[10px] tracking-widest mb-4 flex items-center gap-1";
+
+  const isFormValid = name.trim() && !validateCount(initialPresent) && !validateCount(initialAbsent);
 
   return (
     <BottomSheet isOpen={isOpen} onClose={onClose} title={subjectToEdit ? 'Edit Subject' : 'Add Subject'}>
       <div>
-        <label className={labelClass}>Subject Name</label>
+        {/* Subject Name — label/id properly associated */}
+        <label htmlFor="subject-name" className={labelClass}>Subject Name</label>
         <input 
-          className={inputClass}
+          id="subject-name"
+          className={inputClass(false)}
           placeholder="e.g. Data Structures" 
           value={name}
           onChange={(e) => setName(e.target.value)}
+          aria-required="true"
+          aria-invalid={!name.trim() ? 'true' : 'false'}
         />
 
-        <label className={labelClass}>Accent Color</label>
-        <div className="flex gap-4 mb-6">
+        {/* Color Picker — label as group label, role=group */}
+        <label className={labelClass} id="color-picker-label">Accent Color</label>
+        <div className="flex gap-4 mb-6" role="group" aria-labelledby="color-picker-label">
           {COLORS.map((c) => (
             <button 
               key={c.value}
@@ -95,31 +128,58 @@ export const SubjectFormSheet: React.FC<SubjectFormSheetProps> = ({ isOpen, onCl
 
         <div className="flex gap-4">
           <div className="flex-1">
-            <label className={labelClass}>Present (Initial)</label>
+            {/* Present — htmlFor/id properly associated */}
+            <label htmlFor="initial-present" className={labelClass}>Present (Initial)</label>
             <input 
-              className={inputClass}
+              id="initial-present"
+              className={inputClass(!!presentError)}
               type="number"
               min="0"
+              step="1"
               value={initialPresent}
               onChange={(e) => setInitialPresent(e.target.value)}
+              onBlur={() => setTouchedPresent(true)}
+              aria-invalid={!!presentError ? 'true' : 'false'}
+              aria-describedby={presentError ? 'present-error' : undefined}
             />
+            {presentError && (
+              <p id="present-error" className={errorClass} style={{ color: '#dc2626' }} role="alert">
+                <span className="material-symbols-outlined text-[12px]" aria-hidden="true">error</span>
+                {presentError}
+              </p>
+            )}
+            {!presentError && <div className="mb-4" />}
           </div>
           <div className="flex-1">
-            <label className={labelClass}>Absent (Initial)</label>
+            {/* Absent — htmlFor/id properly associated */}
+            <label htmlFor="initial-absent" className={labelClass}>Absent (Initial)</label>
             <input 
-              className={inputClass}
+              id="initial-absent"
+              className={inputClass(!!absentError)}
               type="number"
               min="0"
+              step="1"
               value={initialAbsent}
               onChange={(e) => setInitialAbsent(e.target.value)}
+              onBlur={() => setTouchedAbsent(true)}
+              aria-invalid={!!absentError ? 'true' : 'false'}
+              aria-describedby={absentError ? 'absent-error' : undefined}
             />
+            {absentError && (
+              <p id="absent-error" className={errorClass} style={{ color: '#dc2626' }} role="alert">
+                <span className="material-symbols-outlined text-[12px]" aria-hidden="true">error</span>
+                {absentError}
+              </p>
+            )}
+            {!absentError && <div className="mb-4" />}
           </div>
         </div>
 
         <button 
-          className="w-full bg-primary hover:bg-primary-container text-on-primary font-label-caps tracking-widest py-4 mt-4 disabled:opacity-50 transition-all text-sm rounded-xl neon-glow-indigo"
+          className="w-full bg-primary hover:bg-primary-container text-on-primary font-label-caps tracking-widest py-4 mt-2 disabled:opacity-50 transition-all text-sm rounded-xl neon-glow-indigo min-h-[44px]"
           onClick={handleSave}
-          disabled={!name.trim()}
+          disabled={!isFormValid}
+          aria-disabled={!isFormValid}
         >
           {subjectToEdit ? 'SAVE CHANGES' : 'SAVE SUBJECT'}
         </button>
