@@ -19,6 +19,11 @@ export const CircularProgress: React.FC<CircularProgressProps> = ({
   const circumference = radius * 2 * Math.PI;
   const offset = circumference - (percentage / 100) * circumference;
 
+  // Respect prefers-reduced-motion: disable the SVG stroke transition
+  const prefersReducedMotion =
+    typeof window !== 'undefined' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   return (
     <div style={{ width: size, height: size, position: 'relative' }}>
       <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
@@ -43,11 +48,12 @@ export const CircularProgress: React.FC<CircularProgressProps> = ({
           style={{
             strokeDasharray: circumference,
             strokeDashoffset: offset,
-            transition: 'stroke-dashoffset 0.5s ease-in-out, stroke 0.3s ease',
+            transition: prefersReducedMotion
+              ? 'none'
+              : 'stroke-dashoffset 0.5s ease-in-out, stroke 0.3s ease',
           }}
         />
       </svg>
-      {/* Optional: Add text in the center if needed by the component using it, but typically we display text outside or position absolute here. */}
     </div>
   );
 };

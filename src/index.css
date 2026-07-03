@@ -46,4 +46,48 @@
   .animate-status {
     animation: pulse-cyan 2s infinite;
   }
+
+  /* BottomSheet slide-up animation */
+  .bottom-sheet-slide {
+    animation: sheet-slide-up 0.25s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  @keyframes sheet-slide-up {
+    from { transform: translateY(100%); }
+    to   { transform: translateY(0); }
+  }
+}
+
+/* ============================================================
+   REDUCED MOTION — disable / drastically shorten all animations
+   for users who have requested reduced motion in their OS.
+   WCAG 2.3.3 / prefers-reduced-motion best practice.
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  /* Kill all CSS transitions globally */
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Specifically disable the bottom-sheet slide animation */
+  .bottom-sheet-slide {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  /* Disable pulse animations */
+  .animate-status,
+  .animate-pulse {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+
+  /* Disable the scanline animation (it moves slightly with grid) */
+  .technical-grid {
+    transition: none !important;
+  }
 }
