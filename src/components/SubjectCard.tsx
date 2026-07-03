@@ -16,7 +16,7 @@ export const SubjectCard: React.FC<SubjectCardProps> = ({ subject, onClick, onOp
   const isSafe = stats.percentage >= 75;
   const isWarning = stats.percentage >= 70 && !isSafe;
   
-  const statusColor = isSafe ? '#4edea3' : (isWarning ? '#f59e0b' : '#ffb4ab');
+  const statusColor = isSafe ? '#059669' : (isWarning ? '#d97706' : '#dc2626');
   const glowClass = isSafe ? 'neon-glow-cyan' : (isWarning ? '' : 'neon-glow-error');
 
   return (

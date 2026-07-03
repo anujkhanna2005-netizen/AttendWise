@@ -10,11 +10,11 @@ interface SubjectFormSheetProps {
 }
 
 const COLORS: { label: string; value: SubjectColor; hex: string }[] = [
-  { label: 'Indigo', value: 'purple', hex: '#7c3aed' }, // primary-container
-  { label: 'Cyan', value: 'blue', hex: '#03b5d3' }, // secondary-container
-  { label: 'Emerald', value: 'green', hex: '#10b981' }, // tertiary
-  { label: 'Amber', value: 'orange', hex: '#f59e0b' }, // warning
-  { label: 'Rose', value: 'pink', hex: '#f43f5e' }, // error
+  { label: 'Indigo', value: 'purple', hex: '#7c3aed' },   // primary-container — AA on white
+  { label: 'Cyan', value: 'blue', hex: '#0891b2' },       // was #03b5d3; #0891b2 passes AA
+  { label: 'Emerald', value: 'green', hex: '#059669' },   // was #10b981 → #059669 per spec
+  { label: 'Amber', value: 'orange', hex: '#d97706' },    // was #f59e0b → #d97706 per spec
+  { label: 'Rose', value: 'pink', hex: '#e11d48' },       // was #f43f5e → #e11d48 per spec
 ];
 
 export const SubjectFormSheet: React.FC<SubjectFormSheetProps> = ({ isOpen, onClose, subjectToEdit }) => {

@@ -18,7 +18,7 @@ export const SubjectDetailsSheet: React.FC<SubjectDetailsSheetProps> = ({ subjec
   const canUndo = subject.history.length > 0;
   
   const isSafe = stats.percentage >= 75;
-  const statusColor = isSafe ? '#4edea3' : '#ffb4ab';
+  const statusColor = isSafe ? '#059669' : '#dc2626'; // WCAG AA compliant
 
   return (
     <BottomSheet isOpen={!!subject} onClose={onClose} title={`MOD // ${subject.name}`}>

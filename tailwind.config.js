@@ -13,7 +13,7 @@ export default {
         "inverse-on-surface": "#332f39",
         "on-error": "#690005",
         "on-primary-fixed": "#25005a",
-        "error": "#ffb4ab",
+        "error": "#dc2626", /* WCAG AA: was #ffb4ab (ef4444→dc2626 per spec) */
         "on-tertiary-container": "#76ffc2",
         "secondary": "#4cd7f6",
         "surface-bright": "#3c3742",
@@ -29,11 +29,11 @@ export default {
         "inverse-surface": "#e8dfee",
         "surface-container": "#221e28",
         "secondary-container": "#03b5d3",
-        "tertiary-fixed-dim": "#4edea3",
+        "tertiary-fixed-dim": "#34d399", /* slightly lighter for dark-surface glow usage */
         "primary": "#d2bbff",
         "inverse-primary": "#732ee4",
         "surface-dim": "#15121b",
-        "tertiary-fixed": "#6ffbbe",
+        "tertiary-fixed": "#6ee7b7",
         "error-container": "#93000a",
         "surface-variant": "#37333e",
         "primary-fixed": "#eaddff",
@@ -44,7 +44,7 @@ export default {
         "secondary-fixed-dim": "#4cd7f6",
         "on-tertiary": "#003824",
         "surface-container-highest": "#37333e",
-        "tertiary": "#4edea3",
+        "tertiary": "#059669", /* WCAG AA: was #4edea3 (#10b981→#059669 per spec) */
         "background": "#15121b",
         "on-surface": "#e8dfee",
         "on-primary-container": "#ede0ff",
