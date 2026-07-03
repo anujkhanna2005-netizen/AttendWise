@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { BottomSheet } from './ui/BottomSheet';
 import { useAttendance } from '../context/AttendanceContext';
+import { useToast } from '../context/ToastContext';
 import type { Subject, SubjectColor } from '../types';
 
 interface SubjectFormSheetProps {
@@ -26,17 +27,28 @@ function validateCount(value: string): string | null {
   return null;
 }
 
+function validateName(value: string): string | null {
+  const trimmed = value.trim();
+  if (trimmed.length === 0) return 'Subject name is required.';
+  if (trimmed.length < 2) return 'Subject name must be at least 2 characters.';
+  if (trimmed.length > 50) return 'Subject name must not exceed 50 characters.';
+  return null;
+}
+
 export const SubjectFormSheet: React.FC<SubjectFormSheetProps> = ({ isOpen, onClose, subjectToEdit }) => {
   const { addSubject, updateSubject } = useAttendance();
+  const { showToast } = useToast();
   const [name, setName] = useState('');
   const [color, setColor] = useState<SubjectColor>('purple');
   const [initialPresent, setInitialPresent] = useState('0');
   const [initialAbsent, setInitialAbsent] = useState('0');
 
   // Touched flags: only show errors after user has interacted with a field
+  const [touchedName, setTouchedName] = useState(false);
   const [touchedPresent, setTouchedPresent] = useState(false);
   const [touchedAbsent, setTouchedAbsent] = useState(false);
 
+  const nameError = touchedName ? validateName(name) : null;
   const presentError = touchedPresent ? validateCount(initialPresent) : null;
   const absentError = touchedAbsent ? validateCount(initialAbsent) : null;
 
@@ -57,17 +69,18 @@ export const SubjectFormSheet: React.FC<SubjectFormSheetProps> = ({ isOpen, onCl
         setInitialPresent('0');
         setInitialAbsent('0');
       }
+      setTouchedName(false);
       setTouchedPresent(false);
       setTouchedAbsent(false);
     }
   }, [isOpen, subjectToEdit]);
 
   const handleSave = () => {
+    setTouchedName(true);
     setTouchedPresent(true);
     setTouchedAbsent(true);
 
-    if (!name.trim()) return;
-    if (validateCount(initialPresent) || validateCount(initialAbsent)) return;
+    if (validateName(name) || validateCount(initialPresent) || validateCount(initialAbsent)) return;
     
     if (subjectToEdit) {
       const presents = subjectToEdit.history.filter(h => h.type === 'present').length;
@@ -102,13 +115,19 @@ export const SubjectFormSheet: React.FC<SubjectFormSheetProps> = ({ isOpen, onCl
           true // Keep history since totals were unchanged
         );
       }
+      showToast("Subject updated!", { type: 'success' });
     } else {
+      const tempId = crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2, 15);
+      // We will set this ID to localStorage temporarily so SubjectCard can run highlight pulse animation!
+      localStorage.setItem('newly_created_subject_id', tempId);
       addSubject(
         name.trim(), 
         color, 
         parseInt(initialPresent) || 0, 
-        parseInt(initialAbsent) || 0
+        parseInt(initialAbsent) || 0,
+        tempId
       );
+      showToast("Subject added!", { type: 'success' });
     }
     onClose();
   };
@@ -151,18 +170,27 @@ export const SubjectFormSheet: React.FC<SubjectFormSheetProps> = ({ isOpen, onCl
         <label htmlFor="subject-name" className={labelClass}>Subject Name</label>
         <input 
           id="subject-name"
-          className={inputClass(false)}
+          className={inputClass(!!nameError)}
           placeholder="e.g. Data Structures" 
           value={name}
           onChange={(e) => setName(e.target.value)}
+          onBlur={() => setTouchedName(true)}
           aria-required="true"
-          aria-invalid={!name.trim() ? 'true' : 'false'}
+          aria-invalid={!!nameError ? 'true' : 'false'}
+          aria-describedby={nameError ? 'name-error' : undefined}
         />
+        {nameError && (
+          <p id="name-error" className={errorClass} style={{ color: '#dc2626' }} role="alert">
+            <span className="material-symbols-outlined text-[12px]" aria-hidden="true">error</span>
+            {nameError}
+          </p>
+        )}
+        {!nameError && <div className="mb-4" />}
 
         {/* Color Picker — proper role="radiogroup" and keyboard navigation */}
         <label className={labelClass} id="color-picker-label">Accent Color</label>
         <div 
-          className="flex gap-4 mb-6" 
+          className="flex justify-between gap-2 mb-6" 
           role="radiogroup" 
           aria-labelledby="color-picker-label"
           onKeyDown={handleColorKeyDown}
@@ -170,20 +198,22 @@ export const SubjectFormSheet: React.FC<SubjectFormSheetProps> = ({ isOpen, onCl
           {COLORS.map((c, index) => {
             const isSelected = color === c.value;
             return (
-              <button 
-                key={c.value}
-                ref={(el) => { colorButtonRefs.current[index] = el; }}
-                role="radio"
-                aria-checked={isSelected}
-                tabIndex={isSelected ? 0 : -1}
-                onClick={() => setColor(c.value)}
-                className="w-12 h-12 min-w-[44px] min-h-[44px] rounded-token-full flex items-center justify-center transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                style={{
-                  backgroundColor: c.hex,
-                  boxShadow: isSelected ? `0 0 0 4px var(--tw-colors-surface), 0 0 0 6px ${c.hex}, 0 0 15px ${c.hex}` : 'none',
-                }}
-                aria-label={c.label}
-              />
+              <div key={c.value} className="flex flex-col items-center gap-1.5 flex-1">
+                <button 
+                  ref={(el) => { colorButtonRefs.current[index] = el; }}
+                  role="radio"
+                  aria-checked={isSelected}
+                  tabIndex={isSelected ? 0 : -1}
+                  onClick={() => setColor(c.value)}
+                  className="w-10 h-10 min-w-[40px] min-h-[40px] rounded-token-full flex items-center justify-center transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                  style={{
+                    backgroundColor: c.hex,
+                    boxShadow: isSelected ? `0 0 0 4px var(--tw-colors-surface), 0 0 0 6px ${c.hex}, 0 0 15px ${c.hex}` : 'none',
+                  }}
+                  aria-label={c.label}
+                />
+                <span className="text-[10px] text-outline font-semibold tracking-wider">{c.label}</span>
+              </div>
             );
           })}
         </div>
@@ -191,7 +221,7 @@ export const SubjectFormSheet: React.FC<SubjectFormSheetProps> = ({ isOpen, onCl
         <div className="flex gap-4">
           <div className="flex-1">
             {/* Present */}
-            <label htmlFor="initial-present" className={labelClass}>Present (Initial)</label>
+            <label htmlFor="initial-present" className={labelClass}>Classes attended so far</label>
             <input 
               id="initial-present"
               className={inputClass(!!presentError)}
@@ -202,8 +232,11 @@ export const SubjectFormSheet: React.FC<SubjectFormSheetProps> = ({ isOpen, onCl
               onChange={(e) => setInitialPresent(e.target.value)}
               onBlur={() => setTouchedPresent(true)}
               aria-invalid={!!presentError ? 'true' : 'false'}
-              aria-describedby={presentError ? 'present-error' : undefined}
+              aria-describedby={presentError ? 'present-error' : 'present-helper'}
             />
+            <p id="present-helper" className="text-[10px] text-outline opacity-70 mb-2">
+              Prior classes attended before tracking with the app.
+            </p>
             {presentError && (
               <p id="present-error" className={errorClass} style={{ color: '#dc2626' }} role="alert">
                 <span className="material-symbols-outlined text-[12px]" aria-hidden="true">error</span>
@@ -214,7 +247,7 @@ export const SubjectFormSheet: React.FC<SubjectFormSheetProps> = ({ isOpen, onCl
           </div>
           <div className="flex-1">
             {/* Absent */}
-            <label htmlFor="initial-absent" className={labelClass}>Absent (Initial)</label>
+            <label htmlFor="initial-absent" className={labelClass}>Classes missed so far</label>
             <input 
               id="initial-absent"
               className={inputClass(!!absentError)}
@@ -225,8 +258,11 @@ export const SubjectFormSheet: React.FC<SubjectFormSheetProps> = ({ isOpen, onCl
               onChange={(e) => setInitialAbsent(e.target.value)}
               onBlur={() => setTouchedAbsent(true)}
               aria-invalid={!!absentError ? 'true' : 'false'}
-              aria-describedby={absentError ? 'absent-error' : undefined}
+              aria-describedby={absentError ? 'absent-error' : 'absent-helper'}
             />
+            <p id="absent-helper" className="text-[10px] text-outline opacity-70 mb-2">
+              Prior classes missed before tracking with the app.
+            </p>
             {absentError && (
               <p id="absent-error" className={errorClass} style={{ color: '#dc2626' }} role="alert">
                 <span className="material-symbols-outlined text-[12px]" aria-hidden="true">error</span>

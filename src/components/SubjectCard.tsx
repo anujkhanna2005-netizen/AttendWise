@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import type { Subject } from '../types';
 import { useAttendance } from '../context/AttendanceContext';
 import { useToast } from '../context/ToastContext';
@@ -105,6 +105,20 @@ const TrendChip: React.FC<{ trend: 'Improving' | 'Falling' | 'Stable' }> = ({ tr
 export const SubjectCard: React.FC<SubjectCardProps> = ({ subject, onClick, onOptionsClick }) => {
   const { getSubjectStats, markAttendance, undoLastEntry } = useAttendance();
   const { showToast } = useToast();
+  const [isHighlighted, setIsHighlighted] = useState(false);
+
+  useEffect(() => {
+    const newlyCreatedId = localStorage.getItem('newly_created_subject_id');
+    if (newlyCreatedId === subject.id) {
+      setIsHighlighted(true);
+      localStorage.removeItem('newly_created_subject_id');
+      const timer = setTimeout(() => {
+        setIsHighlighted(false);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [subject.id]);
+
   const stats = getSubjectStats(subject);
 
   const hasNoData = stats.percentage === -1;
@@ -138,7 +152,7 @@ export const SubjectCard: React.FC<SubjectCardProps> = ({ subject, onClick, onOp
 
   return (
     <div 
-      className="glass-card border border-outline-variant/30 rounded-token-md cursor-pointer transition-all duration-base ease-standard group relative hover:border-outline/60 hover:shadow-elevation-2 active:scale-[0.98]"
+      className={`glass-card border rounded-token-md cursor-pointer transition-all duration-[250ms] ease-standard group relative hover:border-outline/60 hover:shadow-elevation-2 active:scale-[0.98] ${isHighlighted ? 'border-primary ring-2 ring-primary/40 shadow-[0_0_20px_rgba(124,58,237,0.6)]' : 'border-outline-variant/30'}`}
       style={{ boxShadow: 'var(--elevation-1)' }}
       onClick={onClick}
     >

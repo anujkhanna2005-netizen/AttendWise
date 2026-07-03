@@ -8,7 +8,7 @@ interface AttendanceDataContextType {
 }
 
 interface AttendanceActionsContextType {
-  addSubject: (name: string, color: Subject['color'], initialPresent: number, initialAbsent: number) => void;
+  addSubject: (name: string, color: Subject['color'], initialPresent: number, initialAbsent: number, id?: string) => void;
   updateSubject: (id: string, name: string, color: Subject['color'], initialPresent: number, initialAbsent: number, keepHistory?: boolean) => void;
   deleteSubject: (id: string) => void;
   restoreSubject: (subject: Subject) => void;
@@ -33,9 +33,9 @@ export const AttendanceProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     return () => clearTimeout(timer);
   }, [subjects]);
 
-  const addSubject = useCallback((name: string, color: Subject['color'], initialPresent: number, initialAbsent: number) => {
+  const addSubject = useCallback((name: string, color: Subject['color'], initialPresent: number, initialAbsent: number, id?: string) => {
     const newSubject: Subject = {
-      id: crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2, 15),
+      id: id || (crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2, 15)),
       name,
       color,
       initialPresent,
