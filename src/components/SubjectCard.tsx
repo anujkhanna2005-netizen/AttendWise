@@ -3,6 +3,7 @@ import type { Subject } from '../types';
 import { useAttendance } from '../context/AttendanceContext';
 import { useToast } from '../context/ToastContext';
 import { CircularProgress } from './ui/CircularProgress';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface SubjectCardProps {
   subject: Subject;
@@ -174,10 +175,19 @@ export const SubjectCard: React.FC<SubjectCardProps> = ({ subject, onClick, onOp
           </button>
         </div>
 
-        <div className="mt-4">
-          <p className="font-body-sm text-outline leading-relaxed min-h-[40px]">
-            {stats.bunkMessage}
-          </p>
+        <div className="mt-4 min-h-[40px] relative overflow-hidden flex items-center">
+          <AnimatePresence mode="wait">
+            <motion.p
+              key={stats.bunkMessage}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+              className="font-body-sm text-outline leading-relaxed"
+            >
+              {stats.bunkMessage}
+            </motion.p>
+          </AnimatePresence>
         </div>
       </div>
 

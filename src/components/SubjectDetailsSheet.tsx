@@ -4,6 +4,7 @@ import type { Subject } from '../types';
 import { useAttendance } from '../context/AttendanceContext';
 import { useToast } from '../context/ToastContext';
 import { CircularProgress } from './ui/CircularProgress';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface SubjectDetailsSheetProps {
   subject: Subject | null;
@@ -83,9 +84,20 @@ export const SubjectDetailsSheet: React.FC<SubjectDetailsSheetProps> = ({ subjec
               </span>
             </div>
             
-            <p className="font-body-md text-on-surface mb-6 leading-relaxed">
-              {stats.bunkMessage}
-            </p>
+            <div className="min-h-[44px] relative overflow-hidden flex items-center mb-6">
+              <AnimatePresence mode="wait">
+                <motion.p
+                  key={stats.bunkMessage}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.15 }}
+                  className="font-body-md text-on-surface leading-relaxed"
+                >
+                  {stats.bunkMessage}
+                </motion.p>
+              </AnimatePresence>
+            </div>
               
             <div className="grid grid-cols-3 gap-2">
               <div className="bg-surface-container-highest p-3 border border-outline-variant/30 flex flex-col items-center">
