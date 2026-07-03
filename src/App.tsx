@@ -49,7 +49,10 @@ function App() {
   }, [needRefresh, updateServiceWorker, showToast]);
 
   useEffect(() => {
-    const handleOnline = () => setIsOnline(true);
+    const handleOnline = () => {
+      setIsOnline(true);
+      showToast("Back online", { type: 'success' });
+    };
     const handleOffline = () => setIsOnline(false);
 
     window.addEventListener('online', handleOnline);
@@ -59,7 +62,7 @@ function App() {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
-  }, []);
+  }, [showToast]);
 
   useEffect(() => {
     if (subjects.length > 0 && !selectedSubjectId) {
@@ -140,9 +143,9 @@ function App() {
       
       {/* Offline Indicator Banner */}
       {!isOnline && (
-        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[99] bg-[#d97706]/20 border border-[#d97706]/40 text-[#d97706] font-label-caps text-[10px] tracking-widest px-4 py-2 flex items-center gap-2 rounded-token-full shadow-elevation-2 animate-bounce">
-          <span className="material-symbols-outlined text-[14px]">wifi_off</span>
-          SYS_OFFLINE // LOCAL_STORAGE_ACTIVE
+        <div className="fixed top-[calc(4.5rem+env(safe-area-inset-top))] left-4 right-4 md:left-1/2 md:right-auto md:-translate-x-1/2 z-[99] bg-[#d97706]/95 border border-[#d97706]/40 text-black font-body-sm px-4 py-2 flex items-center gap-2 rounded-token-sm shadow-elevation-2 transition-all duration-300">
+          <span className="material-symbols-outlined text-[16px]">wifi_off</span>
+          You're offline. Your data is saved locally and will sync when you're back online.
         </div>
       )}
       
