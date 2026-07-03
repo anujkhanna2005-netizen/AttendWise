@@ -160,8 +160,12 @@ function App() {
                     </div>
                     <div className="text-right">
                       <span className="font-headline-lg-mobile text-on-surface">{stats.percentage.toFixed(1)}<span className="text-secondary">%</span></span>
-                      <p className={`font-label-caps text-[10px] ${isSafe ? 'text-tertiary' : 'text-error'}`}>
-                        {isSafe ? '+SYSTEM STABLE' : '-CRITICAL MARGIN'}
+                      {/* WCAG 1.4.1: icon + label, not color alone */}
+                      <p className={`font-label-caps text-[10px] flex items-center justify-end gap-1 mt-1 ${isSafe ? 'text-tertiary' : 'text-error'}`}>
+                        <span className="material-symbols-outlined text-[12px]" aria-hidden="true">
+                          {isSafe ? 'check_circle' : 'cancel'}
+                        </span>
+                        {isSafe ? 'STABLE' : 'CRITICAL'}
                       </p>
                     </div>
                   </div>

@@ -66,10 +66,15 @@ export const DashboardHeader: React.FC = () => {
             </div>
             <div className="text-right">
               <span className="font-headline-lg-mobile text-on-surface">{overallPercentage.toFixed(1)}<span className="text-secondary">%</span></span>
-              <p className={`font-label-caps text-[10px] ${targetReached ? 'text-tertiary' : 'text-error'}`}>
-                {targetReached ? '+SYSTEM STABLE' : '-CRITICAL MARGIN'}
+              {/* WCAG 1.4.1: status chip with icon + label, not color alone */}
+              <p className={`font-label-caps text-[10px] flex items-center justify-end gap-1 mt-1 ${targetReached ? 'text-tertiary' : 'text-error'}`}>
+                <span className="material-symbols-outlined text-[12px]" aria-hidden="true">
+                  {targetReached ? 'check_circle' : 'cancel'}
+                </span>
+                {targetReached ? 'STABLE' : 'CRITICAL'}
               </p>
             </div>
+
           </div>
           {/* Custom Bar Chart UI */}
           <div className="h-64 flex items-end justify-between gap-1 md:gap-4 relative px-4">
