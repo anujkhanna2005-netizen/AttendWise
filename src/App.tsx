@@ -48,6 +48,15 @@ function App() {
   const stats = activeSubject ? getSubjectStats(activeSubject) : null;
   const isSafe = stats ? stats.percentage >= 75 : true;
 
+  // Monitor setup completion automatically
+  useEffect(() => {
+    if (subjects.length > 0) {
+      localStorage.setItem('attendwise_setup_completed', 'true');
+    }
+  }, [subjects]);
+
+  const hasCompletedSetup = localStorage.getItem('attendwise_setup_completed') === 'true';
+
   return (
     <div className="flex min-h-screen">
       
@@ -115,8 +124,29 @@ function App() {
 
         <div className="px-margin-sm md:px-margin-lg pt-8">
           {subjects.length === 0 ? (
-            <SetupWizard onAddFirstSubject={() => setIsFormSheetOpen(true)} />
+            hasCompletedSetup ? (
+              /* Re-designed Empty State (distinct from setup wizard) */
+              <div className="flex flex-col items-center justify-center min-h-[50vh] text-center p-6 mt-8 glass-card border border-outline-variant/30 rounded-token-md shadow-elevation-1">
+                <div className="w-16 h-16 rounded-token-md bg-surface-variant flex items-center justify-center mb-6 text-outline">
+                  <span className="material-symbols-outlined text-[32px]">folder_open</span>
+                </div>
+                <h3 className="font-headline-lg-mobile text-xl font-bold mb-2 text-on-surface">No Subjects Registered</h3>
+                <p className="font-body-sm text-outline mb-6 max-w-xs">
+                  Your module directory is empty. Add a new subject to begin monitoring attendance ratios.
+                </p>
+                <button 
+                  onClick={() => setIsFormSheetOpen(true)}
+                  className="px-6 py-3 bg-primary text-on-primary font-label-caps text-[10px] tracking-widest flex items-center gap-2 hover:bg-primary/95 transition-all shadow-glow-primary active:scale-[0.96] rounded-token-sm"
+                >
+                  <span className="material-symbols-outlined text-[16px]">add</span>
+                  REGISTER MODULE
+                </button>
+              </div>
+            ) : (
+              <SetupWizard onAddFirstSubject={() => setIsFormSheetOpen(true)} />
+            )
           ) : activeSubject && stats ? (
+
             <>
               {/* Dashboard Header Content exactly as in code.html */}
               <div className="mb-gutter flex flex-col md:flex-row md:items-end justify-between gap-4 border-l-2 border-secondary pl-4 py-2 mt-4">
