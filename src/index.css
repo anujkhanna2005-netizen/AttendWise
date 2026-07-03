@@ -311,12 +311,20 @@
 
   /* BottomSheet slide-up animation (uses token vars) */
   .bottom-sheet-slide {
-    animation: sheet-slide-up var(--duration-sheet) var(--easing-spring);
+    animation: sheet-slide-up var(--duration-sheet) var(--easing-spring) forwards;
+  }
+  .bottom-sheet-slide-down {
+    animation: sheet-slide-down var(--duration-sheet) var(--easing-spring) forwards;
   }
   @keyframes sheet-slide-up {
     from { transform: translateY(100%); }
     to   { transform: translateY(0); }
   }
+  @keyframes sheet-slide-down {
+    from { transform: translateY(0); }
+    to   { transform: translateY(100%); }
+  }
+
 
   /* ── Elevation utility classes ────────────── */
   .elevation-0 { box-shadow: var(--elevation-0); }
@@ -352,7 +360,8 @@
     scroll-behavior: auto !important;
   }
 
-  .bottom-sheet-slide {
+  .bottom-sheet-slide,
+  .bottom-sheet-slide-down {
     animation: none !important;
     transform: none !important;
   }
