@@ -1,8 +1,10 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
 import { useAttendance } from './context/AttendanceContext';
+import { useToast } from './context/ToastContext';
 import { SetupWizard } from './components/SetupWizard';
 import { SubjectCard } from './components/SubjectCard';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useRegisterSW } from 'virtual:pwa-register/react';
 import type { Subject } from './types';
 
 // Code-split bottom sheets since they aren't needed on initial paint
@@ -13,12 +15,31 @@ const SubjectOptionsSheet = lazy(() => import('./components/SubjectOptionsSheet'
 
 function App() {
   const { subjects, getSubjectStats, markAttendance } = useAttendance();
+  const { showToast } = useToast();
   const [isFormSheetOpen, setIsFormSheetOpen] = useState(false);
   const [subjectToEdit, setSubjectToEdit] = useState<Subject | null>(null);
   const [selectedSubjectId, setSelectedSubjectId] = useState<string | null>(null);
   const [optionsSubject, setOptionsSubject] = useState<Subject | null>(null);
   const [epochTime, setEpochTime] = useState(Math.floor(Date.now() / 1000));
   const [isOnline, setIsOnline] = useState(typeof navigator !== 'undefined' ? navigator.onLine : true);
+
+  // Prompt user to update when service worker detects new version available
+  const {
+    needRefresh: [needRefresh],
+    updateServiceWorker,
+  } = useRegisterSW();
+
+  useEffect(() => {
+    if (needRefresh) {
+      showToast("New version of AttendWise is available", {
+        type: 'info',
+        actionLabel: 'Refresh',
+        onAction: () => {
+          updateServiceWorker(true);
+        }
+      });
+    }
+  }, [needRefresh, updateServiceWorker, showToast]);
 
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
