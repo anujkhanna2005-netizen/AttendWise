@@ -1,19 +1,23 @@
-import React, { createContext, useContext, useEffect, useState, useMemo } from 'react';
+import React, { createContext, useContext, useEffect, useState, useMemo, useCallback } from 'react';
 import type { Subject, SubjectStats, AttendanceTrend, AttendanceStatus } from '../types';
 
-interface AttendanceContextType {
+interface AttendanceDataContextType {
   subjects: Subject[];
+  getSubjectStats: (subject: Subject) => SubjectStats;
+  overallPercentage: number;
+}
+
+interface AttendanceActionsContextType {
   addSubject: (name: string, color: Subject['color'], initialPresent: number, initialAbsent: number) => void;
   updateSubject: (id: string, name: string, color: Subject['color'], initialPresent: number, initialAbsent: number) => void;
   deleteSubject: (id: string) => void;
   restoreSubject: (subject: Subject) => void;
   markAttendance: (id: string, type: 'present' | 'absent') => void;
   undoLastEntry: (id: string) => void;
-  getSubjectStats: (subject: Subject) => SubjectStats;
-  overallPercentage: number;
 }
 
-const AttendanceContext = createContext<AttendanceContextType | undefined>(undefined);
+const AttendanceDataContext = createContext<AttendanceDataContextType | undefined>(undefined);
+const AttendanceActionsContext = createContext<AttendanceActionsContextType | undefined>(undefined);
 
 export const AttendanceProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [subjects, setSubjects] = useState<Subject[]>(() => {
@@ -21,11 +25,15 @@ export const AttendanceProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     return saved ? JSON.parse(saved) : [];
   });
 
+  // Debounced LocalStorage Write — Task 3
   useEffect(() => {
-    localStorage.setItem('attendwise_data', JSON.stringify(subjects));
+    const timer = setTimeout(() => {
+      localStorage.setItem('attendwise_data', JSON.stringify(subjects));
+    }, 300); // 300ms debounce
+    return () => clearTimeout(timer);
   }, [subjects]);
 
-  const addSubject = (name: string, color: Subject['color'], initialPresent: number, initialAbsent: number) => {
+  const addSubject = useCallback((name: string, color: Subject['color'], initialPresent: number, initialAbsent: number) => {
     const newSubject: Subject = {
       id: crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2, 15),
       name,
@@ -35,21 +43,21 @@ export const AttendanceProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       history: []
     };
     setSubjects(prev => [...prev, newSubject]);
-  };
+  }, []);
 
-  const updateSubject = (id: string, name: string, color: Subject['color'], initialPresent: number, initialAbsent: number) => {
+  const updateSubject = useCallback((id: string, name: string, color: Subject['color'], initialPresent: number, initialAbsent: number) => {
     setSubjects(prev => prev.map(s => s.id === id ? { ...s, name, color, initialPresent, initialAbsent } : s));
-  };
+  }, []);
 
-  const deleteSubject = (id: string) => {
+  const deleteSubject = useCallback((id: string) => {
     setSubjects(prev => prev.filter(s => s.id !== id));
-  };
+  }, []);
 
-  const restoreSubject = (subject: Subject) => {
+  const restoreSubject = useCallback((subject: Subject) => {
     setSubjects(prev => [...prev, subject]);
-  };
+  }, []);
 
-  const markAttendance = (id: string, type: 'present' | 'absent') => {
+  const markAttendance = useCallback((id: string, type: 'present' | 'absent') => {
     setSubjects(prev => prev.map(s => {
       if (s.id !== id) return s;
       return {
@@ -57,9 +65,9 @@ export const AttendanceProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         history: [...s.history, { type, timestamp: Date.now() }]
       };
     }));
-  };
+  }, []);
 
-  const undoLastEntry = (id: string) => {
+  const undoLastEntry = useCallback((id: string) => {
     setSubjects(prev => prev.map(s => {
       if (s.id !== id || s.history.length === 0) return s;
       return {
@@ -67,9 +75,9 @@ export const AttendanceProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         history: s.history.slice(0, -1)
       };
     }));
-  };
+  }, []);
 
-  const getSubjectStats = (subject: Subject): SubjectStats => {
+  const getSubjectStats = useCallback((subject: Subject): SubjectStats => {
     const presents = subject.history.filter(h => h.type === 'present').length;
     const absents = subject.history.filter(h => h.type === 'absent').length;
     
@@ -106,7 +114,7 @@ export const AttendanceProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }
     
     if (totalClasses === 0) {
-        bunkMessage = "No classes recorded yet";
+      bunkMessage = "No classes recorded yet";
     }
 
     return {
@@ -118,7 +126,7 @@ export const AttendanceProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       trend,
       bunkMessage
     };
-  };
+  }, []);
 
   const overallPercentage = useMemo(() => {
     if (subjects.length === 0) return 0;
@@ -132,27 +140,50 @@ export const AttendanceProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     });
 
     return totalClasses === 0 ? 100 : Math.round((totalPresent / totalClasses) * 100);
-  }, [subjects]);
+  }, [subjects, getSubjectStats]);
+
+  const dataValue = useMemo(() => ({
+    subjects,
+    getSubjectStats,
+    overallPercentage
+  }), [subjects, getSubjectStats, overallPercentage]);
+
+  const actionsValue = useMemo(() => ({
+    addSubject,
+    updateSubject,
+    deleteSubject,
+    restoreSubject,
+    markAttendance,
+    undoLastEntry
+  }), [addSubject, updateSubject, deleteSubject, restoreSubject, markAttendance, undoLastEntry]);
 
   return (
-    <AttendanceContext.Provider value={{
-      subjects,
-      addSubject,
-      updateSubject,
-      deleteSubject,
-      restoreSubject,
-      markAttendance,
-      undoLastEntry,
-      getSubjectStats,
-      overallPercentage
-    }}>
-      {children}
-    </AttendanceContext.Provider>
+    <AttendanceDataContext.Provider value={dataValue}>
+      <AttendanceActionsContext.Provider value={actionsValue}>
+        {children}
+      </AttendanceActionsContext.Provider>
+    </AttendanceDataContext.Provider>
   );
 };
 
-export const useAttendance = () => {
-  const context = useContext(AttendanceContext);
-  if (!context) throw new Error('useAttendance must be used within AttendanceProvider');
+export const useAttendanceData = () => {
+  const context = useContext(AttendanceDataContext);
+  if (!context) throw new Error('useAttendanceData must be used within AttendanceProvider');
   return context;
+};
+
+export const useAttendanceActions = () => {
+  const context = useContext(AttendanceActionsContext);
+  if (!context) throw new Error('useAttendanceActions must be used within AttendanceProvider');
+  return context;
+};
+
+// Aggregated hook for backward compatibility across all components
+export const useAttendance = () => {
+  const data = useAttendanceData();
+  const actions = useAttendanceActions();
+  return {
+    ...data,
+    ...actions
+  };
 };

@@ -8,7 +8,6 @@ import type { Subject } from './types';
 // Code-split bottom sheets since they aren't needed on initial paint
 const SubjectFormSheet = lazy(() => import('./components/SubjectFormSheet').then(m => ({ default: m.SubjectFormSheet })));
 const SubjectOptionsSheet = lazy(() => import('./components/SubjectOptionsSheet').then(m => ({ default: m.SubjectOptionsSheet })));
-const SubjectDetailsSheet = lazy(() => import('./components/SubjectDetailsSheet').then(m => ({ default: m.SubjectDetailsSheet })));
 
 
 
