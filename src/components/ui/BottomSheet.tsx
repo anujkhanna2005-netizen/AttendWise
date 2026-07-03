@@ -129,8 +129,8 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({ isOpen, onClose, title
         aria-modal="true"
         aria-labelledby="bottom-sheet-title"
         tabIndex={-1}
-        className={`fixed bottom-0 left-0 right-0 max-w-3xl mx-auto glass-card border-t border-outline-variant/50 z-50 p-6 max-h-[90vh] overflow-y-auto transform transition-transform bottom-sheet-radius focus:outline-none ${sheetClass}`}
-        style={{ boxShadow: 'var(--glow-sheet)' }}
+        className={`fixed bottom-0 left-0 right-0 max-w-3xl mx-auto glass-card border-t border-outline-variant/50 z-50 p-6 overflow-y-auto transform transition-transform bottom-sheet-radius focus:outline-none ${sheetClass}`}
+        style={{ boxShadow: 'var(--glow-sheet)', maxHeight: 'calc(100dvh - env(safe-area-inset-bottom) - 2rem)' }}
         onKeyDown={handleKeyDown}
       >
         {/* Increased drag handle bar size for better visibility/affordance: w-16 h-1.5 */}
