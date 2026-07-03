@@ -247,6 +247,20 @@
     color: var(--color-text-primary);
     background-color: var(--color-background);
   }
+
+  /* Mobile Safe Area notch & home indicator support */
+  header {
+    padding-top: env(safe-area-inset-top);
+  }
+  
+  main {
+    padding-top: calc(4rem + env(safe-area-inset-top)) !important;
+  }
+
+  nav.fixed.bottom-0 {
+    padding-bottom: env(safe-area-inset-bottom);
+    height: calc(4rem + env(safe-area-inset-bottom)) !important;
+  }
 }
 
 /* ============================================================
