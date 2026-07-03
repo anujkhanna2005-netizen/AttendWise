@@ -32,8 +32,9 @@ export const SubjectDetailsSheet: React.FC<SubjectDetailsSheetProps> = ({ subjec
   const stats = getSubjectStats(subject);
   const canUndo = subject.history.length > 0;
   
-  const isSafe = stats.percentage >= 75;
-  const statusColor = isSafe ? '#059669' : '#dc2626'; // WCAG AA compliant
+  const hasNoData = stats.percentage === -1;
+  const isSafe = stats.percentage >= 75 || hasNoData;
+  const statusColor = hasNoData ? 'var(--color-outline-variant)' : (isSafe ? '#059669' : '#dc2626'); // WCAG AA compliant
 
   const handleDelete = () => {
     triggerHaptic([30, 50, 30, 50]);
@@ -52,7 +53,7 @@ export const SubjectDetailsSheet: React.FC<SubjectDetailsSheetProps> = ({ subjec
   };
 
   return (
-    <BottomSheet isOpen={!!subject} onClose={() => { setIsConfirmingDelete(false); onClose(); }} title={`MOD // ${subject.name}`}>
+    <BottomSheet isOpen={!!subject} onClose={() => { setIsConfirmingDelete(false); onClose(); }} title={`${subject.name}`}>
       
       {!isConfirmingDelete ? (
         <>
@@ -67,7 +68,7 @@ export const SubjectDetailsSheet: React.FC<SubjectDetailsSheetProps> = ({ subjec
             
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
               <div className="font-headline-xl text-4xl font-bold text-on-surface">
-                {stats.percentage.toFixed(1)}<span className="text-secondary text-lg">%</span>
+                {hasNoData ? "—" : `${stats.percentage.toFixed(1)}%`}
               </div>
             </div>
           </div>

@@ -85,7 +85,7 @@ export const AttendanceProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     const absentCount = subject.initialAbsent + absents;
     const totalClasses = presentCount + absentCount;
     
-    const percentage = totalClasses === 0 ? 100 : Math.round((presentCount / totalClasses) * 100);
+    const percentage = totalClasses === 0 ? -1 : Math.round((presentCount / totalClasses) * 100);
     
     let status: AttendanceStatus = 'Safe';
     if (percentage < 70) status = 'Danger';
@@ -139,7 +139,7 @@ export const AttendanceProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       totalClasses += stats.totalClasses;
     });
 
-    return totalClasses === 0 ? 100 : Math.round((totalPresent / totalClasses) * 100);
+    return totalClasses === 0 ? -1 : Math.round((totalPresent / totalClasses) * 100);
   }, [subjects, getSubjectStats]);
 
   const dataValue = useMemo(() => ({

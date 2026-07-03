@@ -23,7 +23,18 @@ const triggerHaptic = (pattern: number | number[]) => {
 };
 
 // WCAG 1.4.1: status must not rely on color alone — include icon + label
-const StatusBadge: React.FC<{ isSafe: boolean; isWarning: boolean }> = ({ isSafe, isWarning }) => {
+const StatusBadge: React.FC<{ isSafe: boolean; isWarning: boolean; hasNoData?: boolean }> = ({ isSafe, isWarning, hasNoData }) => {
+  if (hasNoData) {
+    return (
+      <span
+        className="inline-flex items-center gap-1 font-label-caps text-[10px] tracking-widest px-2 py-0.5 border border-outline/30 bg-outline/10 rounded-token-xs text-outline"
+        aria-label="Status: No data yet"
+      >
+        <span className="material-symbols-outlined text-[12px]" aria-hidden="true">info</span>
+        NO DATA
+      </span>
+    );
+  }
   if (isSafe) {
     return (
       <span
@@ -96,10 +107,11 @@ export const SubjectCard: React.FC<SubjectCardProps> = ({ subject, onClick, onOp
   const { showToast } = useToast();
   const stats = getSubjectStats(subject);
 
-  const isSafe = stats.percentage >= 75;
-  const isWarning = stats.percentage >= 70 && !isSafe;
+  const hasNoData = stats.percentage === -1;
+  const isSafe = stats.percentage >= 75 || hasNoData;
+  const isWarning = stats.percentage >= 70 && !isSafe && !hasNoData;
   
-  const statusColor = isSafe ? '#059669' : (isWarning ? '#d97706' : '#dc2626');
+  const statusColor = hasNoData ? 'var(--color-outline-variant)' : (isSafe ? '#059669' : (isWarning ? '#d97706' : '#dc2626'));
   
   // Mapping subject colors to actual token variables/hex
   const colorMap = {
@@ -159,7 +171,7 @@ export const SubjectCard: React.FC<SubjectCardProps> = ({ subject, onClick, onOp
               
               {/* Badges row */}
               <div className="flex flex-wrap gap-2">
-                <StatusBadge isSafe={isSafe} isWarning={isWarning} />
+                <StatusBadge isSafe={isSafe} isWarning={isWarning} hasNoData={hasNoData} />
                 <TrendChip trend={stats.trend} />
               </div>
             </div>

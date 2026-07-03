@@ -18,7 +18,8 @@ export const CircularProgress: React.FC<CircularProgressProps> = ({
 }) => {
   const radius = (size - strokeWidth) / 2;
   const circumference = radius * 2 * Math.PI;
-  const offset = circumference - (percentage / 100) * circumference;
+  const displayPercentage = percentage === -1 ? 0 : percentage;
+  const offset = circumference - (displayPercentage / 100) * circumference;
 
   // Respect prefers-reduced-motion
   const prefersReducedMotion =

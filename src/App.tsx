@@ -1,4 +1,4 @@
-import { useState, useEffect, lazy, Suspense } from 'react';
+import { useState, useEffect, lazy, Suspense, useMemo } from 'react';
 import { useAttendance } from './context/AttendanceContext';
 import { useToast } from './context/ToastContext';
 import { SetupWizard } from './components/SetupWizard';
@@ -20,7 +20,6 @@ function App() {
   const [subjectToEdit, setSubjectToEdit] = useState<Subject | null>(null);
   const [selectedSubjectId, setSelectedSubjectId] = useState<string | null>(null);
   const [optionsSubject, setOptionsSubject] = useState<Subject | null>(null);
-  const [epochTime, setEpochTime] = useState(Math.floor(Date.now() / 1000));
   const [isOnline, setIsOnline] = useState(typeof navigator !== 'undefined' ? navigator.onLine : true);
 
   // Prompt user to update when service worker detects new version available
@@ -64,12 +63,7 @@ function App() {
     }
   }, [subjects, selectedSubjectId]);
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setEpochTime(Math.floor(Date.now() / 1000));
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
+
 
   // Mouse parallax for technical grid
   useEffect(() => {
@@ -289,7 +283,9 @@ function App() {
                       <p className="font-body-sm text-outline text-[11px]">Ratio computed over your last 8 sessions</p>
                     </div>
                     <div className="text-right">
-                      <span className="font-headline-lg-mobile text-on-surface">{stats.percentage.toFixed(1)}<span className="text-secondary">%</span></span>
+                      <span className="font-headline-lg-mobile text-on-surface">
+                        {stats.percentage === -1 ? "—" : `${stats.percentage.toFixed(1)}%`}
+                      </span>
                       {/* WCAG 1.4.1: icon + label, not color alone */}
                       <p className={`font-label-caps text-[10px] flex items-center justify-end gap-1 mt-1 ${isSafe ? 'text-tertiary' : 'text-error'}`}>
                         <span className="material-symbols-outlined text-[12px]" aria-hidden="true">
@@ -310,7 +306,7 @@ function App() {
                       <div className="border-t border-on-surface border-2"></div>
                     </div>
                     
-                    {runningPercentageHistory.map((point, idx) => (
+                    {runningPercentageHistory.map((point: { label: string; percentage: number }, idx: number) => (
                       <div key={idx} className="flex-1 flex flex-col items-center gap-2 h-full justify-end group z-10">
                         {/* Tooltip on hover */}
                         <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-surface-container-high border border-outline-variant px-1.5 py-0.5 text-[9px] rounded-token-sm text-on-surface absolute mb-20 pointer-events-none transform -translate-y-8">
