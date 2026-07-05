@@ -97,7 +97,7 @@ const ToastItem: React.FC<{ toast: Toast; onDismiss: () => void }> = ({ toast, o
         }}>
           {toast.type === 'success' ? 'check_circle' : toast.type === 'error' ? 'error' : toast.type === 'warning' ? 'warning' : 'info'}
         </span>
-        <p className="font-body-sm text-[11px] tracking-wide text-on-surface line-clamp-2">
+        <p className="font-body-sm text-xs tracking-wide text-on-surface line-clamp-2">
           {toast.message}
         </p>
       </div>

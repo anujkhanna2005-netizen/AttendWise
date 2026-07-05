@@ -3,10 +3,10 @@ import { useAttendance } from './context/AttendanceContext';
 import { useToast } from './context/ToastContext';
 import { SetupWizard } from './components/SetupWizard';
 import { SubjectCard } from './components/SubjectCard';
-import { CalendarView } from './components/CalendarView';
+const CalendarView = lazy(() => import('./components/CalendarView').then(m => ({ default: m.CalendarView })));
+const BatchAttendanceSheet = lazy(() => import('./components/BatchAttendanceSheet').then(m => ({ default: m.BatchAttendanceSheet })));
+const AuthSheet = lazy(() => import('./components/AuthSheet').then(m => ({ default: m.AuthSheet })));
 import { NotificationSettings } from './components/NotificationSettings';
-import { BatchAttendanceSheet } from './components/BatchAttendanceSheet';
-import { AuthSheet } from './components/AuthSheet';
 import { useAuth } from './context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRegisterSW } from 'virtual:pwa-register/react';
@@ -738,7 +738,7 @@ function App() {
                                 <div className="pt-3 border-t border-outline-variant/30 flex items-center justify-between">
                                   <div>
                                     <p className="text-xs text-outline font-bold uppercase tracking-wide">Semester Forecast</p>
-                                    <p className="text-[11px] text-on-surface-variant mt-0.5">
+                                    <p className="text-xs text-on-surface-variant mt-0.5">
                                       Attend remaining <span className="font-bold text-secondary font-mono">{semesterBunkCalc.remainingClasses}</span> classes
                                     </p>
                                   </div>
@@ -746,7 +746,7 @@ function App() {
                                     <span className="text-lg font-bold text-primary font-mono">
                                       {Math.round(((stats.presentCount + semesterBunkCalc.remainingClasses) / semesterBunkCalc.expectedTotalClasses) * 100)}%
                                     </span>
-                                    <span className="text-[9px] text-outline block">Projected</span>
+                                    <span className="text-xs text-outline block">Projected</span>
                                   </div>
                                 </div>
                               )}
@@ -1182,21 +1182,21 @@ function App() {
                 <div className="w-8 h-8 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center text-primary font-bold shrink-0 font-mono text-xs">1</div>
                 <div>
                   <p className="font-semibold text-xs text-on-surface">Tap cards for details</p>
-                  <p className="text-[11px] text-outline mt-0.5">Tap any subject card to view calendar history and forecasts.</p>
+                  <p className="text-xs text-outline mt-0.5">Tap any subject card to view calendar history and forecasts.</p>
                 </div>
               </div>
               <div className="flex gap-3">
                 <div className="w-8 h-8 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center text-primary font-bold shrink-0 font-mono text-xs">2</div>
                 <div>
                   <p className="font-semibold text-xs text-on-surface">Mark with one tap</p>
-                  <p className="text-[11px] text-outline mt-0.5">Use the Present / Absent buttons directly on cards to log attendance instantly.</p>
+                  <p className="text-xs text-outline mt-0.5">Use the Present / Absent buttons directly on cards to log attendance instantly.</p>
                 </div>
               </div>
               <div className="flex gap-3">
                 <div className="w-8 h-8 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center text-primary font-bold shrink-0 font-mono text-xs">3</div>
                 <div>
                   <p className="font-semibold text-xs text-on-surface">Pull to sync data</p>
-                  <p className="text-[11px] text-outline mt-0.5">Pull down on the dashboard to trigger a live database sync.</p>
+                  <p className="text-xs text-outline mt-0.5">Pull down on the dashboard to trigger a live database sync.</p>
                 </div>
               </div>
             </div>

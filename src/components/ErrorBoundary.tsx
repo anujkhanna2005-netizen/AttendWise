@@ -123,7 +123,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
           >
             <summary
               style={{
-                fontSize: '0.625rem',
+                fontSize: '0.75rem',
                 letterSpacing: '0.1em',
                 color: '#958da1',
                 textTransform: 'uppercase',
@@ -134,7 +134,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
             <pre
               style={{
                 marginTop: '0.5rem',
-                fontSize: '0.625rem',
+                fontSize: '0.75rem',
                 color: '#dc2626',
                 whiteSpace: 'pre-wrap',
                 wordBreak: 'break-word',
@@ -154,7 +154,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
               border: '1px solid rgba(124, 58, 237, 0.5)',
               color: '#d2bbff',
               fontFamily: '"JetBrains Mono", monospace',
-              fontSize: '0.625rem',
+              fontSize: '0.75rem',
               letterSpacing: '0.15em',
               textTransform: 'uppercase',
               padding: '0.75rem 1.5rem',
@@ -179,7 +179,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
               border: '1px solid rgba(255,255,255,0.1)',
               color: '#958da1',
               fontFamily: '"JetBrains Mono", monospace',
-              fontSize: '0.625rem',
+              fontSize: '0.75rem',
               letterSpacing: '0.15em',
               textTransform: 'uppercase',
               padding: '0.75rem 1.5rem',
