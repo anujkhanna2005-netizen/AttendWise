@@ -13,9 +13,9 @@ export const Card: React.FC<CardProps> = ({
   className = '',
   ...props
 }) => {
-  // Base glassmorphism style + custom border and radius tokens
+  // Base solid modern card style + custom border and radius tokens
   const baseClasses = `
-    glass-card border border-outline-variant/30 rounded-token-md p-6
+    modern-card p-6
     transition-all duration-base ease-standard relative
   `.trim().replace(/\s+/g, ' ');
 

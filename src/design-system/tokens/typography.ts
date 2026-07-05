@@ -18,84 +18,62 @@ export const fontFamily = {
   mono:     '"JetBrains Mono", "Cascadia Code", "Fira Code", "Courier New", monospace',
 } as const;
 
-/**
- * Type scale tiers.
- * clamp(min, preferred, max) gives fluid sizing between breakpoints.
- *
- * Preferred value uses vw units: e.g. 2.5vw means it scales with viewport width.
- * At 375px viewport: 2.5vw ≈ 9.4px (but clamped to min)
- * At 1440px viewport: 2.5vw ≈ 36px (but clamped to max)
- */
 export const typeScale = {
-  /** Large display — hero numbers, epoch time */
-  displayLg: {
-    size:     'clamp(2.5rem, 5vw, 4rem)',    // 40px → 64px
+  hero: {
+    size:     '2.5rem',
+    weight:   '800',
+    line:     '1.1',
+    tracking: '-0.02em',
+    family:   'body',
+  },
+  h1: {
+    size:     '1.75rem',
     weight:   '700',
-    line:     '1.15',
-    tracking: '-0.03em',
-    family:   'display',
-  },
-  /** Standard headline — section titles */
-  headlineLg: {
-    size:     'clamp(1.5rem, 3vw, 2rem)',    // 24px → 32px
-    weight:   '600',
-    line:     '1.25',
-    tracking: '-0.01em',
-    family:   'display',
-  },
-  /** Sub-headline — card headers, sheet titles */
-  headlineMd: {
-    size:     'clamp(1.125rem, 2vw, 1.5rem)', // 18px → 24px
-    weight:   '600',
-    line:     '1.333',
-    tracking: '-0.005em',
-    family:   'display',
-  },
-  /** Title — bento grid panel headers */
-  titleMd: {
-    size:     '1rem',      // 16px — fixed, no fluid scaling needed
-    weight:   '600',
-    line:     '1.5',
-    tracking: '0',
-    family:   'display',
-  },
-  /** Body text — descriptions, messages */
-  bodyLg: {
-    size:     '1rem',      // 16px
-    weight:   '400',
-    line:     '1.5',
-    tracking: '0',
-    family:   'body',
-  },
-  bodySm: {
-    size:     '0.875rem',  // 14px
-    weight:   '400',
-    line:     '1.428',
-    tracking: '0',
-    family:   'body',
-  },
-  /** Monospace label — the dominant type in this terminal-themed UI */
-  labelCaps: {
-    size:     '0.75rem',   // 12px
-    weight:   '500',
-    line:     '1.333',
-    tracking: '0.1em',
-    family:   'mono',
-  },
-  labelSm: {
-    size:     '0.625rem',  // 10px
-    weight:   '500',
     line:     '1.2',
-    tracking: '0.1em',
-    family:   'mono',
+    tracking: '-0.01em',
+    family:   'body',
   },
-  /** Caption — timestamps, metadata */
-  caption: {
-    size:     '0.75rem',   // 12px
-    weight:   '400',
-    line:     '1.333',
+  h2: {
+    size:     '1.375rem',
+    weight:   '600',
+    line:     '1.3',
     tracking: '0',
     family:   'body',
+  },
+  h3: {
+    size:     '1.125rem',
+    weight:   '600',
+    line:     '1.4',
+    tracking: '0',
+    family:   'body',
+  },
+  body: {
+    size:     '0.938rem',
+    weight:   '400',
+    line:     '1.5',
+    tracking: '0',
+    family:   'body',
+  },
+  sm: {
+    size:     '0.813rem',
+    weight:   '400',
+    line:     '1.5',
+    tracking: '0',
+    family:   'body',
+  },
+  xs: {
+    size:     '0.75rem',
+    weight:   '600',
+    line:     '1.4',
+    tracking: '0',
+    family:   'body',
+  },
+  data: {
+    size:     '0.75rem',
+    weight:   '500',
+    line:     '1.3',
+    tracking: '0',
+    family:   'mono',
   },
 } as const;
 

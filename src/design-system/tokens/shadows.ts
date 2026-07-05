@@ -38,13 +38,13 @@ export const elevation = {
  */
 export const glows = {
   /** Primary brand glow (indigo) — primary buttons, FAB, selected states */
-  primary:   '0 0 15px rgba(124, 58, 237, 0.5)',
-  /** Secondary glow (cyan) — live indicators, session stats card */
-  secondary: '0 0 15px rgba(76, 215, 246, 0.4)',
+  primary:   '0 0 15px rgba(129, 140, 248, 0.4)',
+  /** Secondary glow (teal) — live indicators, session stats card */
+  secondary: '0 0 15px rgba(45, 212, 191, 0.3)',
   /** Error/danger glow — delete confirmation, critical warnings */
-  error:     '0 0 15px rgba(220, 38, 38, 0.4)',
+  error:     '0 0 15px rgba(248, 113, 113, 0.35)',
   /** BottomSheet top shadow — upward projection */
-  sheet:     '0 -10px 40px rgba(124, 58, 237, 0.15)',
+  sheet:     '0 -10px 40px rgba(129, 140, 248, 0.1)',
   /** No glow */
   none:      'none',
 } as const;

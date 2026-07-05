@@ -6,11 +6,11 @@ interface Toast {
   message: string;
   actionLabel?: string;
   onAction?: () => void;
-  type?: 'info' | 'success' | 'error';
+  type?: 'info' | 'success' | 'error' | 'warning';
 }
 
 interface ToastContextType {
-  showToast: (message: string, options?: { actionLabel?: string; onAction?: () => void; type?: 'info' | 'success' | 'error' }) => void;
+  showToast: (message: string, options?: { actionLabel?: string; onAction?: () => void; type?: 'info' | 'success' | 'error' | 'warning' }) => void;
 }
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
@@ -18,7 +18,7 @@ const ToastContext = createContext<ToastContextType | undefined>(undefined);
 export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  const showToast = useCallback((message: string, options?: { actionLabel?: string; onAction?: () => void; type?: 'info' | 'success' | 'error' }) => {
+  const showToast = useCallback((message: string, options?: { actionLabel?: string; onAction?: () => void; type?: 'info' | 'success' | 'error' | 'warning' }) => {
     const id = Math.random().toString(36).substring(2, 9);
     const newToast: Toast = {
       id,
@@ -72,10 +72,11 @@ const ToastItem: React.FC<{ toast: Toast; onDismiss: () => void }> = ({ toast, o
     }
   };
 
-  const borderColors = {
+  const borderColors: Record<string, string> = {
     info: 'border-primary/40',
     success: 'border-[#059669]/40',
     error: 'border-red-500/40',
+    warning: 'border-[#d97706]/40',
   };
 
   return (
@@ -92,11 +93,11 @@ const ToastItem: React.FC<{ toast: Toast; onDismiss: () => void }> = ({ toast, o
     >
       <div className="flex items-center gap-2.5">
         <span className="material-symbols-outlined text-[18px] shrink-0" style={{
-          color: toast.type === 'success' ? '#059669' : toast.type === 'error' ? '#dc2626' : '#d2bbff'
+          color: toast.type === 'success' ? 'var(--color-success)' : toast.type === 'error' ? 'var(--color-danger)' : toast.type === 'warning' ? 'var(--color-warning)' : 'var(--color-primary-light)'
         }}>
-          {toast.type === 'success' ? 'check_circle' : toast.type === 'error' ? 'error' : 'info'}
+          {toast.type === 'success' ? 'check_circle' : toast.type === 'error' ? 'error' : toast.type === 'warning' ? 'warning' : 'info'}
         </span>
-        <p className="font-label-caps text-[11px] tracking-wider text-on-surface line-clamp-2">
+        <p className="font-body-sm text-[11px] tracking-wide text-on-surface line-clamp-2">
           {toast.message}
         </p>
       </div>
@@ -108,7 +109,7 @@ const ToastItem: React.FC<{ toast: Toast; onDismiss: () => void }> = ({ toast, o
             toast.onAction?.();
             onDismiss();
           }}
-          className="shrink-0 font-label-caps text-[10px] text-primary hover:text-primary-hover tracking-widest border border-primary/30 px-2.5 py-1.5 hover:bg-primary/5 active:scale-95 transition-all rounded-token-sm"
+          className="shrink-0 font-body-sm text-xs text-primary hover:text-primary-hover tracking-wide border border-primary/30 px-2.5 py-1.5 hover:bg-primary/5 active:scale-95 transition-all rounded-token-sm"
         >
           {toast.actionLabel}
         </button>

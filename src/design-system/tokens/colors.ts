@@ -11,98 +11,97 @@
  */
 
 // ─────────────────────────────────────────────
-// 13-step Neutral Scale (HSL 270° warm-purple)
+// 13-step Slate Neutral Scale (Tailwind Slate)
 // Maps to CSS: --neutral-{step}
 // ─────────────────────────────────────────────
 export const neutral = {
   0:   '#ffffff',
-  50:  '#f8f7fc',
-  100: '#f0eef8',
-  150: '#e8e5f3',
-  200: '#dddaef',
-  300: '#c4bedd',
-  400: '#a99ec9',
-  500: '#8e80b4',
-  600: '#72639e',
-  700: '#574c87',
-  800: '#3d3570',
-  900: '#241e56',
-  950: '#15121b',   // app background
+  50:  '#f8fafc',
+  100: '#f1f5f9',
+  150: '#e2e8f0',
+  200: '#cbd5e1',
+  300: '#94a3b8',
+  400: '#64748b',
+  500: '#475569',
+  600: '#334155',
+  700: '#1e293b',
+  800: '#0f172a',
+  900: '#020617',
+  950: '#0b0f19',   // app background container fallback
 } as const;
 
-// ─────────────────────────────────────────────
-// Brand / Primary palette
-// ─────────────────────────────────────────────
 export const brand = {
-  primary:         '#d2bbff',  // Tailwind: primary
-  primaryHover:    '#b89dff',
-  primaryActive:   '#9b7de0',
-  primaryContainer:'#7c3aed',  // Tailwind: primary-container
-  onPrimary:       '#3f008e',  // Tailwind: on-primary
-  onPrimaryContainer: '#ede0ff',
+  primary:         '#6366f1',  // Indigo-500
+  primaryHover:    '#4f46e5',  // Indigo-600
+  primaryActive:   '#4338ca',  // Indigo-700
+  primaryContainer:'#3730a3',  // Indigo-800
+  primaryLight:    '#a5b4fc',  // Indigo-300
+  onPrimary:       '#ffffff',  // White
+  onPrimaryContainer: '#e0e7ff',
 
-  secondary:       '#4cd7f6',  // Tailwind: secondary
-  secondaryContainer: '#03b5d3',
-  onSecondary:     '#003640',
+  secondary:       '#f59e0b',  // Amber-500
+  secondaryDim:    '#d97706',  // Amber-600
+  secondaryContainer: '#92400e', // Amber-800
+  onSecondary:     '#ffffff',
 
-  tertiary:        '#059669',  // WCAG AA (was #4edea3) — safe status
-  tertiaryContainer: '#007650',
-  onTertiary:      '#003824',
+  success:         '#10b981',  // Emerald-500
+  successContainer:'#065f46',
+  onSuccess:       '#ffffff',
 } as const;
 
 // ─────────────────────────────────────────────
-// Status colors (all WCAG 2.2 AA on white ≥4.5:1)
+// Status colors
 // ─────────────────────────────────────────────
 export const status = {
-  safe:            '#059669',  // 4.54:1 on white
-  safeSubtle:      'rgba(5, 150, 105, 0.1)',
-  safeBorder:      'rgba(5, 150, 105, 0.4)',
+  safe:            '#10b981',  // Emerald-500
+  safeSubtle:      'rgba(16, 185, 129, 0.1)',
+  safeBorder:      'rgba(16, 185, 129, 0.4)',
 
-  warning:         '#d97706',  // 4.52:1 on white
-  warningSubtle:   'rgba(217, 119, 6, 0.1)',
-  warningBorder:   'rgba(217, 119, 6, 0.4)',
+  warning:         '#f97316',  // Orange-500
+  warningSubtle:   'rgba(249, 115, 22, 0.1)',
+  warningBorder:   'rgba(249, 115, 22, 0.4)',
 
-  danger:          '#dc2626',  // 5.91:1 on white
-  dangerSubtle:    'rgba(220, 38, 38, 0.1)',
-  dangerBorder:    'rgba(220, 38, 38, 0.4)',
+  danger:          '#ef4444',  // Red-500
+  dangerSubtle:    'rgba(239, 68, 68, 0.1)',
+  dangerBorder:    'rgba(239, 68, 68, 0.4)',
 
-  error:           '#dc2626',
-  errorContainer:  '#93000a',
-  onError:         '#690005',
+  error:           '#ef4444',
+  errorContainer:  '#7f1d1d',
+  onError:         '#ffffff',
 } as const;
 
 // ─────────────────────────────────────────────
-// Surface / Background tokens (dark-first)
+// Surface / Background tokens (Slate-900 / Slate-800)
 // ─────────────────────────────────────────────
 export const surface = {
-  background:            '#15121b',
-  surface:               '#15121b',
-  surfaceDim:            '#15121b',
-  surfaceBright:         '#3c3742',
-  surfaceContainerLowest:'#100d16',
-  surfaceContainerLow:   '#1d1a24',
-  surfaceContainer:      '#221e28',
-  surfaceContainerHigh:  '#2c2833',
-  surfaceContainerHighest:'#37333e',
-  surfaceVariant:        '#37333e',
+  background:            '#0f172a',  // Slate-900
+  surface:               '#1e293b',  // Slate-800
+  surfaceDim:            '#0f172a',
+  surfaceBright:         '#334155',  // Slate-700
+  surfaceContainerLowest:'#020617',
+  surfaceContainerLow:   '#0f172a',
+  surfaceContainer:      '#1e293b',
+  surfaceContainerHigh:  '#334155',
+  surfaceContainerHighest:'#475569',
+  surfaceVariant:        '#334155',
 } as const;
 
 // ─────────────────────────────────────────────
 // Text / On-surface tokens
 // ─────────────────────────────────────────────
 export const text = {
-  primary:   '#e8dfee',  // on-surface
-  secondary: '#ccc3d8',  // on-surface-variant
-  tertiary:  '#958da1',  // outline
-  disabled:  '#4a4455',  // outline-variant
+  primary:   '#f1f5f9',  // Slate-100
+  secondary: '#94a3b8',  // Slate-400
+  tertiary:  '#64748b',  // Slate-500
+  disabled:  '#475569',  // Slate-600
 } as const;
 
 // ─────────────────────────────────────────────
 // Border tokens
 // ─────────────────────────────────────────────
 export const border = {
-  outline:        '#958da1',
-  outlineVariant: '#4a4455',
+  outline:        '#475569',  // Slate-600
+  outlineVariant: '#334155',  // Slate-700
 } as const;
 
 // ─────────────────────────────────────────────

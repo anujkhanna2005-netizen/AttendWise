@@ -10,58 +10,59 @@ export default {
       // ── Color tokens ─────────────────────────────────────────────
       // These mirror /src/design-system/tokens/colors.ts
       colors: {
-        // Material You dark theme surface stack
-        "on-background":               "#e8dfee",
-        "on-error-container":          "#ffdad6",
-        "inverse-on-surface":          "#332f39",
-        "on-error":                    "#690005",
-        "on-primary-fixed":            "#25005a",
-        "error":                       "#dc2626",   // WCAG AA (Task 3)
-        "on-tertiary-container":       "#76ffc2",
-        "secondary":                   "#4cd7f6",
-        "surface-bright":              "#3c3742",
-        "on-tertiary-fixed":           "#002113",
-        "surface-container-lowest":    "#100d16",
-        "on-secondary-fixed-variant":  "#004e5c",
-        "on-secondary-fixed":          "#001f26",
-        "secondary-fixed":             "#acedff",
-        "on-tertiary-fixed-variant":   "#005236",
-        "tertiary-container":          "#007650",
-        "outline":                     "#958da1",
-        "outline-variant":             "#4a4455",
-        "inverse-surface":             "#e8dfee",
-        "surface-container":           "#221e28",
-        "secondary-container":         "#03b5d3",
-        "tertiary-fixed-dim":          "#34d399",
-        "primary":                     "#d2bbff",
-        "inverse-primary":             "#732ee4",
-        "surface-dim":                 "#15121b",
-        "tertiary-fixed":              "#6ee7b7",
-        "error-container":             "#93000a",
-        "surface-variant":             "#37333e",
-        "primary-fixed":               "#eaddff",
-        "surface-container-low":       "#1d1a24",
-        "surface-tint":                "#d2bbff",
-        "on-secondary-container":      "#00424e",
-        "surface-container-high":      "#2c2833",
-        "secondary-fixed-dim":         "#4cd7f6",
-        "on-tertiary":                 "#003824",
-        "surface-container-highest":   "#37333e",
-        "tertiary":                    "#059669",   // WCAG AA (Task 3)
-        "background":                  "#15121b",
-        "on-surface":                  "#e8dfee",
-        "on-primary-container":        "#ede0ff",
-        "surface":                     "#15121b",
-        "on-surface-variant":          "#ccc3d8",
-        "primary-container":           "#7c3aed",
-        "on-primary-fixed-variant":    "#5a00c6",
-        "primary-fixed-dim":           "#d2bbff",
-        "on-secondary":                "#003640",
-        "on-primary":                  "#3f008e",
+        "primary":                     "var(--color-primary)",
+        "primary-hover":               "var(--color-primary-hover)",
+        "primary-active":              "var(--color-primary-active)",
+        "primary-container":           "var(--color-primary-container)",
+        "primary-light":               "var(--color-primary-light)",
+        "on-primary":                  "var(--color-on-primary)",
+
+        "secondary":                   "var(--color-secondary)",
+        "secondary-dim":               "var(--color-secondary-dim)",
+        "secondary-hover":             "var(--color-secondary-dim)",
+        "secondary-active":            "var(--color-secondary-dim)",
+        "secondary-container":         "var(--color-secondary-container)",
+        "on-secondary":                "var(--color-on-secondary)",
+
+        "success":                     "var(--color-success)",
+        "success-container":           "var(--color-success-container)",
+        "on-success":                  "var(--color-on-success)",
+
+        "background":                  "var(--color-background)",
+        "surface":                     "var(--color-surface)",
+        "surface-dim":                 "var(--color-surface-dim)",
+        "surface-bright":              "var(--color-surface-bright)",
+        "surface-container-lowest":    "var(--color-surface-container-lowest)",
+        "surface-container-low":       "var(--color-surface-container-low)",
+        "surface-container":           "var(--color-surface-container)",
+        "surface-container-high":      "var(--color-surface-container-high)",
+        "surface-container-highest":   "var(--color-surface-container-highest)",
+        "surface-variant":             "var(--color-surface-variant)",
+
+        "text-primary":                "var(--color-text-primary)",
+        "text-secondary":              "var(--color-text-secondary)",
+        "text-tertiary":               "var(--color-text-tertiary)",
+
+        "outline":                     "var(--color-outline)",
+        "outline-variant":             "var(--color-outline-variant)",
+
+        "safe":                        "var(--color-safe)",
+        "warning":                     "var(--color-warning)",
+        "danger":                      "var(--color-danger)",
+        "error":                       "var(--color-error)",
+        "error-container":             "var(--color-error-container)",
+        "on-error":                    "var(--color-on-error)",
+
+        // Keep some common semantic names for backward compatibility
+        "on-surface":                  "#f1f5f9",
+        "on-surface-variant":          "#94a3b8",
       },
 
-      // ── Font families (with robust system fallbacks from tokens/typography.ts) ──
+      // ── Font families (Sora and JetBrains Mono only, Inter dropped) ──
       fontFamily: {
+        "sora": ["Sora", "system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"],
+        "mono": ["JetBrains Mono", "Cascadia Code", "Fira Code", "Courier New", "monospace"],
+        // Legacy fallbacks mapped to Sora
         "body-md":           ["Sora", "system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"],
         "headline-lg":       ["Sora", "system-ui", "-apple-system", "sans-serif"],
         "label-caps":        ["JetBrains Mono", "Cascadia Code", "Fira Code", "Courier New", "monospace"],
@@ -71,15 +72,25 @@ export default {
         "meta-data":         ["Sora", "system-ui", "-apple-system", "sans-serif"],
       },
 
-      // ── Font sizes ────────────────────────────────────────────────
+      // ── Font sizes (New standardized typography scale) ───────────────────────────
       fontSize: {
-        "body-md":           ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
-        "headline-lg":       ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
-        "label-caps":        ["12px", {"lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "500"}],
-        "headline-xl":       ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
-        "headline-lg-mobile":["24px", {"lineHeight": "32px", "fontWeight": "600"}],
-        "body-sm":           ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
-        "meta-data":         ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+        "hero":              ["2.5rem", {"lineHeight": "1.1", "fontWeight": "800"}],
+        "h1":                ["1.75rem", {"lineHeight": "1.2", "fontWeight": "700"}],
+        "h2":                ["1.375rem", {"lineHeight": "1.3", "fontWeight": "600"}],
+        "h3":                ["1.125rem", {"lineHeight": "1.4", "fontWeight": "600"}],
+        "body":              ["0.938rem", {"lineHeight": "1.5", "fontWeight": "400"}],
+        "sm":                ["0.813rem", {"lineHeight": "1.5", "fontWeight": "400"}],
+        "xs":                ["0.75rem", {"lineHeight": "1.4", "fontWeight": "600"}],
+        "data":              ["0.75rem", {"lineHeight": "1.3", "fontWeight": "500"}],
+
+        // Legacy compatibility mappings
+        "body-md":           ["0.938rem", {"lineHeight": "1.5", "fontWeight": "400"}],
+        "headline-lg":       ["1.375rem", {"lineHeight": "1.3", "fontWeight": "600"}],
+        "label-caps":        ["0.75rem", {"lineHeight": "1.4", "fontWeight": "600"}],
+        "headline-xl":       ["2.5rem", {"lineHeight": "1.1", "fontWeight": "800"}],
+        "headline-lg-mobile":["1.125rem", {"lineHeight": "1.4", "fontWeight": "600"}],
+        "body-sm":           ["0.813rem", {"lineHeight": "1.5", "fontWeight": "400"}],
+        "meta-data":         ["0.75rem", {"lineHeight": "1.4", "fontWeight": "600"}],
       },
 
       // ── Spacing ── mirrors --space-N CSS vars ─────────────────────

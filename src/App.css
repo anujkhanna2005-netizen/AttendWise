@@ -21,24 +21,7 @@
   display: none;                  /* Chrome/Safari */
 }
 
-/* ─────────────────────────────────────────────────────────
-   Subtle glass variant — slightly more transparent than .glass-card
-   Used by SubjectOptionsSheet buttons.
-   ───────────────────────────────────────────────────────── */
-.subtle-glass {
-  backdrop-filter: blur(var(--space-2));      /* 8px blur */
-  background: rgba(18, 18, 26, 0.4);
-}
 
-/* ─────────────────────────────────────────────────────────
-   Card base — consumes token vars for padding, radius, shadow.
-   Components add this class alongside glass-card for full styling.
-   ───────────────────────────────────────────────────────── */
-.card-token {
-  padding:       var(--space-6);              /* 24px */
-  border-radius: var(--radius-md);            /* 12px */
-  box-shadow:    var(--elevation-1);
-}
 
 /* ─────────────────────────────────────────────────────────
    BottomSheet overrides — top-left/right radius only

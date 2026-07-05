@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preload" href="/favicon.svg" as="image" type="image/svg+xml" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.webmanifest" />
@@ -24,24 +24,22 @@
 
     <!-- Material Symbols (icon font) -->
     <link rel="preload" as="style"
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined&text=schoolsettingsaddboxclosewarningdeleteedithistorydone_allchevronrightleftwifioffcloudsyncinfocalendartodaycheckcirclecancelpersondashboardanalyticsmorevertarrowdownwardnotificationslockloginlogout&display=swap"
       onload="this.onload=null;this.rel='stylesheet'" />
     <noscript>
       <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" />
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined&text=schoolsettingsaddboxclosewarningdeleteedithistorydone_allchevronrightleftwifioffcloudsyncinfocalendartodaycheckcirclecancelpersondashboardanalyticsmorevertarrowdownwardnotificationslockloginlogout&display=swap" />
     </noscript>
 
-    <meta name="theme-color" content="#7c3aed" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#818cf8" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)" />
     <meta name="description" content="AttendWise 🎓 Track attendance. Stay above 75%." />
-    <!-- apple-touch-icon: use SVG (supported iOS 12+ with fallback) -->
-    <link rel="apple-touch-icon" href="/favicon.svg" />
+    <!-- PWA icons — SVG is primary (browser tab), PNG only for iOS home screen -->
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <title>AttendWise</title>
   </head>
   <body class="bg-background text-on-surface font-body-md selection:bg-primary-container/30 overflow-x-hidden">
     <!-- Background Elements -->
-    <div class="fixed inset-0 technical-grid z-0 opacity-50"></div>
-    <div class="fixed inset-0 scanline z-10 opacity-15"></div>
     <div id="root" class="relative z-20"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

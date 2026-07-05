@@ -1,5 +1,24 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+
+const useReducedMotion = () => {
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  });
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const listener = (event: MediaQueryListEvent) => {
+      setPrefersReducedMotion(event.matches);
+    };
+    mediaQuery.addEventListener('change', listener);
+    return () => mediaQuery.removeEventListener('change', listener);
+  }, []);
+
+  return prefersReducedMotion;
+};
 
 interface CircularProgressProps {
   percentage: number;
@@ -14,17 +33,14 @@ export const CircularProgress: React.FC<CircularProgressProps> = ({
   size = 60,
   strokeWidth = 6,
   color = '#2fd9f4', // secondary-fixed-dim
-  trackColor = 'var(--tw-colors-surface-container-high)',
+  trackColor = 'var(--color-surface-container-high)',
 }) => {
   const radius = (size - strokeWidth) / 2;
   const circumference = radius * 2 * Math.PI;
   const displayPercentage = percentage === -1 ? 0 : percentage;
   const offset = circumference - (displayPercentage / 100) * circumference;
 
-  // Respect prefers-reduced-motion
-  const prefersReducedMotion =
-    typeof window !== 'undefined' &&
-    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const prefersReducedMotion = useReducedMotion();
 
   return (
     <div style={{ width: size, height: size, position: 'relative' }} className="flex items-center justify-center">

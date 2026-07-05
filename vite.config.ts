@@ -8,22 +8,21 @@ export default defineConfig({
     VitePWA({
       // Set to 'prompt' so the user is asked before reload (not updated silently)
       registerType: 'prompt',
-      includeAssets: ['favicon.svg'],
+      includeAssets: ['favicon.svg', 'icon-*.png', 'apple-touch-icon.png'],
       manifest: {
         name: 'AttendWise',
         short_name: 'AttendWise',
         description: 'Track attendance. Stay above 75%.',
-        theme_color: '#7c3aed',
-        background_color: '#15121b',
+        theme_color: '#818cf8',
+        background_color: '#0f172a',
         display: 'standalone',
-        orientation: 'portrait',
         icons: [
-          {
-            src: 'favicon.svg',
-            sizes: '192x192 512x512',
-            type: 'image/svg+xml',
-            purpose: 'any maskable'
-          }
+          // SVG first — browsers that support it will use this (best quality, original logo)
+          { src: 'favicon.svg',           sizes: 'any',     type: 'image/svg+xml', purpose: 'any' },
+          // PNG fallbacks for specific sizes (Android, older browsers)
+          { src: 'icon-192.png',          sizes: '192x192', type: 'image/png' },
+          { src: 'icon-512.png',          sizes: '512x512', type: 'image/png' },
+          { src: 'icon-512-maskable.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
         ]
       },
       workbox: {

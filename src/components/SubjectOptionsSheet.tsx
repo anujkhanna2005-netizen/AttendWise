@@ -33,7 +33,8 @@ export const SubjectOptionsSheet: React.FC<SubjectOptionsSheetProps> = ({ subjec
   if (!subject) return null;
 
   const handleDelete = () => {
-    triggerHaptic([30, 50, 30, 50]);
+    // Long haptic (100ms) only fires when user explicitly confirms deletion
+    triggerHaptic(100);
     const deletedSubject = { ...subject };
     deleteSubject(subject.id);
     showToast(`Deleted ${deletedSubject.name}`, {
@@ -41,6 +42,7 @@ export const SubjectOptionsSheet: React.FC<SubjectOptionsSheetProps> = ({ subjec
       actionLabel: 'Undo',
       onAction: () => {
         triggerHaptic(10);
+        localStorage.setItem('newly_created_subject_id', deletedSubject.id);
         restoreSubject(deletedSubject);
       }
     });
@@ -53,7 +55,7 @@ export const SubjectOptionsSheet: React.FC<SubjectOptionsSheetProps> = ({ subjec
         <div className="flex flex-col gap-3">
           <Button 
             variant="outline"
-            className="w-full justify-start gap-4 transition-all text-sm font-semibold h-[48px] min-h-[48px]"
+            className="w-full justify-start gap-4 transition-all text-sm font-semibold"
             onClick={() => onEdit(subject)}
           >
             <span className="material-symbols-outlined text-[24px] text-primary">edit</span>
@@ -62,7 +64,7 @@ export const SubjectOptionsSheet: React.FC<SubjectOptionsSheetProps> = ({ subjec
           
           <Button 
             variant="error"
-            className="w-full justify-start gap-4 transition-all text-sm font-semibold h-[48px] min-h-[48px]"
+            className="w-full justify-start gap-4 transition-all text-sm font-semibold"
             onClick={() => setIsConfirmingDelete(true)}
           >
             <span className="material-symbols-outlined text-[24px]">delete</span>
@@ -71,7 +73,7 @@ export const SubjectOptionsSheet: React.FC<SubjectOptionsSheetProps> = ({ subjec
         </div>
       ) : (
         <div className="text-center p-4">
-          <div className="w-20 h-20 rounded-full bg-error-container/30 text-error flex items-center justify-center mx-auto mb-6 neon-glow-error">
+          <div className="w-20 h-20 rounded-full bg-error-container/30 text-error flex items-center justify-center mx-auto mb-6">
             <span className="material-symbols-outlined text-[40px]">warning</span>
           </div>
           <h3 className="font-headline-lg-mobile text-2xl font-bold mb-3 text-on-surface">Delete {subject.name}?</h3>
@@ -82,14 +84,14 @@ export const SubjectOptionsSheet: React.FC<SubjectOptionsSheetProps> = ({ subjec
           <div className="flex flex-col gap-3">
             <Button 
               variant="error"
-              className="w-full text-sm font-bold h-[48px] min-h-[48px]"
+              className="w-full text-sm font-bold"
               onClick={handleDelete}
             >
               Confirm Delete
             </Button>
             <Button 
               variant="outline"
-              className="w-full text-sm font-semibold h-[48px] min-h-[48px]"
+              className="w-full text-sm font-semibold"
               onClick={() => setIsConfirmingDelete(false)}
             >
               Cancel

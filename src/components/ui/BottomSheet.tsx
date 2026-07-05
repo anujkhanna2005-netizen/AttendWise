@@ -1,4 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Icon } from './Icon';
 
 interface BottomSheetProps {
   isOpen: boolean;
@@ -19,24 +21,18 @@ const FOCUSABLE_SELECTORS = [
 export const BottomSheet: React.FC<BottomSheetProps> = ({ isOpen, onClose, title, children }) => {
   const sheetRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<Element | null>(null);
-  const [shouldRender, setShouldRender] = useState(isOpen);
-  const [isClosing, setIsClosing] = useState(false);
+  const [shouldPulse, setShouldPulse] = useState(false);
 
-  // Handle local state to allow close animation before unmounting
+  // Trigger pulse hint once on first mounting/opening of sheet
   useEffect(() => {
     if (isOpen) {
-      setShouldRender(true);
-      setIsClosing(false);
-    } else if (shouldRender) {
-      // Trigger close animation
-      setIsClosing(true);
-      const timer = setTimeout(() => {
-        setShouldRender(false);
-        setIsClosing(false);
-      }, 250); // Mapped to var(--duration-sheet) which is 250ms
-      return () => clearTimeout(timer);
+      const shown = localStorage.getItem('attendwise_drag_hint_shown');
+      if (!shown) {
+        setShouldPulse(true);
+        localStorage.setItem('attendwise_drag_hint_shown', 'true');
+      }
     }
-  }, [isOpen, shouldRender]);
+  }, [isOpen]);
 
   // Lock body scroll while open
   useEffect(() => {
@@ -48,9 +44,9 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({ isOpen, onClose, title
     return () => { document.body.style.overflow = 'unset'; };
   }, [isOpen]);
 
-  // Focus management: capture trigger & autofocus on open, restore on close
+  // Focus management
   useEffect(() => {
-    if (isOpen && shouldRender) {
+    if (isOpen) {
       triggerRef.current = document.activeElement;
       const id = requestAnimationFrame(() => {
         if (sheetRef.current) {
@@ -63,7 +59,7 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({ isOpen, onClose, title
         }
       });
       return () => cancelAnimationFrame(id);
-    } else if (!isOpen && !shouldRender) {
+    } else {
       const trigger = triggerRef.current;
       if (trigger && (trigger as HTMLElement).focus) {
         requestAnimationFrame(() => {
@@ -72,11 +68,9 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({ isOpen, onClose, title
       }
       triggerRef.current = null;
     }
-  }, [isOpen, shouldRender]);
+  }, [isOpen]);
 
   const handleCloseTrigger = useCallback(() => {
-    setIsClosing(true);
-    // Let the parent know we want to close (which sets isOpen to false)
     onClose();
   }, [onClose]);
 
@@ -110,44 +104,78 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({ isOpen, onClose, title
     }
   }, [handleCloseTrigger]);
 
-  if (!shouldRender) return null;
-
-  // Custom animation styles using Phase 2 tokens
-  const backdropClass = isClosing ? 'opacity-0' : 'opacity-100';
-  const sheetClass = isClosing ? 'bottom-sheet-slide-down' : 'bottom-sheet-slide';
-
   return (
-    <>
-      <div 
-        className={`fixed inset-0 bg-background/80 backdrop-blur-sm z-50 transition-opacity duration-[250ms] ease-spring ${backdropClass}`} 
-        onClick={handleCloseTrigger}
-        aria-hidden="true"
-      />
-      <div
-        ref={sheetRef}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="bottom-sheet-title"
-        tabIndex={-1}
-        className={`fixed bottom-0 left-0 right-0 max-w-3xl mx-auto glass-card border-t border-outline-variant/50 z-50 p-6 overflow-y-auto transform transition-transform bottom-sheet-radius focus:outline-none ${sheetClass}`}
-        style={{ boxShadow: 'var(--glow-sheet)', maxHeight: 'calc(100dvh - env(safe-area-inset-bottom) - 2rem)' }}
-        onKeyDown={handleKeyDown}
-      >
-        {/* Increased drag handle bar size for better visibility/affordance: w-16 h-1.5 */}
-        <div className="w-16 h-1.5 bg-outline-variant/60 rounded-token-full mx-auto mb-6" />
-        
-        <div className="flex justify-between items-center mb-6 border-b border-outline-variant/30 pb-4">
-          <h2 id="bottom-sheet-title" className="font-label-caps text-on-surface tracking-[0.2em]">{title}</h2>
-          <button
+    <AnimatePresence>
+      {isOpen && (
+        <>
+          {/* Backdrop overlay */}
+          <motion.div 
+            className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 pointer-events-auto"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
             onClick={handleCloseTrigger}
-            className="p-2 hover:bg-surface-variant text-outline hover:text-secondary transition-colors border border-transparent hover:border-outline-variant/50 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-token-full"
-            aria-label="Close"
+            aria-hidden="true"
+          />
+          
+          {/* Draggable bottom sheet */}
+          <motion.div
+            ref={sheetRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="bottom-sheet-title"
+            tabIndex={-1}
+            className="fixed bottom-0 left-0 right-0 max-w-3xl mx-auto modern-card border-t border-outline-variant/50 z-50 p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] overflow-y-auto bottom-sheet-radius focus:outline-none"
+            style={{ 
+              boxShadow: 'var(--glow-sheet)', 
+              maxHeight: '85vh',
+              touchAction: 'none'
+            }}
+            initial={{ y: '100%' }}
+            animate={{ y: 0 }}
+            exit={{ y: '100%' }}
+            transition={{ type: 'spring', damping: 25, stiffness: 220 }}
+            drag="y"
+            dragConstraints={{ top: 0 }}
+            dragElastic={0.15}
+            onDragEnd={(_, info) => {
+              // Dismiss if dragged down past 100px or with rapid downward velocity
+              if (info.offset.y > 100 || info.velocity.y > 400) {
+                handleCloseTrigger();
+              }
+            }}
+            onKeyDown={handleKeyDown}
           >
-            <span className="material-symbols-outlined text-[20px]">close</span>
-          </button>
-        </div>
-        {children}
-      </div>
-    </>
+            {/* Grab handle with hint animation */}
+            <motion.div 
+              className="w-12 h-1.5 bg-outline-variant/60 rounded-token-full mx-auto mb-6 cursor-grab active:cursor-grabbing" 
+              animate={shouldPulse ? {
+                scaleX: [1, 1.25, 1],
+                scaleY: [1, 1.35, 1],
+                backgroundColor: ['rgba(255,255,255,0.2)', 'rgba(99,102,241,0.8)', 'rgba(255,255,255,0.2)'],
+              } : {}}
+              transition={{ duration: 1.0, ease: "easeInOut", repeat: 0 }}
+            />
+            
+            <div className="flex justify-between items-center mb-6 border-b border-outline-variant/30 pb-4">
+              <h2 id="bottom-sheet-title" className="font-semibold text-sm text-on-surface tracking-wide">{title}</h2>
+              <button
+                onClick={handleCloseTrigger}
+                className="p-2 hover:bg-surface-variant text-outline hover:text-secondary transition-colors border border-transparent hover:border-outline-variant/50 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-token-full"
+                aria-label="Close"
+              >
+                <Icon name="close" size="md" />
+              </button>
+            </div>
+            
+            {/* Scroll wrapper to prevent drag conflicts with nested scrolling */}
+            <div className="overflow-y-auto touch-pan-y" style={{ pointerEvents: 'auto' }}>
+              {children}
+            </div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
   );
 };

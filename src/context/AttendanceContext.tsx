@@ -14,6 +14,8 @@ interface AttendanceActionsContextType {
   restoreSubject: (subject: Subject) => void;
   markAttendance: (id: string, type: 'present' | 'absent') => void;
   undoLastEntry: (id: string) => void;
+  editHistoryEntry: (subjectId: string, entryIndex: number, newType: 'present' | 'absent') => void;
+  deleteHistoryEntry: (subjectId: string, entryIndex: number) => void;
 }
 
 const AttendanceDataContext = createContext<AttendanceDataContextType | undefined>(undefined);
@@ -77,6 +79,25 @@ export const AttendanceProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }));
   }, []);
 
+  const editHistoryEntry = useCallback((subjectId: string, entryIndex: number, newType: 'present' | 'absent') => {
+    setSubjects(prev => prev.map(s => {
+      if (s.id !== subjectId) return s;
+      const history = [...s.history];
+      if (entryIndex >= 0 && entryIndex < history.length) {
+        history[entryIndex] = { ...history[entryIndex], type: newType };
+      }
+      return { ...s, history };
+    }));
+  }, []);
+
+  const deleteHistoryEntry = useCallback((subjectId: string, entryIndex: number) => {
+    setSubjects(prev => prev.map(s => {
+      if (s.id !== subjectId) return s;
+      const history = s.history.filter((_, idx) => idx !== entryIndex);
+      return { ...s, history };
+    }));
+  }, []);
+
   const getSubjectStats = useCallback((subject: Subject): SubjectStats => {
     const presents = subject.history.filter(h => h.type === 'present').length;
     const absents = subject.history.filter(h => h.type === 'absent').length;
@@ -85,7 +106,7 @@ export const AttendanceProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     const absentCount = subject.initialAbsent + absents;
     const totalClasses = presentCount + absentCount;
     
-    const percentage = totalClasses === 0 ? -1 : Math.round((presentCount / totalClasses) * 100);
+    const percentage = totalClasses === 0 ? -1 : Math.round((presentCount / totalClasses) * 1000) / 10;
     
     let status: AttendanceStatus = 'Safe';
     if (percentage < 70) status = 'Danger';
@@ -97,7 +118,7 @@ export const AttendanceProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       const lastEntry = subject.history[subject.history.length - 1];
       const prevPresents = presentCount - (lastEntry.type === 'present' ? 1 : 0);
       const prevTotal = totalClasses - 1;
-      const prevPercentage = prevTotal === 0 ? 100 : Math.round((prevPresents / prevTotal) * 100);
+      const prevPercentage = prevTotal === 0 ? 100 : Math.round((prevPresents / prevTotal) * 1000) / 10;
       
       if (percentage > prevPercentage) trend = 'Improving';
       else if (percentage < prevPercentage) trend = 'Falling';
@@ -139,7 +160,7 @@ export const AttendanceProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       totalClasses += stats.totalClasses;
     });
 
-    return totalClasses === 0 ? -1 : Math.round((totalPresent / totalClasses) * 100);
+    return totalClasses === 0 ? -1 : Math.round((totalPresent / totalClasses) * 1000) / 10;
   }, [subjects, getSubjectStats]);
 
   const dataValue = useMemo(() => ({
@@ -154,8 +175,10 @@ export const AttendanceProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     deleteSubject,
     restoreSubject,
     markAttendance,
-    undoLastEntry
-  }), [addSubject, updateSubject, deleteSubject, restoreSubject, markAttendance, undoLastEntry]);
+    undoLastEntry,
+    editHistoryEntry,
+    deleteHistoryEntry
+  }), [addSubject, updateSubject, deleteSubject, restoreSubject, markAttendance, undoLastEntry, editHistoryEntry, deleteHistoryEntry]);
 
   return (
     <AttendanceDataContext.Provider value={dataValue}>
