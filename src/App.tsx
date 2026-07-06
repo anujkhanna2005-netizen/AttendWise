@@ -11,6 +11,7 @@ import { NotificationSettings } from './components/NotificationSettings';
 import { AppHeader } from './components/AppHeader';
 import { BottomNav } from './components/BottomNav';
 import { SheetSkeleton } from './components/SheetSkeleton';
+import { InstallPromptBanner } from './components/InstallPromptBanner';
 import { useAuth } from './context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRegisterSW } from 'virtual:pwa-register/react';
@@ -721,6 +722,8 @@ function App() {
           onClose={() => setIsBatchSheetOpen(false)}
         />
       </Suspense>
+
+      <InstallPromptBanner />
 
       {/* Auth Sheet */}
       <Suspense fallback={<SheetSkeleton />}>

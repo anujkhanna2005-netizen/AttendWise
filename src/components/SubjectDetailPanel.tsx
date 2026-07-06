@@ -100,6 +100,15 @@ export const SubjectDetailPanel: React.FC<SubjectDetailPanelProps> = ({ activeSu
     };
   }, [activeSubject.id, stats, semesterInfo]);
 
+  const neededConsecutives = useMemo(() => {
+    if (stats.percentage >= 75) return 0;
+    const needed = Math.max(0, 3 * stats.totalClasses - 4 * stats.presentCount);
+    if (semesterBunkCalc) {
+      return Math.min(needed, semesterBunkCalc.remainingClasses);
+    }
+    return needed;
+  }, [stats.totalClasses, stats.presentCount, stats.percentage, semesterBunkCalc]);
+
   const handleMark = useCallback((type: 'present' | 'absent') => {
     triggerHaptic(type === 'present' ? 15 : [15, 80, 15]);
     onMarkAttendance(activeSubject.id, type);
@@ -168,12 +177,16 @@ export const SubjectDetailPanel: React.FC<SubjectDetailPanelProps> = ({ activeSu
                 const statusTextColor = overallStatus === 'success' ? 'text-success' : overallStatus === 'warning' ? 'text-warning' : 'text-danger';
                 const statusTextLabel = overallStatus === 'success' ? 'STABLE' : overallStatus === 'warning' ? 'WARNING' : 'CRITICAL';
                 const statusIcon = overallStatus === 'success' ? 'check_circle' : overallStatus === 'warning' ? 'warning' : 'cancel';
+                const ariaLabelStatus = overallStatus === 'success' ? 'safe' : overallStatus === 'warning' ? 'warning' : 'critical';
                 return (
-                  <p className={`font-label-caps text-xs flex items-center justify-end gap-1 mt-1 ${statusTextColor}`}>
+                  <p 
+                    className={`font-label-caps text-xs flex items-center justify-end gap-1 mt-1 ${statusTextColor}`}
+                    aria-label={`Attendance status: ${ariaLabelStatus}`}
+                  >
                     <span className="material-symbols-outlined text-[12px]" aria-hidden="true">
                       {statusIcon}
                     </span>
-                    {statusTextLabel}
+                    <span aria-hidden="true">{statusTextLabel}</span>
                   </p>
                 );
               })()}
@@ -362,14 +375,26 @@ export const SubjectDetailPanel: React.FC<SubjectDetailPanelProps> = ({ activeSu
               <p className="font-body-md text-on-surface text-xs leading-relaxed">
                 {stats.totalClasses === 0 ? (
                   "No classes recorded yet. Mark attendance to calculate safety margins and projections."
+                ) : neededConsecutives > 0 ? (
+                  <>
+                    Attending the next <span className="text-secondary font-bold font-mono">{neededConsecutives} classes</span> consecutively will bring your attendance to{" "}
+                    <span className="text-secondary font-bold font-mono">
+                      {Math.round(((stats.presentCount + neededConsecutives) / (stats.totalClasses + neededConsecutives)) * 100)}%
+                    </span>{" "}
+                    (reaching the 75% threshold). If you miss the next class, it will drop to{" "}
+                    <span className="text-danger font-bold font-mono">
+                      {Math.round((stats.presentCount / (stats.totalClasses + 1)) * 100)}%
+                    </span>
+                    .
+                  </>
                 ) : (
                   <>
-                    Attending the next 5 classes consecutively will bring your attendance to{" "}
-                    <span className="text-secondary font-bold font-mono">
-                      {Math.round(((stats.presentCount + 5) / (stats.totalClasses + 5)) * 100)}%
+                    You are maintaining a safe attendance of {stats.percentage.toFixed(1)}%. Attending the next class will bring it to{" "}
+                    <span className="text-success font-bold font-mono">
+                      {Math.round(((stats.presentCount + 1) / (stats.totalClasses + 1)) * 100)}%
                     </span>
-                    . If you miss the next class, it will drop to{" "}
-                    <span className="text-danger font-bold font-mono">
+                    , while missing the next class will drop it to{" "}
+                    <span className="text-warning font-bold font-mono">
                       {Math.round((stats.presentCount / (stats.totalClasses + 1)) * 100)}%
                     </span>
                     .

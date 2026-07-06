@@ -89,23 +89,20 @@ export const surface = {
   surfaceVariant:        '#334155',
 } as const;
 
-// ─────────────────────────────────────────────
-// Text / On-surface tokens
-// ─────────────────────────────────────────────
 export const text = {
   primary:   '#f1f5f9',  // Slate-100
-  secondary: '#94a3b8',  // Slate-400
-  tertiary:  '#64748b',  // Slate-500
+  secondary: '#cbd5e1',  // Slate-200
+  tertiary:  '#cbd5e1',  // Slate-200
   disabled:  '#475569',  // Slate-600
-  navInactive: '#94a3b8',
+  navInactive: '#cbd5e1',
 } as const;
 
 // ─────────────────────────────────────────────
 // Border tokens
 // ─────────────────────────────────────────────
 export const border = {
-  outline:        '#475569',  // Slate-600
-  outlineVariant: '#334155',  // Slate-700
+  outline:        '#cbd5e1',  // Slate-200
+  outlineVariant: '#475569',  // Slate-600
 } as const;
 
 // ─────────────────────────────────────────────

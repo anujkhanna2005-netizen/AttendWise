@@ -72,15 +72,14 @@
     --color-surface-container-highest: #475569;
     --color-surface-variant:       #334155;
 
-    /* Text / on-surface (Slate-100 / Slate-400 / Slate-500) */
     --color-text-primary:   #f1f5f9;   /* on-surface */
-    --color-text-secondary: #94a3b8;   /* on-surface-variant */
-    --color-text-tertiary:  #64748b;   /* outline */
-    --color-nav-inactive:   #94a3b8;
-
+    --color-text-secondary: #cbd5e1;   /* on-surface-variant */
+    --color-text-tertiary:  #cbd5e1;   /* outline */
+    --color-nav-inactive:   #cbd5e1;
+ 
     /* Borders */
-    --color-outline:         #475569;
-    --color-outline-variant: #334155;
+    --color-outline:         #cbd5e1;
+    --color-outline-variant: #475569;
 
     /* Status (all WCAG 2.2 AA ≥4.5:1 on Slate/neutral) */
     --color-safe:            #10b981;
@@ -142,13 +141,13 @@
 
     /* Text / on-surface */
     --color-text-primary:   #0f172a;   /* Slate-900 */
-    --color-text-secondary: #475569;   /* Slate-600 */
-    --color-text-tertiary:  #64748b;   /* Slate-500 */
-    --color-nav-inactive:   #64748b;
+    --color-text-secondary: #334155;   /* Slate-700 */
+    --color-text-tertiary:  #475569;   /* Slate-600 */
+    --color-nav-inactive:   #475569;
 
     /* Borders */
-    --color-outline:         #cbd5e1;
-    --color-outline-variant: #e2e8f0;
+    --color-outline:         #475569;
+    --color-outline-variant: #cbd5e1;
 
     /* Status (all WCAG 2.2 AA ≥4.5:1 on light background) */
     --color-safe:            #059669;
