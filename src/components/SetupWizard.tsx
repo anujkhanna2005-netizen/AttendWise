@@ -57,8 +57,6 @@ export const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
     localStorage.setItem('attendwise_setup_completed', 'true');
     if (onComplete) {
       onComplete();
-    } else {
-      window.location.reload();
     }
   };
 
@@ -67,8 +65,6 @@ export const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
     localStorage.setItem('attendwise_setup_completed', 'true');
     if (onComplete) {
       onComplete();
-    } else {
-      window.location.reload();
     }
   };
 

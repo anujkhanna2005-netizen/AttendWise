@@ -54,7 +54,6 @@ function App() {
   const { semesterInfo, updateSemesterInfo, hasCompletedSemesterSetup, skipSemesterSetup, hasSkippedSetup } = useSemester();
   const [activeTab, setActiveTab] = useState<'dashboard' | 'subjects' | 'calendar' | 'settings'>('dashboard');
   const handleTabSwitch = (tab: 'dashboard' | 'subjects' | 'calendar' | 'settings') => {
-    triggerHaptic(15);
     setActiveTab(tab);
   };
   const [isFormSheetOpen, setIsFormSheetOpen] = useState(false);
@@ -422,7 +421,7 @@ function App() {
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        <header className="fixed top-0 left-0 w-full border-b border-outline-variant/30 bg-surface/80 backdrop-blur-xl z-50 shadow-[0_4px_12px_rgba(0,0,0,0.25)] flex justify-between items-center px-margin-sm md:px-margin-lg pt-[env(safe-area-inset-top)] h-[calc(4rem+env(safe-area-inset-top))] lg:pl-72">
+        <header className="fixed top-0 left-0 w-full border-b border-outline-variant/30 bg-surface/80 backdrop-blur-xl z-50 shadow-elevation-2 flex justify-between items-center px-margin-sm md:px-margin-lg pt-[env(safe-area-inset-top)] h-[calc(4rem+env(safe-area-inset-top))] lg:pl-72">
           <div className="flex items-center gap-3">
             <span className="material-symbols-outlined text-secondary active:scale-95 transition-transform">school</span>
             <div>
@@ -616,7 +615,7 @@ function App() {
                             <ResponsiveContainer width="100%" height="100%">
                               <BarChart
                                 data={runningPercentageHistory}
-                                margin={{ top: 20, right: 10, left: -25, bottom: 0 }}
+                                margin={{ top: 20, right: 10, left: 0, bottom: 0 }}
                               >
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-outline-variant)" opacity={0.3} />
                                 <XAxis 
@@ -926,7 +925,7 @@ function App() {
                       {(['light', 'dark', 'system'] as const).map((mode) => (
                         <button
                           key={mode}
-                          onClick={() => { triggerHaptic(10); setTheme(mode); }}
+                          onClick={() => { setTheme(mode); }}
                           className={`flex-1 py-3 px-4 rounded-token-sm border font-semibold text-xs tracking-wide capitalize transition-all cursor-pointer ${
                             theme === mode
                               ? 'bg-primary text-on-primary border-primary shadow-glow-primary font-bold'
@@ -1042,11 +1041,11 @@ function App() {
 
       {/* BottomNavBar (Mobile Only) - Fixed 4-Tab Bar */}
       <nav
-        className="lg:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 bg-surface-container-lowest/90 backdrop-blur-xl border-t border-outline-variant/30 shadow-[0_-5px_20px_rgba(78,222,163,0.15)] pb-[env(safe-area-inset-bottom)]"
+        className="lg:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 bg-surface-container-lowest/90 backdrop-blur-xl border-t border-outline-variant/30 pb-[env(safe-area-inset-bottom)]"
         aria-label="Main navigation"
       >
         <button 
-          className={`flex flex-col items-center justify-center transition-transform active:scale-95 flex-1 h-full cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${activeTab === 'dashboard' ? 'text-primary' : 'text-[#6b6577]'}`}
+          className={`flex flex-col items-center justify-center transition-transform active:scale-95 flex-1 h-full cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${activeTab === 'dashboard' ? 'text-primary' : 'text-nav-inactive'}`}
           onClick={() => handleTabSwitch('dashboard')}
           aria-label="Dashboard"
           aria-current={activeTab === 'dashboard' ? 'page' : undefined}
@@ -1055,7 +1054,7 @@ function App() {
           <span className="text-xs font-medium tracking-wide mt-0.5">Dashboard</span>
         </button>
         <button 
-          className={`flex flex-col items-center justify-center transition-transform active:scale-95 flex-1 h-full cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${activeTab === 'subjects' ? 'text-primary' : 'text-[#6b6577]'}`}
+          className={`flex flex-col items-center justify-center transition-transform active:scale-95 flex-1 h-full cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${activeTab === 'subjects' ? 'text-primary' : 'text-nav-inactive'}`}
           onClick={() => handleTabSwitch('subjects')}
           aria-label="Subjects"
           aria-current={activeTab === 'subjects' ? 'page' : undefined}
@@ -1064,7 +1063,7 @@ function App() {
           <span className="text-xs font-medium tracking-wide mt-0.5">Subjects</span>
         </button>
         <button 
-          className={`flex flex-col items-center justify-center transition-transform active:scale-95 flex-1 h-full cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${activeTab === 'calendar' ? 'text-primary' : 'text-[#6b6577]'}`}
+          className={`flex flex-col items-center justify-center transition-transform active:scale-95 flex-1 h-full cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${activeTab === 'calendar' ? 'text-primary' : 'text-nav-inactive'}`}
           onClick={() => handleTabSwitch('calendar')}
           aria-label="Calendar"
           aria-current={activeTab === 'calendar' ? 'page' : undefined}
@@ -1073,7 +1072,7 @@ function App() {
           <span className="text-xs font-medium tracking-wide mt-0.5">Calendar</span>
         </button>
         <button 
-          className={`flex flex-col items-center justify-center transition-transform active:scale-95 flex-1 h-full cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${activeTab === 'settings' ? 'text-primary' : 'text-[#6b6577]'}`}
+          className={`flex flex-col items-center justify-center transition-transform active:scale-95 flex-1 h-full cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${activeTab === 'settings' ? 'text-primary' : 'text-nav-inactive'}`}
           onClick={() => handleTabSwitch('settings')}
           aria-label="Settings"
           aria-current={activeTab === 'settings' ? 'page' : undefined}

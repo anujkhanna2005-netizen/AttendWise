@@ -42,6 +42,7 @@ export default {
         "text-primary":                "var(--color-text-primary)",
         "text-secondary":              "var(--color-text-secondary)",
         "text-tertiary":               "var(--color-text-tertiary)",
+        "nav-inactive":                 "var(--color-nav-inactive)",
 
         "outline":                     "var(--color-outline)",
         "outline-variant":             "var(--color-outline-variant)",

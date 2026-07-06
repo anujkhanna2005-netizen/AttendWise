@@ -157,7 +157,7 @@ export const SubjectFormSheet: React.FC<SubjectFormSheetProps> = ({ isOpen, onCl
   };
 
   const inputClass = (hasError: boolean | null) =>
-    `w-full p-4 rounded-token-sm border ${hasError ? 'border-red-500 bg-red-500/5' : 'border-outline-variant/50 bg-surface/50'} text-on-surface font-body-md mb-1 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all shadow-inner`;
+    `w-full p-4 rounded-token-sm border ${hasError ? 'border-red-500 bg-red-500/5' : 'border-outline-variant/50 bg-surface/50'} text-on-surface font-body-md mb-1 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all`;
   const labelClass = "block text-xs font-label-caps tracking-widest text-outline mb-2 uppercase";
   const errorClass = "font-label-caps text-xs tracking-widest mb-4 flex items-center gap-1";
 

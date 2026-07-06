@@ -1,16 +1,18 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
 
+export type ToastType = 'info' | 'success' | 'error' | 'warning';
+
 interface Toast {
   id: string;
   message: string;
   actionLabel?: string;
   onAction?: () => void;
-  type?: 'info' | 'success' | 'error' | 'warning';
+  type?: ToastType;
 }
 
 interface ToastContextType {
-  showToast: (message: string, options?: { actionLabel?: string; onAction?: () => void; type?: 'info' | 'success' | 'error' | 'warning' }) => void;
+  showToast: (message: string, options?: { actionLabel?: string; onAction?: () => void; type?: ToastType }) => void;
 }
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
@@ -18,7 +20,7 @@ const ToastContext = createContext<ToastContextType | undefined>(undefined);
 export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  const showToast = useCallback((message: string, options?: { actionLabel?: string; onAction?: () => void; type?: 'info' | 'success' | 'error' | 'warning' }) => {
+  const showToast = useCallback((message: string, options?: { actionLabel?: string; onAction?: () => void; type?: ToastType }) => {
     const id = Math.random().toString(36).substring(2, 9);
     const newToast: Toast = {
       id,
@@ -44,7 +46,11 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     <ToastContext.Provider value={{ showToast }}>
       {children}
       {/* Toast Container */}
-      <div className="fixed bottom-20 left-0 right-0 z-[100] flex flex-col items-center gap-2 pointer-events-none px-4">
+      <div 
+        className="fixed bottom-20 left-0 right-0 z-[100] flex flex-col items-center gap-2 pointer-events-none px-4"
+        aria-live="polite"
+        role="status"
+      >
         <AnimatePresence>
           {toasts.map((toast) => (
             <ToastItem key={toast.id} toast={toast} onDismiss={() => removeToast(toast.id)} />

@@ -94,6 +94,7 @@ export const text = {
   secondary: '#94a3b8',  // Slate-400
   tertiary:  '#64748b',  // Slate-500
   disabled:  '#475569',  // Slate-600
+  navInactive: '#94a3b8',
 } as const;
 
 // ─────────────────────────────────────────────
@@ -136,6 +137,7 @@ export const cssVarNames = {
   colorTextPrimary:      '--color-text-primary',
   colorTextSecondary:    '--color-text-secondary',
   colorTextTertiary:     '--color-text-tertiary',
+  colorNavInactive:      '--color-nav-inactive',
   colorError:            '--color-error',
   colorErrorContainer:   '--color-error-container',
 
