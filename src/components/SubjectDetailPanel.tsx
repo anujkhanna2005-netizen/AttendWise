@@ -34,13 +34,21 @@ const triggerHaptic = (pattern: number | number[]) => {
 };
 
 export const SubjectDetailPanel: React.FC<SubjectDetailPanelProps> = ({ activeSubject, onMarkAttendance }) => {
-  const { getSubjectStats } = useAttendance();
+  const { getSubjectStats, undoLastEntry } = useAttendance();
   const { semesterInfo } = useSemester();
   const { showToast } = useToast();
 
   const stats = useMemo(() => {
     return getSubjectStats(activeSubject);
   }, [activeSubject, getSubjectStats]);
+
+  const handleUndo = useCallback(() => {
+    triggerHaptic(15);
+    undoLastEntry(activeSubject.id);
+    showToast(`Undid last attendance entry for ${activeSubject.name}`, {
+      type: 'success'
+    });
+  }, [activeSubject, undoLastEntry, showToast]);
 
   // Compute running percentage history for the last 8 entries
   const runningPercentageHistory = useMemo(() => {
@@ -154,6 +162,16 @@ export const SubjectDetailPanel: React.FC<SubjectDetailPanelProps> = ({ activeSu
           >
             <Icon name="remove" size="sm" /> Absent
           </Button>
+          {activeSubject.history.length > 0 && (
+            <Button
+              variant="outline"
+              className="px-3 py-2 font-semibold text-xs flex items-center gap-1.5 h-[44px] rounded-token-sm border border-outline text-on-surface hover:bg-surface-variant/40"
+              onClick={handleUndo}
+              aria-label="Undo last marked attendance entry"
+            >
+              <Icon name="undo" size="sm" /> Undo
+            </Button>
+          )}
         </div>
       </div>
 
