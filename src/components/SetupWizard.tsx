@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import type { SubjectColor } from '../types';
 import { Button } from './ui/Button';
 import { useSemester } from '../context/SemesterContext';
 import { useAttendance } from '../context/AttendanceContext';
@@ -22,7 +23,7 @@ export const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
 
   // Step 3: Add First Subject
   const [subjName, setSubjName] = useState('');
-  const [subjColor, setSubjColor] = useState<'purple' | 'blue' | 'green' | 'orange' | 'pink'>('purple');
+  const [subjColor, setSubjColor] = useState<SubjectColor>('purple');
   const [initPresent, setInitPresent] = useState('0');
   const [initAbsent, setInitAbsent] = useState('0');
 
@@ -174,18 +175,18 @@ export const SetupWizard: React.FC<SetupWizardProps> = ({ onComplete }) => {
           <div>
             <span className="block text-xs font-semibold text-outline mb-2 uppercase tracking-wide">Theme Color</span>
             <div className="flex gap-3 justify-center py-2">
-              {(['purple', 'blue', 'green', 'orange', 'pink'] as const).map(color => (
+              {(['purple', 'teal', 'gold', 'blue', 'coral'] as const).map(color => (
                 <button
-                  key={color}
-                  type="button"
-                  onClick={() => setSubjColor(color)}
-                  className={`w-11 h-11 min-w-[44px] min-h-[44px] rounded-full border-2 transition-all ${
-                    subjColor === color ? 'border-primary scale-110' : 'border-transparent opacity-70'
-                  }`}
-                  style={{
-                    backgroundColor: color === 'purple' ? '#6366f1' : color === 'blue' ? '#a5b4fc' : color === 'green' ? '#10b981' : color === 'orange' ? '#f97316' : '#ef4444'
-                  }}
-                  aria-label={color}
+                   key={color}
+                   type="button"
+                   onClick={() => setSubjColor(color)}
+                   className={`w-11 h-11 min-w-[44px] min-h-[44px] rounded-full border-2 transition-all ${
+                     subjColor === color ? 'border-primary scale-110' : 'border-transparent opacity-70'
+                   }`}
+                   style={{
+                     backgroundColor: color === 'purple' ? '#6C5CE7' : color === 'teal' ? '#00B894' : color === 'gold' ? '#FDCB6E' : color === 'blue' ? '#0984E3' : '#D63031'
+                   }}
+                   aria-label={color}
                 />
               ))}
             </div>

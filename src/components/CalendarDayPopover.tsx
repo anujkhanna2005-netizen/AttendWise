@@ -16,11 +16,11 @@ interface CalendarDayPopoverProps {
 }
 
 const COLOR_MAP: Record<string, string> = {
-  purple: '#6366f1',  // Indigo-500 (Primary)
-  blue:   '#a5b4fc',  // Indigo-300 (Primary Light)
-  orange: '#f97316',  // Orange-500 (Warning)
-  green:  '#10b981',  // Emerald-500 (Success)
-  pink:   '#ef4444',  // Red-500 (Danger)
+  purple: '#6C5CE7',
+  teal:   '#00B894',
+  gold:   '#FDCB6E',
+  blue:   '#0984E3',
+  coral:  '#D63031',
 };
 
 export const CalendarDayPopover: React.FC<CalendarDayPopoverProps> = ({
@@ -62,7 +62,7 @@ export const CalendarDayPopover: React.FC<CalendarDayPopoverProps> = ({
               <div className="flex items-center gap-3">
                 <div
                   className="w-3 h-3 rounded-full flex-shrink-0"
-                  style={{ backgroundColor: COLOR_MAP[subject.color] ?? '#6366f1' }}
+                  style={{ backgroundColor: COLOR_MAP[subject.color] ?? '#6C5CE7' }}
                 />
                 <span className="font-body-sm text-on-surface text-sm font-semibold">{subject.name}</span>
               </div>

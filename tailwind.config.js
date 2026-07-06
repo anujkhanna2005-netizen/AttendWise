@@ -24,6 +24,9 @@ export default {
         "secondary-container":         "var(--color-secondary-container)",
         "on-secondary":                "var(--color-on-secondary)",
 
+        "accent":                      "var(--color-accent)",
+        "on-accent":                   "var(--color-on-accent)",
+
         "success":                     "var(--color-success)",
         "success-container":           "var(--color-success-container)",
         "on-success":                  "var(--color-on-success)",
@@ -65,10 +68,10 @@ export default {
         "mono": ["JetBrains Mono", "Cascadia Code", "Fira Code", "Courier New", "monospace"],
         // Legacy fallbacks mapped to Sora
         "body-md":           ["Sora", "system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"],
-        "headline-lg":       ["Sora", "system-ui", "-apple-system", "sans-serif"],
+        "headline-lg":       ["Outfit", "system-ui", "-apple-system", "sans-serif"],
         "label-caps":        ["JetBrains Mono", "Cascadia Code", "Fira Code", "Courier New", "monospace"],
-        "headline-xl":       ["Sora", "system-ui", "-apple-system", "sans-serif"],
-        "headline-lg-mobile":["Sora", "system-ui", "-apple-system", "sans-serif"],
+        "headline-xl":       ["Outfit", "system-ui", "-apple-system", "sans-serif"],
+        "headline-lg-mobile":["Outfit", "system-ui", "-apple-system", "sans-serif"],
         "body-sm":           ["Sora", "system-ui", "-apple-system", "sans-serif"],
         "meta-data":         ["Sora", "system-ui", "-apple-system", "sans-serif"],
       },

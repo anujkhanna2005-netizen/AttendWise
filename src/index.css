@@ -36,19 +36,24 @@
   :root {
     color-scheme: dark;
 
-    /* Primary brand (Indigo-500) */
-    --color-primary:          #6366f1;
-    --color-primary-hover:    #4f46e5;
-    --color-primary-active:   #4338ca;
-    --color-primary-container:#3730a3;
-    --color-primary-light:    #a5b4fc;
-    --color-on-primary:       #ffffff;
+    /* Primary brand (Warm violet-blue) */
+    --color-primary:            #6C5CE7;
+    --color-primary-hover:      #5A4BD1;
+    --color-primary-active:     #4834B9;
+    --color-primary-container:  #332B66;
+    --color-primary-light:      #B8AEFF;
+    --color-on-primary:         #ffffff;
+    --color-on-primary-container: #E8E3FF;
 
-    /* Secondary / Amber-500 (replaces teal/emerald) */
-    --color-secondary:        #f59e0b;
-    --color-secondary-dim:    #d97706;
-    --color-secondary-container: #92400e;
-    --color-on-secondary:     #ffffff;
+    /* Secondary (Soft teal) */
+    --color-secondary:          #00B894;
+    --color-secondary-dim:      #00A381;
+    --color-secondary-container: #0A3D34;
+    --color-on-secondary:       #ffffff;
+
+    /* Accent (Gold - achievements only) */
+    --color-accent:             #FDCB6E;
+    --color-on-accent:          #2D3436;
 
     /* Success / Safe status (replaces tertiary) */
     --color-success:          #10b981;
@@ -100,19 +105,23 @@
   [data-theme="light"] {
     color-scheme: light;
 
-    /* Primary brand (Indigo-600 in light mode for AA contrast) */
-    --color-primary:          #4f46e5;
-    --color-primary-hover:    #4338ca;
-    --color-primary-active:   #3730a3;
-    --color-primary-container:#e0e7ff;
-    --color-primary-light:    #6366f1;
-    --color-on-primary:       #ffffff;
+    /* Primary brand (Warm violet-blue, darkened for light mode contrast) */
+    --color-primary:            #5A4BD1;
+    --color-primary-hover:      #4834B9;
+    --color-primary-active:     #332B66;
+    --color-primary-container:  #E8E3FF;
+    --color-primary-light:      #B8AEFF;
+    --color-on-primary:         #ffffff;
 
-    /* Secondary / Amber-600 */
-    --color-secondary:        #d97706;
-    --color-secondary-dim:    #b45309;
-    --color-secondary-container: #fef3c7;
-    --color-on-secondary:     #ffffff;
+    /* Secondary (Soft teal, darkened for light mode contrast) */
+    --color-secondary:          #006E57;
+    --color-secondary-dim:      #0A3D34;
+    --color-secondary-container: #C2F0E5;
+    --color-on-secondary:       #ffffff;
+
+    /* Accent (Gold - achievements only) */
+    --color-accent:             #D97706;
+    --color-on-accent:          #ffffff;
 
     /* Success / Safe status */
     --color-success:          #059669;
@@ -182,7 +191,7 @@
   /* clamp(min, preferred, max) for fluid headline scaling */
   :root {
     /* Font families - Sora only for display and body, Inter dropped */
-    --font-display: "Sora", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --font-display: "Outfit", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     --font-body:    "Sora", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     --font-mono:    "JetBrains Mono", "Cascadia Code", "Fira Code", "Courier New", monospace;
 
@@ -322,6 +331,10 @@
     font-family: var(--font-body);
     color: var(--color-text-primary);
     background-color: var(--color-background);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
   }
 
 

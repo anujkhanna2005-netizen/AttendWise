@@ -13,7 +13,7 @@
  */
 
 export const fontFamily = {
-  display:  '"Sora", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+  display:  '"Outfit", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
   body:     '"Sora", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
   mono:     '"JetBrains Mono", "Cascadia Code", "Fira Code", "Courier New", monospace',
 } as const;
@@ -24,28 +24,28 @@ export const typeScale = {
     weight:   '800',
     line:     '1.1',
     tracking: '-0.02em',
-    family:   'body',
+    family:   'display',
   },
   h1: {
     size:     '1.75rem',
     weight:   '700',
     line:     '1.2',
     tracking: '-0.01em',
-    family:   'body',
+    family:   'display',
   },
   h2: {
     size:     '1.375rem',
     weight:   '600',
     line:     '1.3',
     tracking: '0',
-    family:   'body',
+    family:   'display',
   },
   h3: {
     size:     '1.125rem',
     weight:   '600',
     line:     '1.4',
     tracking: '0',
-    family:   'body',
+    family:   'display',
   },
   body: {
     size:     '0.938rem',

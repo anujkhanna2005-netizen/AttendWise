@@ -3,7 +3,7 @@ import { BottomSheet } from './ui/BottomSheet';
 import { useAttendance } from '../context/AttendanceContext';
 import { useToast } from '../context/ToastContext';
 import { Button } from './ui/Button';
-import type { Subject } from '../types';
+import type { Subject, SubjectColor } from '../types';
 
 interface SubjectFormSheetProps {
   isOpen: boolean;
@@ -12,11 +12,11 @@ interface SubjectFormSheetProps {
 }
 
 const COLORS = [
-  { value: 'purple', label: 'Ind', hex: '#6366f1' },
-  { value: 'blue', label: 'Sky', hex: '#a5b4fc' },
-  { value: 'green', label: 'Teal', hex: '#10b981' },
-  { value: 'orange', label: 'Amb', hex: '#f97316' },
-  { value: 'pink', label: 'Red', hex: '#ef4444' },
+  { value: 'purple', label: 'Vio', hex: '#6C5CE7' },
+  { value: 'teal', label: 'Tea', hex: '#00B894' },
+  { value: 'gold', label: 'Gld', hex: '#FDCB6E' },
+  { value: 'blue', label: 'Blu', hex: '#0984E3' },
+  { value: 'coral', label: 'Cor', hex: '#D63031' },
 ] as const;
 
 const validateName = (val: string) => {
@@ -37,7 +37,7 @@ export const SubjectFormSheet: React.FC<SubjectFormSheetProps> = ({ isOpen, onCl
   const { showToast } = useToast();
 
   const [name, setName] = useState('');
-  const [color, setColor] = useState<'purple' | 'blue' | 'green' | 'orange' | 'pink'>('purple');
+  const [color, setColor] = useState<SubjectColor>('purple');
   const [initialPresent, setInitialPresent] = useState('0');
   const [initialAbsent, setInitialAbsent] = useState('0');
 

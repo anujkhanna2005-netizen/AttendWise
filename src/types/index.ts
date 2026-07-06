@@ -1,4 +1,4 @@
-export type SubjectColor = 'blue' | 'purple' | 'orange' | 'green' | 'pink';
+export type SubjectColor = 'purple' | 'teal' | 'gold' | 'blue' | 'coral';
 
 export interface AttendanceEntry {
   type: 'present' | 'absent';

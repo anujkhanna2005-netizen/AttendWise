@@ -31,22 +31,25 @@ export const neutral = {
 } as const;
 
 export const brand = {
-  primary:         '#6366f1',  // Indigo-500
-  primaryHover:    '#4f46e5',  // Indigo-600
-  primaryActive:   '#4338ca',  // Indigo-700
-  primaryContainer:'#3730a3',  // Indigo-800
-  primaryLight:    '#a5b4fc',  // Indigo-300
-  onPrimary:       '#ffffff',  // White
-  onPrimaryContainer: '#e0e7ff',
+  primary:            '#6C5CE7',  // warm violet-blue
+  primaryHover:        '#5A4BD1',
+  primaryActive:       '#4834B9',
+  primaryContainer:    '#332B66',
+  primaryLight:        '#B8AEFF',
+  onPrimary:           '#ffffff',
+  onPrimaryContainer:  '#E8E3FF',
 
-  secondary:       '#f59e0b',  // Amber-500
-  secondaryDim:    '#d97706',  // Amber-600
-  secondaryContainer: '#92400e', // Amber-800
-  onSecondary:     '#ffffff',
+  secondary:           '#00B894',  // soft teal
+  secondaryDim:        '#00A381',
+  secondaryContainer:  '#0A3D34',
+  onSecondary:         '#ffffff',
 
-  success:         '#10b981',  // Emerald-500
-  successContainer:'#065f46',
-  onSuccess:       '#ffffff',
+  accent:              '#FDCB6E',  // gold
+  onAccent:            '#2D3436',
+
+  success:             '#10b981',  // keep — status colors are fine, don't touch
+  successContainer:    '#065f46',
+  onSuccess:           '#ffffff',
 } as const;
 
 // ─────────────────────────────────────────────
@@ -129,6 +132,8 @@ export const cssVarNames = {
   colorPrimaryHover:     '--color-primary-hover',
   colorPrimaryActive:    '--color-primary-active',
   colorOnPrimary:        '--color-on-primary',
+  colorAccent:           '--color-accent',
+  colorOnAccent:         '--color-on-accent',
   colorSurface:          '--color-surface',
   colorSurfaceVariant:   '--color-surface-variant',
   colorSurfaceContainer: '--color-surface-container',

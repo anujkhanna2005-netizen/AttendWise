@@ -51,9 +51,9 @@ export const SubjectCard: React.FC<SubjectCardProps> = ({
   }, [stats.percentage, subject.name, showToast]);
 
   const colorMap: Record<string, string> = {
-    purple: '#6366f1', blue: '#a5b4fc', green: '#10b981', orange: '#f97316', pink: '#ef4444',
+    purple: '#6C5CE7', teal: '#00B894', gold: '#FDCB6E', blue: '#0984E3', coral: '#D63031',
   };
-  const dotColor = colorMap[subject.color] || '#6366f1';
+  const dotColor = colorMap[subject.color] || '#6C5CE7';
 
   const handleMark = useCallback((type: 'present' | 'absent') => {
     triggerHaptic(type === 'present' ? 15 : [15, 80, 15]);
