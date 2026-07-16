@@ -35,3 +35,17 @@ def create_semester(body: SemesterCreate, db: Session = Depends(get_db)):
             detail="Failed to create semester due to database integrity constraints",
         ) from exc
     return semester
+
+
+@router.delete(
+    "/{semester_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    dependencies=[Depends(require_roles("admin"))],
+)
+def delete_semester(semester_id: int, db: Session = Depends(get_db)):
+    semester = db.get(Semester, semester_id)
+    if not semester:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Semester not found")
+    db.delete(semester)
+    db.commit()
+

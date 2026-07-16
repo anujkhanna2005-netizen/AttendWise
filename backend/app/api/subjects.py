@@ -43,3 +43,24 @@ def create_subject(body: SubjectCreate, db: Session = Depends(get_db)):
             detail=f"Subject with code '{body.code}' already exists in this course",
         )
     return subject
+
+
+@router.delete(
+    "/{subject_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    dependencies=[Depends(require_roles("admin", "faculty"))],
+)
+def delete_subject(subject_id: int, db: Session = Depends(get_db)):
+    subject = db.get(Subject, subject_id)
+    if not subject:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Subject not found")
+    db.delete(subject)
+    try:
+        db.commit()
+    except IntegrityError as exc:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Cannot delete subject: students are currently enrolled in it (ON DELETE RESTRICT)",
+        ) from exc
+
