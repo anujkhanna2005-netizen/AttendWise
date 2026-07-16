@@ -79,7 +79,6 @@ class User(Base):
         DateTime(timezone=True),
         nullable=False,
         server_default=text("NOW()"),
-        default=datetime.utcnow,
     )
 
     role: Mapped["Role"] = relationship("Role", back_populates="users")
@@ -292,3 +291,112 @@ class StudentParent(Base):
 
     student: Mapped["Student"] = relationship("Student", back_populates="student_parent_links")
     parent: Mapped["Parent"] = relationship("Parent", back_populates="student_parent_links")
+
+
+# ---------------------------------------------------------------------------
+# 10. semesters
+# ---------------------------------------------------------------------------
+from sqlalchemy import CheckConstraint
+from sqlalchemy.dialects.postgresql import JSONB
+
+class Semester(Base):
+    __tablename__ = "semesters"
+    __table_args__ = (
+        CheckConstraint("number BETWEEN 1 AND 8", name="chk_semester_number"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    name: Mapped[str] = mapped_column(String(100), nullable=False)
+    number: Mapped[int] = mapped_column(Integer, nullable=False)
+
+    enrollments: Mapped[list["StudentEnrollment"]] = relationship(
+        "StudentEnrollment", back_populates="semester", cascade="all, delete-orphan"
+    )
+    assignments: Mapped[list["FacultySubjectAssignment"]] = relationship(
+        "FacultySubjectAssignment", back_populates="semester", cascade="all, delete-orphan"
+    )
+
+
+# ---------------------------------------------------------------------------
+# 11. faculty_subject_assignments
+# ---------------------------------------------------------------------------
+class FacultySubjectAssignment(Base):
+    __tablename__ = "faculty_subject_assignments"
+    __table_args__ = (
+        PrimaryKeyConstraint("faculty_id", "subject_id", "semester_id", name="pk_faculty_subject_assignments"),
+    )
+
+    faculty_id: Mapped[int] = mapped_column(
+        Integer,
+        ForeignKey("faculty.id", ondelete="RESTRICT"),
+        nullable=False,
+    )
+    subject_id: Mapped[int] = mapped_column(
+        Integer,
+        ForeignKey("subjects.id", ondelete="RESTRICT"),
+        nullable=False,
+    )
+    semester_id: Mapped[int] = mapped_column(
+        Integer,
+        ForeignKey("semesters.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+
+    faculty: Mapped["Faculty"] = relationship("Faculty")
+    subject: Mapped["Subject"] = relationship("Subject")
+    semester: Mapped["Semester"] = relationship("Semester", back_populates="assignments")
+
+
+# ---------------------------------------------------------------------------
+# 12. student_enrollments
+# ---------------------------------------------------------------------------
+class StudentEnrollment(Base):
+    __tablename__ = "student_enrollments"
+    __table_args__ = (
+        PrimaryKeyConstraint("student_id", "subject_id", "semester_id", name="pk_student_enrollments"),
+    )
+
+    student_id: Mapped[int] = mapped_column(
+        Integer,
+        ForeignKey("students.id", ondelete="RESTRICT"),
+        nullable=False,
+    )
+    subject_id: Mapped[int] = mapped_column(
+        Integer,
+        ForeignKey("subjects.id", ondelete="RESTRICT"),
+        nullable=False,
+    )
+    semester_id: Mapped[int] = mapped_column(
+        Integer,
+        ForeignKey("semesters.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+
+    student: Mapped["Student"] = relationship("Student")
+    subject: Mapped["Subject"] = relationship("Subject")
+    semester: Mapped["Semester"] = relationship("Semester", back_populates="enrollments")
+
+
+# ---------------------------------------------------------------------------
+# 13. audit_logs
+# ---------------------------------------------------------------------------
+class AuditLog(Base):
+    __tablename__ = "audit_logs"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    table_name: Mapped[str] = mapped_column(String(100), nullable=False)
+    row_id: Mapped[str] = mapped_column(String(100), nullable=False)
+    action: Mapped[str] = mapped_column(String(20), nullable=False)
+    old_data: Mapped[Optional[dict]] = mapped_column(JSONB, nullable=True)
+    new_data: Mapped[Optional[dict]] = mapped_column(JSONB, nullable=True)
+    changed_by: Mapped[Optional[int]] = mapped_column(
+        Integer,
+        ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True,
+    )
+    changed_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=text("NOW()"),
+    )
+

@@ -148,3 +148,70 @@ class HealthResponse(BaseModel):
     status: str
     db_connected: bool
     version: str
+
+
+# ---------------------------------------------------------------------------
+# Semesters
+# ---------------------------------------------------------------------------
+class SemesterCreate(BaseModel):
+    name: str = Field(min_length=1, max_length=100)
+    number: int = Field(ge=1, le=8)
+
+
+class SemesterOut(BaseModel):
+    id: int
+    name: str
+    number: int
+
+    model_config = {"from_attributes": True}
+
+
+# ---------------------------------------------------------------------------
+# Enrollments
+# ---------------------------------------------------------------------------
+class EnrollmentCreate(BaseModel):
+    student_id: int
+    subject_id: int
+    semester_id: int
+
+
+class EnrollmentOut(BaseModel):
+    student_id: int
+    subject_id: int
+    semester_id: int
+
+    model_config = {"from_attributes": True}
+
+
+# ---------------------------------------------------------------------------
+# Faculty Assignments
+# ---------------------------------------------------------------------------
+class FacultyAssignmentCreate(BaseModel):
+    faculty_id: int
+    subject_id: int
+    semester_id: int
+
+
+class FacultyAssignmentOut(BaseModel):
+    faculty_id: int
+    subject_id: int
+    semester_id: int
+
+    model_config = {"from_attributes": True}
+
+
+# ---------------------------------------------------------------------------
+# Audit Logs
+# ---------------------------------------------------------------------------
+class AuditLogOut(BaseModel):
+    id: int
+    table_name: str
+    row_id: str
+    action: str
+    old_data: dict | None = None
+    new_data: dict | None = None
+    changed_by: int | None = None
+    changed_at: datetime
+
+    model_config = {"from_attributes": True}
+
