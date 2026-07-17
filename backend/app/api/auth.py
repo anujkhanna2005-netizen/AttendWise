@@ -20,17 +20,35 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 _SELF_REGISTER_ROLES = {"student", "parent"}
 
 
+from fastapi import Request
+from app.auth.security import decode_token, require_roles
+
 @router.post("/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
-def register(body: RegisterRequest, db: Session = Depends(get_db)):
-    """
-    Open self-registration for students and parents only.
-    Faculty and admin accounts are seeded by an admin — not open to the public.
-    """
+def register(request: Request, body: RegisterRequest, db: Session = Depends(get_db)):
+    # If registering a role other than student/parent, verify that requester is authenticated as admin
     if body.role not in _SELF_REGISTER_ROLES:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Self-registration is only allowed for: {sorted(_SELF_REGISTER_ROLES)}",
-        )
+        auth_header = request.headers.get("Authorization")
+        if not auth_header or not auth_header.startswith("Bearer "):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Registration of administrative/faculty roles requires admin Authorization headers",
+            )
+        token = auth_header.split(" ")[1]
+        try:
+            payload = decode_token(token)
+            role_name = payload.get("role")
+            if role_name != "admin":
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="Only administrative users can register faculty accounts",
+                )
+        except Exception as exc:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid token or authentication parameters",
+            ) from exc
+
+
 
     role = db.query(Role).filter(Role.name == body.role).first()
     if not role:
