@@ -27,13 +27,27 @@ export const AttendanceProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     return saved ? JSON.parse(saved) : [];
   });
 
-  // Debounced LocalStorage Write — Task 3
+  // debounced write is ONLY performed if backend attendance is OFF
   useEffect(() => {
+    if (import.meta.env.VITE_USE_BACKEND_ATTENDANCE === 'true') return;
     const timer = setTimeout(() => {
       localStorage.setItem('attendwise_data', JSON.stringify(subjects));
     }, 300); // 300ms debounce
     return () => clearTimeout(timer);
   }, [subjects]);
+
+  // Load backend data if VITE_USE_BACKEND_ATTENDANCE is ON
+  useEffect(() => {
+    if (import.meta.env.VITE_USE_BACKEND_ATTENDANCE === 'true') {
+      const loadBackendData = async () => {
+        const { BackendAttendanceAdapter } = await import('../services/storage/BackendAttendanceAdapter');
+        const adapter = new BackendAttendanceAdapter();
+        const data = await adapter.getSubjects();
+        setSubjects(data);
+      };
+      loadBackendData();
+    }
+  }, []);
 
   const addSubject = useCallback((name: string, color: Subject['color'], initialPresent: number, initialAbsent: number, id?: string) => {
     const newSubject: Subject = {
@@ -60,6 +74,28 @@ export const AttendanceProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   }, []);
 
   const markAttendance = useCallback((id: string, type: 'present' | 'absent') => {
+    // If flag is ON, push to backend API
+    if (import.meta.env.VITE_USE_BACKEND_ATTENDANCE === 'true') {
+      const postAttendance = async () => {
+        const baseUrl = import.meta.env.VITE_API_URL || 'https://attendwise-api-production.up.railway.app';
+        const token = localStorage.getItem('attendwise_token');
+        await fetch(`${baseUrl}/attendance`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+          },
+          body: JSON.stringify({
+            student_id: Number(localStorage.getItem('attendwise_student_id') || '0'),
+            timetable_slot_id: Number(id),
+            date: new Date().toISOString().split('T')[0],
+            status: type === 'present' ? 'present' : 'absent',
+          }),
+        });
+      };
+      postAttendance();
+    }
+
     setSubjects(prev => prev.map(s => {
       if (s.id !== id) return s;
       return {
@@ -70,6 +106,34 @@ export const AttendanceProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   }, []);
 
   const undoLastEntry = useCallback((id: string) => {
+    // If flag is ON, fetch last record ID for this subject/slot, and correct/delete via backend
+    if (import.meta.env.VITE_USE_BACKEND_ATTENDANCE === 'true') {
+      const deleteLastAttendance = async () => {
+        const baseUrl = import.meta.env.VITE_API_URL || 'https://attendwise-api-production.up.railway.app';
+        const token = localStorage.getItem('attendwise_token');
+        // Fetch target records for deletion
+        const res = await fetch(`${baseUrl}/attendance?timetable_slot_id=${id}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          }
+        });
+        const records = await res.json();
+        if (records.length > 0) {
+          // Correct/delete the last record using PATCH or DELETE
+          const lastRecord = records[records.length - 1];
+          await fetch(`${baseUrl}/attendance/${lastRecord.id}`, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify({ status: 'absent' }), // toggles state or marks absent
+          });
+        }
+      };
+      deleteLastAttendance();
+    }
+
     setSubjects(prev => prev.map(s => {
       if (s.id !== id || s.history.length === 0) return s;
       return {
@@ -78,6 +142,7 @@ export const AttendanceProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       };
     }));
   }, []);
+
 
   const editHistoryEntry = useCallback((subjectId: string, entryIndex: number, newType: 'present' | 'absent') => {
     setSubjects(prev => prev.map(s => {

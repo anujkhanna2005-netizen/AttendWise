@@ -244,3 +244,47 @@ class TimetableSlotOut(BaseModel):
     model_config = {"from_attributes": True}
 
 
+# ---------------------------------------------------------------------------
+# Attendance Records
+# ---------------------------------------------------------------------------
+class AttendanceRecordCreate(BaseModel):
+    student_id: int
+    timetable_slot_id: int
+    date: dt.date
+    status: str = Field(min_length=1, max_length=20) # present/absent/late
+
+
+class AttendanceRecordUpdate(BaseModel):
+    status: str = Field(min_length=1, max_length=20)
+
+
+class AttendanceRecordOut(BaseModel):
+    id: int
+    student_id: int
+    timetable_slot_id: int
+    date: dt.date
+    status: str
+    marked_by: int | None = None
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
+class SubjectAttendanceSummary(BaseModel):
+    subject_id: int
+    subject_name: str
+    subject_code: str
+    total_classes: int
+    present_count: int
+    absent_count: int
+    late_count: int
+    percentage: float
+
+
+class StudentAttendanceSummary(BaseModel):
+    student_id: int
+    summaries: list[SubjectAttendanceSummary]
+
+
+

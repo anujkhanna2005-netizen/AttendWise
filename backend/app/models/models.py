@@ -439,3 +439,50 @@ class TimetableSlot(Base):
     semester: Mapped["Semester"] = relationship("Semester")
 
 
+# ---------------------------------------------------------------------------
+# 15. attendance_records
+# ---------------------------------------------------------------------------
+from sqlalchemy import Date, Enum
+
+class AttendanceRecord(Base):
+    __tablename__ = "attendance_records"
+    __table_args__ = (
+        UniqueConstraint("student_id", "timetable_slot_id", "date", name="uq_student_class_date"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    student_id: Mapped[int] = mapped_column(
+        Integer,
+        ForeignKey("students.id", ondelete="RESTRICT"),
+        nullable=False,
+    )
+    timetable_slot_id: Mapped[int] = mapped_column(
+        Integer,
+        ForeignKey("timetable_slots.id", ondelete="RESTRICT"),
+        nullable=False,
+    )
+    date: Mapped[datetime.date] = mapped_column(Date, nullable=False)
+    status: Mapped[str] = mapped_column(String(20), nullable=False)  # present/absent/late
+    marked_by: Mapped[Optional[int]] = mapped_column(
+        Integer,
+        ForeignKey("faculty.id", ondelete="SET NULL"),
+        nullable=True,
+    )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=text("NOW()"),
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=text("NOW()"),
+        onupdate=text("NOW()"),
+    )
+
+    student: Mapped["Student"] = relationship("Student")
+    timetable_slot: Mapped["TimetableSlot"] = relationship("TimetableSlot")
+    marker: Mapped[Optional["Faculty"]] = relationship("Faculty")
+
+
+

@@ -21,7 +21,7 @@ from app.models import models  # noqa: F401 – register all ORM models with SQL
 from app.schemas.schemas import HealthResponse
 
 # Route modules
-from app.api import auth, departments, courses, subjects, students, faculty, parents, semesters, enrollments, faculty_assignments, audit_logs, timetable
+from app.api import auth, departments, courses, subjects, students, faculty, parents, semesters, enrollments, faculty_assignments, audit_logs, timetable, attendance
 
 settings = get_settings()
 
@@ -66,6 +66,7 @@ app.include_router(enrollments.router)
 app.include_router(faculty_assignments.router)
 app.include_router(audit_logs.router)
 app.include_router(timetable.router)
+app.include_router(attendance.router)
 
 
 # ---------------------------------------------------------------------------
