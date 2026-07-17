@@ -100,6 +100,17 @@ erDiagram
         time end_time
     }
 
+    attendance_records {
+        int id PK
+        int student_id FK
+        int timetable_slot_id FK
+        date date
+        string status
+        int marked_by FK "nullable"
+        timestamp created_at
+        timestamp updated_at
+    }
+
     users ||--o{ roles : "has"
     students ||--|| users : "is a"
     faculty ||--|| users : "is a"
@@ -119,5 +130,9 @@ erDiagram
     timetable_slots }o--|| faculty : "scheduled for"
     timetable_slots }o--|| subjects : "teaches"
     timetable_slots }o--|| semesters : "during"
+    attendance_records }o--|| students : "tracks (RESTRICT)"
+    attendance_records }o--|| timetable_slots : "schedules (RESTRICT)"
+    attendance_records }o--|| faculty : "marked by (SET NULL)"
     audit_logs }o--|| users : "modified by"
 ```
+
