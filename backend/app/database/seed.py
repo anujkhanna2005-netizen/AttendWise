@@ -23,17 +23,24 @@ ROLES = ["admin", "faculty", "student", "parent"]
 # ---------------------------------------------------------------------------
 SEED_USERS = [
     {
-        "email": os.getenv("SEED_ADMIN_EMAIL", "admin@attendwise.local"),
+        "email": os.getenv("SEED_ADMIN_EMAIL", "admin@attendwise.com"),
         "password": os.getenv("SEED_ADMIN_PASSWORD", "admin_change_me_123"),
         "role": "admin",
     },
     {
-        "email": os.getenv("SEED_FACULTY_EMAIL", "faculty@attendwise.local"),
-        "password": os.getenv("SEED_FACULTY_PASSWORD", "faculty_change_me_123"),
+        "email": "faculty_v1@attendwise.com",
+        "password": "Fac1@Secure!2025",
         "role": "faculty",
-        "department_id": None,   # no department assigned at seed time
+        "department_id": None,
+    },
+    {
+        "email": "faculty_v2@attendwise.com",
+        "password": "Fac2@Secure!2025",
+        "role": "faculty",
+        "department_id": None,
     },
 ]
+
 
 
 def seed():
