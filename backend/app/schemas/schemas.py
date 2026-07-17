@@ -215,3 +215,32 @@ class AuditLogOut(BaseModel):
 
     model_config = {"from_attributes": True}
 
+
+# ---------------------------------------------------------------------------
+# Timetable Slots
+# ---------------------------------------------------------------------------
+import datetime as dt
+
+class TimetableSlotCreate(BaseModel):
+    faculty_id: int
+    subject_id: int
+    semester_id: int
+    room: str = Field(min_length=1, max_length=50)
+    day_of_week: int = Field(ge=0, le=6)
+    start_time: dt.time
+    end_time: dt.time
+
+
+class TimetableSlotOut(BaseModel):
+    id: int
+    faculty_id: int
+    subject_id: int
+    semester_id: int
+    room: str
+    day_of_week: int
+    start_time: dt.time
+    end_time: dt.time
+
+    model_config = {"from_attributes": True}
+
+

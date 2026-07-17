@@ -400,3 +400,42 @@ class AuditLog(Base):
         server_default=text("NOW()"),
     )
 
+
+# ---------------------------------------------------------------------------
+# 14. timetable_slots
+# ---------------------------------------------------------------------------
+from sqlalchemy import Time
+
+class TimetableSlot(Base):
+    __tablename__ = "timetable_slots"
+    __table_args__ = (
+        CheckConstraint("end_time > start_time", name="chk_timetable_times"),
+        CheckConstraint("day_of_week BETWEEN 0 AND 6", name="chk_timetable_day"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    faculty_id: Mapped[int] = mapped_column(
+        Integer,
+        ForeignKey("faculty.id", ondelete="RESTRICT"),
+        nullable=False,
+    )
+    subject_id: Mapped[int] = mapped_column(
+        Integer,
+        ForeignKey("subjects.id", ondelete="RESTRICT"),
+        nullable=False,
+    )
+    semester_id: Mapped[int] = mapped_column(
+        Integer,
+        ForeignKey("semesters.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    room: Mapped[str] = mapped_column(String(50), nullable=False)
+    day_of_week: Mapped[int] = mapped_column(Integer, nullable=False)  # 0=Monday, 6=Sunday
+    start_time: Mapped[datetime.time] = mapped_column(Time, nullable=False)
+    end_time: Mapped[datetime.time] = mapped_column(Time, nullable=False)
+
+    faculty: Mapped["Faculty"] = relationship("Faculty")
+    subject: Mapped["Subject"] = relationship("Subject")
+    semester: Mapped["Semester"] = relationship("Semester")
+
+
