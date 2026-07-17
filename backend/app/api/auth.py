@@ -86,6 +86,11 @@ def register(request: Request, body: RegisterRequest, db: Session = Depends(get_
     elif body.role == "parent":
         profile = Parent(user_id=user.id)
         db.add(profile)
+    elif body.role == "faculty":
+        from app.models.models import Faculty
+        profile = Faculty(user_id=user.id, department_id=body.department_id)
+        db.add(profile)
+
 
     try:
         db.commit()
